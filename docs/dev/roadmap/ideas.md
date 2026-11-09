@@ -394,6 +394,10 @@ decide whether to enable it by default. Not verified at run time.
 
 - **Shape:** fix the hang when a server does not answer (upstream #376); add favorites, history
   and filters (mods, players, ping).
+- **Status:** #376 fixed on branch `fix/server-browser-dns`: master DNS lookups were blocking
+  (`gethostbyname` on the main thread, 5 s each with a hung DNS) and a failed lookup retried the
+  same master forever; also a master socket never created had descriptor 0 and was "closed" on
+  timeout, closing stdin. Open: favorites, history, filters.
 
 ## Fork identity: versions and updates
 

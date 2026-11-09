@@ -5,6 +5,9 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import sys
+import subprocess
+import shutil
 import functools
 import http.server
 import threading
@@ -357,6 +360,34 @@ class HudScale(GameTestCase):
         normal, double = self.shot(1), self.shot(2)
         self.assertGreater(normal, 300)
         self.assertGreater(double / normal, 3.0, (normal, double))   # twice the size on both axes
+
+
+@require_game
+@unittest.skipUnless(sys.platform.startswith("linux") and shutil.which("gcc"), "needs Linux and gcc (LD_PRELOAD)")
+class ServerBrowser(GameTestCase):
+    def test_slow_dns_does_not_freeze_the_game(self):
+        # upstream #376: refreshing the internet server list froze the game while master DNS lookups hung
+        shim = os.path.join(self.home.path, "slowdns.so")
+        subprocess.run(["gcc", "-shared", "-fPIC", "-o", shim,
+                        os.path.join(os.path.dirname(os.path.abspath(__file__)), "slowdns.c"), "-ldl"], check=True)
+        c = self.client("+set", "developer", "1", env={"LD_PRELOAD": shim})
+        c.wait_for(r"Opening IP socket", timeout=60)
+        time.sleep(10)
+        c.send("pushmenu joinnetgame")
+        time.sleep(2)
+        c.send("widgetcommand netgamelist refreshserverlist")
+        time.sleep(0.5)
+        mark = len(c.log())
+        start = time.time()
+        c.send("echo BROWSER_ALIVE")
+        c.wait_for(r"^BROWSER_ALIVE", start=mark, timeout=30)
+        self.assertLess(time.time() - start, 2.0)          # was 5 s per master lookup
+        time.sleep(6)                                       # past the master socket timeout
+        mark = len(c.log())
+        c.send("echo STDIN_ALIVE")                          # a never-created master socket closed fd 0
+        c.wait_for(r"^STDIN_ALIVE", start=mark, timeout=10)
+        self.assertIn("SLOWDNS getaddrinfo(master.", c.log())
+        self.assertEqual(c.quit(), 0)
 
 
 @require_game

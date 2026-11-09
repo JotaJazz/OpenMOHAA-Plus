@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
 
+#include "gs_resolve.h" // Added in OpenMOHAA Plus
 #include "q_gamespy.h"
 #include "../qcommon/qcommon.h"
 #include "cl_gamespy.h"
@@ -121,7 +122,15 @@ qboolean Com_RefreshGameSpyMasters()
 
 void Com_InitGameSpy()
 {
+    unsigned int i, address;
+
     Com_RefreshGameSpyMasters();
+
+    // Added in OpenMOHAA Plus: resolve the masters in the background now, so the server browser
+    // does not wait for DNS (upstream #376)
+    for (i = 0; i < num_entries; i++) {
+        GS_LookupHost(entries[i].host, &address);
+    }
 
     Cmd_AddCommand("net_gamespy_restart", Com_RestartGameSpy_f);
 }

@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — server browser DNS freeze (#376)
+- Reproduced with an `LD_PRELOAD` shim that makes host-name lookups take 5 s (numeric addresses must pass through, or socket setup slows down too): refreshing the list froze the game ~8 s on upstream.
+- Three faults in `gserverlist.c`: blocking `gethostbyname`, no move to the next master on DNS failure, master sockets zero-initialized so a never-created one closed descriptor 0 (stdin) on timeout.
+- Debugging lesson: a leftover headless client from a failed probe kept running; list `pgrep -x openmohaa` before blaming the code.
+
 ## 2026-11-09 — game install detection
 - Upstream's Windows store lookups were ioquake3's Quake 3 ones (Steam 2200, GOG 1441704920, Microsoft Store "Quake 3"): GOG now uses MOHAA War Chest 1207659126, the others are off. Windows paths not tested here (no Windows); CI compiles them.
 - New `fs_eapath` (EA installer folder, also in the Wine prefix) when the base path has no `main/Pak0.pk3`; the bare "Couldn't load default.cfg" now lists the searched folders and the `fs_basepath` fix.
