@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 
 #include "gamecmds.h"
+#include "scriptexception.h"
 #include "glb_local.h"
 #include "camera.h"
 #include "viewthing.h"
@@ -649,7 +650,14 @@ qboolean G_CompileScript(gentity_t *ent)
         return qfalse;
     }
 
-    CompileAssemble(gi.Argv(1), gi.Argv(2));
+    // Fixed in OpenMOHAA Plus: a script that doesn't compile threw an uncaught ScriptException,
+    // which aborted the whole server
+    try {
+        CompileAssemble(gi.Argv(1), gi.Argv(2));
+    } catch (const ScriptException& e) {
+        gi.Printf("compilescript: %s failed: %s\n", gi.Argv(1), e.string.c_str());
+        return qfalse;
+    }
     return qtrue;
 }
 
