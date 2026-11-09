@@ -10,7 +10,7 @@ Derived from `#include "../<dir>/..."` usage and the CMake targets in [overview.
 | Engine | `qcommon`, `server`, `client`, `sys`, `sdl`, `null`, `uilib` | executables |
 | Shared C++ base | `corepp`, `tiki`, `skeletor` | executables and modules (compiled per target) |
 | Game modules | `fgame` (+ `script`, `parser`), `cgame` | `game.so`, `cgame.so` |
-| Renderers | `renderercommon`, `renderergl1`, `renderergl2` | `renderer_opengl*.so` |
+| Renderers | `renderercommon`, `renderergl1`, `renderergl2`, `renderervk` | `renderer_opengl*.so`, `renderer_vulkan.so` (GL1 sources + `renderervk`) |
 | Vendored | `thirdparty`, `gamespy` | linked in |
 
 ## Allowed dependencies

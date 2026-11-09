@@ -23,3 +23,4 @@
 | svs time fixup | Saved times stored relative to the level and rebased on load (`SV_FinishSvsTimeFixups`) |
 | TAG_GAME / TAG_CGAME | Zone memory tags owned by the game / cgame module |
 | Map-script override | A `maps/<map>.scr` in the home path that replaces the stock map script (used by tests) |
+| lavapipe | Mesa's software Vulkan driver; the tests run the Vulkan renderer on it (`VK_ICD_FILENAMES`) |

@@ -40,6 +40,12 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
   generates its own parser.
 
+- Vulkan renderer ([renderer-vulkan.md](../architecture/renderer-vulkan.md)): one frame in flight
+  (every submit waits for the GPU), one memory allocation per texture (drivers may cap allocations
+  near 4096), pipelines created on first use (a hitch the first time a state appears). The window
+  and swapchain path, `vid_restart` on a real window, Windows and macOS builds (CI installs the
+  Vulkan headers on Linux only) are not tested.
+
 ## Sanitizer findings (headless suite on an ASan + UBSan build, 2026-11-09)
 
 Fixed: out-of-bounds read in `S_OPENAL_Start2DSound` (branch `fix/snd-callback-entity`), signed

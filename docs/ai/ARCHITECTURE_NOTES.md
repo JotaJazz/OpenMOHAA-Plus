@@ -27,4 +27,5 @@ Full rules: [boundaries.md](../dev/architecture/boundaries.md). Decisions: [ADR 
 
 ## ADRs
 0001 AI-assisted work stays in the fork · 0002 original behaviour by default · 0003 one branch per
-issue, `--no-ff` merges · 0004 module may stay resident after unload.
+issue, `--no-ff` merges · 0004 module may stay resident after unload · 0005 the Vulkan renderer
+emulates the GL1 renderer's OpenGL calls.

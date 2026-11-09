@@ -7,6 +7,11 @@ Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 - Bots never threw grenades and with grenades only took out an empty pistol (`UseWeaponWithAmmo` skipped throwables). Now: switch, aim above the enemy, charge 0.7-2 s (overcook is at 4 s), throw, switch back.
 - Three traps found by tracing: `WEAPON_CLASS_THROWABLE` includes the binoculars (use `WEAPON_CLASS_GRENADE`); `useWeapon()` is undone because `CheckValidWeapon` sees the bot without a weapon mid-switch and re-arms it (skipped during a throw); the switch then works through the player's own `useweaponclass grenade`.
 
+## 2026-11-09 — Vulkan renderer, first stage
+- Not a port: the GL1 renderer calls OpenGL through 76 `qgl*` pointers, mostly GL 1.x fixed function, so `renderer_vulkan` is GL1 plus an emulation of those calls (ADR 0005); no renderer copy, pictures comparable pixel by pixel with GL1.
+- First bug: front faces must stay counter-clockwise when the shader flips y (clockwise culled the whole BSP while models showed). Spawn points are random, so screenshots use an `sv_scripts` camera.
+- Not tested: a real window/swapchain, Windows/macOS builds; Zink cannot run on lavapipe (rejects CPU devices), so Zink was not an option to test here.
+
 ## 2026-11-09 — lag compensation (g_antilag)
 - Bullets rewind the other players to the shooter's `usercmd.serverTime` (the time the client renders), restoring position, angles and the animation state the bone hit locations are computed from (the per-frame pose cache is reset); history of 64 frames, capped by `g_antilag_maxms`.
 - Counting hits was too noisy to test (client pitch jumps with recoil, SMG spread); the test checks the logged sideways aim distance instead: about 2 units from the rewound bot, 14 from where it is now, with 150 ms of client delay.

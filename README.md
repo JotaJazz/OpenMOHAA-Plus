@@ -55,6 +55,7 @@ the original assets, scripts and servers
 - the game folder found on its own for GOG and the original `EA GAMES\MOHAA` install (also inside
   Wine), an AppImage for Linux and the Steam Deck
 - HRTF audio for headphones (`s_hrtf 1`)
+- an experimental [Vulkan renderer](docs/markdown/03-configuration/12-plus-vulkan.md) (`cl_renderer vulkan`, Linux builds)
 
 ### For servers and competitive play
 
@@ -112,7 +113,7 @@ The work follows a [plan in phases](docs/dev/roadmap/ideas.md#prioritized-plan):
 | 2. Script platform (gametype events, HTTP/JSON, toolkit) | done |
 | 3. Competitive and online | nearly done: bots that play objectives (#602) and validation of impossible hits are left |
 | 4. Player experience | nearly done: match demos, a Flatpak and loading saves from the original game (#601) are left |
-| 5. Big bets (campaign co-op, WebAssembly, Vulkan, community portal) | not started |
+| 5. Big bets (campaign co-op, WebAssembly, Vulkan, community portal) | started: a first Vulkan renderer |
 
 Upstream bugs keep being fixed alongside, picked by what can be reproduced and verified (next: the
 same musl fix for the client module that the server got in #918). Tested on Linux with the original

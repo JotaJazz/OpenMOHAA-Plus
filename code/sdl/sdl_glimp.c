@@ -35,6 +35,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
 
+#ifdef USE_VULKAN
+// Added in OpenMOHAA Plus: renderer_vulkan uses this window code with a Vulkan device in place
+// of the GL context, and qgl* pointing at the GL emulation (code/renderervk). Without a working
+// Vulkan driver it falls back to a real OpenGL context: the renderer code is the same.
+#    include "../renderervk/vk_local.h"
+static qboolean vkActive;
+#endif
+
 typedef enum
 {
 	RSERR_OK,
@@ -89,6 +97,13 @@ GLimp_Shutdown
 void GLimp_Shutdown( void )
 {
 	ri.IN_Shutdown();
+
+#ifdef USE_VULKAN
+	if ( vkActive ) {
+		VK_Shutdown();
+		vkActive = qfalse;
+	}
+#endif
 
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 }
@@ -412,6 +427,9 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 	int i = 0;
 	SDL_Surface *icon = NULL;
 	Uint32 flags = SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL;
+#ifdef USE_VULKAN
+	qboolean headless = qfalse;
+#endif
 	SDL_DisplayMode desktopMode;
 	int display = 0;
 	int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
@@ -593,6 +611,39 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 		numContexts++;
 	}
 
+#ifdef USE_VULKAN
+	// a Vulkan window, or without a Vulkan-capable video driver (SDL "offscreen") no window
+	// surface at all: then frames are only drawn into the offscreen image (screenshots, tests)
+	SDL_window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, ( flags & ~SDL_WINDOW_OPENGL ) | SDL_WINDOW_VULKAN );
+	if ( !SDL_window )
+	{
+		ri.Printf( PRINT_ALL, "SDL_CreateWindow with Vulkan failed (%s), rendering offscreen\n", SDL_GetError() );
+		headless = qtrue;
+		SDL_window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags & ~SDL_WINDOW_OPENGL );
+	}
+	if ( SDL_window && !VK_Init( SDL_window, glConfig.vidWidth, glConfig.vidHeight, headless ) )
+	{
+		VK_Shutdown();
+		SDL_DestroyWindow( SDL_window );
+		SDL_window = NULL;
+	}
+	if ( SDL_window )
+	{
+		vkActive = qtrue;
+		VK_GL_SetProcAddresses();
+		SDL_SetWindowIcon( SDL_window, icon );
+		glConfig.colorBits = 24;
+		glConfig.depthBits = 24;
+		glConfig.stencilBits = 8;
+		glConfig.stereoEnabled = qfalse;
+	}
+	if ( !vkActive )
+	{
+		ri.Printf( PRINT_ALL, "Vulkan could not start, using OpenGL\n" );
+	}
+
+	if ( !vkActive )
+#endif
 	for (i = 0; i < 16; i++)
 	{
 		int testColorBits, testDepthBits, testStencilBits;
@@ -821,6 +872,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 		break;
 	}
 
+
 	SDL_FreeSurface( icon );
 
 	if( !SDL_window )
@@ -894,6 +946,19 @@ static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qbool
 GLimp_InitExtensions
 ===============
 */
+#ifdef USE_VULKAN
+static void GLimp_InitExtensionsVulkan( void )
+{
+	// what the GL emulation provides (code/renderervk/vk_gl.c)
+	glConfig.textureCompression = TC_NONE;
+	glConfig.textureEnvAddAvailable = qtrue;
+	glConfig.numTextureUnits = 2;
+	maxAnisotropy = (int)VK_MaxAnisotropy();
+	textureFilterAnisotropic = r_ext_texture_filter_anisotropic->integer && maxAnisotropy > 1;
+	haveClampToEdge = qtrue;
+}
+#endif
+
 static void GLimp_InitExtensions( qboolean fixedFunction )
 {
 	if ( !r_allowExtensions->integer )
@@ -1171,6 +1236,11 @@ success:
 	}
 
 	// initialize extensions
+#ifdef USE_VULKAN
+	if ( vkActive )
+		GLimp_InitExtensionsVulkan();
+	else
+#endif
 	GLimp_InitExtensions( fixedFunction );
 
 	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
@@ -1192,6 +1262,11 @@ void GLimp_EndFrame( void )
 	// don't flip if drawing to front buffer
 	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
+#ifdef USE_VULKAN
+		if ( vkActive )
+			VK_EndFrame();
+		else
+#endif
 		SDL_GL_SwapWindow( SDL_window );
 	}
 

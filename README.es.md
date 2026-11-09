@@ -55,6 +55,7 @@ compatibilidad con los assets, scripts y servidores originales
 - la carpeta del juego se encuentra sola en instalaciones de GOG y en la original `EA GAMES\MOHAA`
   (también dentro de Wine), y un AppImage para Linux y la Steam Deck
 - audio HRTF para audífonos (`s_hrtf 1`)
+- un [renderer Vulkan](docs/markdown/03-configuration/12-plus-vulkan.md) experimental (`cl_renderer vulkan`, en los builds de Linux)
 
 ### Para servidores y juego competitivo
 
@@ -116,7 +117,7 @@ El trabajo sigue un [plan por fases](docs/dev/roadmap/ideas.md#prioritized-plan)
 | 2. Plataforma de scripts (eventos de gametype, HTTP/JSON, herramientas) | terminada |
 | 3. Competitivo y online | casi terminada: faltan bots que jueguen objetivos (#602) y validar impactos imposibles |
 | 4. Experiencia del jugador | casi terminada: faltan demos de partidas, un Flatpak y cargar partidas guardadas del juego original (#601) |
-| 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | sin empezar |
+| 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | empezada: un primer renderer Vulkan |
 
 En paralelo se siguen corrigiendo bugs del proyecto original, elegidos según lo que se pueda
 reproducir y verificar (el próximo: la misma corrección para el módulo del cliente en musl que

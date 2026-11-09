@@ -9,6 +9,7 @@ An accepted ADR is never edited; a later ADR supersedes it and the old one gets
 | [0002](0002-original-behaviour-by-default.md) | Original-game behaviour by default | Accepted |
 | [0003](0003-one-branch-per-issue.md) | One branch per upstream issue, merged with --no-ff | Accepted |
 | [0004](0004-module-may-stay-resident.md) | A game module may stay resident after unload | Accepted |
+| [0005](0005-vulkan-renderer-emulates-gl1.md) | The Vulkan renderer emulates the GL1 renderer's OpenGL calls | Accepted |
 
 ## Template (MADR-lite)
 
