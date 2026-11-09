@@ -759,6 +759,51 @@ class _CaptureHandler(BaseHTTPRequestHandler):
 
 @require_game
 class ReferenceMods(GameTestCase):
+    def test_plus_match_halftime_draw_and_timeouts(self):
+        mod = os.path.join(omoh.REPO, "misc", "mods", "plus-match", "global")
+        shutil.copytree(mod, os.path.join(self.home.path, "main", "global"))
+        # every round: axis wins after 4 s (the map restarts each round in objective mode)
+        self.home.write("maps/obj/obj_team2.scr", """main:
+	event_subscribe "level_intermission" on_intermission
+	level waittill spawn
+	level waittill roundstart
+	wait 4
+	teamwin axis
+end
+
+on_intermission:
+	println "TMATCH intermission"
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "4", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+set", "sv_scripts", "global/plus/match.scr",
+                        "+set", "plus_match_rounds", "4", "+set", "plus_match_timeouts", "1",
+                        "+set", "plus_match_timeout_length", "2", "+map", "obj/obj_team2")
+        s.wait_for(r"==== InitGame ====")
+        s.wait_for(r"PLUS_MATCH loaded", timeout=120)
+        s.wait_for(r"has entered the battle", count=4, timeout=120)
+        time.sleep(1)
+        s.send("timeout axis")
+        s.wait_for(r"PLUS_MATCH timeout axis")
+        s.wait_for(r"PLUS_MATCH resumed", timeout=20)         # timeout length 2 s
+        mark = len(s.log())
+        s.send("timeout axis")                                # none left this half
+        s.send("plus_match_timeouts_axis")
+        s.wait_for(r'"plus_match_timeouts_axis" is:"0', start=mark)
+        s.wait_for(r"PLUS_MATCH draw", timeout=300)
+        draw = len(s.log())
+        log = s.wait_for(r"TMATCH intermission", start=draw, timeout=60)   # also fires between rounds
+        s.send("fraglimit")
+        s.wait_for(r'"fraglimit" is:"2')                      # lowered to the tied score to end the match
+        self.assertEqual(s.quit(), 0)
+        self.assertEqual(log[mark:].count("PLUS_MATCH timeout axis"), 0)
+        rounds = re.findall(r"PLUS_MATCH round (\d+) winner (\w+) score (\d+)-(\d+)", log)
+        self.assertEqual(rounds, [("1", "axis", "1", "0"), ("2", "axis", "2", "0"),
+                                  ("3", "axis", "1", "2"), ("4", "axis", "2", "2")])
+        self.assertLess(log.index("PLUS_MATCH round 2"), log.index("PLUS_MATCH halftime"))
+        self.assertLess(log.index("PLUS_MATCH halftime"), log.index("PLUS_MATCH round 3"))
+        self.assertIn("PLUS_MATCH draw", log)
+
     def test_plus_stats_posts_round_results(self):
         import json
         http = HTTPServer(("127.0.0.1", 0), _CaptureHandler)

@@ -45,7 +45,7 @@ Every branch named in a "Status" line below was merged into `main` on 2026-11-09
 | 0 | all | - |
 | 1 | all (flood protection already existed) | - |
 | 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
-| 3 | `sv_fps 40`, `sv_scripts`, plus-stats reference mod, server administration (#905); ready-up, player info, anti-wallhack and votes already existed | competition mode, server QoL (hitsounds), better bots, competitive netcode |
+| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds; ready-up, player info, anti-wallhack and votes already existed | hit markers and round timer on the HUD, better bots, competitive netcode |
 | 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
 | 5 | - | all |
 
