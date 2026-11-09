@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // playerbot_rotation.cpp: Manages bot rotation
 
 #include "playerbot.h"
+#include "g_bot.h" // Added in OpenMOHAA Plus
 
 BotRotation::BotRotation()
 {
@@ -66,9 +67,10 @@ void BotRotation::TurnThink(usercmd_t& botcmd, usereyes_t& eyeinfo)
     int   i;
 
     factor      = 1.0;
-    maxChange   = Q_max(360, g_bot_turn_speed->integer);
+    // Changed in OpenMOHAA Plus: scaled by g_bot_skill
+    maxChange   = Q_max(360, g_bot_turn_speed->integer * G_BotTurnScale());
     minChange   = 20;
-    changeSpeed = g_bot_turn_speed->integer;
+    changeSpeed = g_bot_turn_speed->integer * G_BotTurnScale();
 
     if (m_vTargetAng[PITCH] > 180) {
         m_vTargetAng[PITCH] -= 360;

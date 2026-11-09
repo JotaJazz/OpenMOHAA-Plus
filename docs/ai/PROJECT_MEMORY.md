@@ -3,6 +3,16 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — bots throw grenades (#833)
+- Bots never threw grenades and with grenades only took out an empty pistol (`UseWeaponWithAmmo` skipped throwables). Now: switch, aim above the enemy, charge 0.7-2 s (overcook is at 4 s), throw, switch back.
+- Three traps found by tracing: `WEAPON_CLASS_THROWABLE` includes the binoculars (use `WEAPON_CLASS_GRENADE`); `useWeapon()` is undone because `CheckValidWeapon` sees the bot without a weapon mid-switch and re-arms it (skipped during a throw); the switch then works through the player's own `useweaponclass grenade`.
+
+## 2026-11-09 — bot skill levels and weapons (#684)
+- Bots already had aim cvars (`g_bot_attack_*`, `g_bot_turn_speed`) and reported a fixed "Average" skill; `g_bot_skill` 1-5 multiplies them (3 = unchanged) and `g_bot_weapons` replaces the automatic weapon choice. The level's real effect on fights is not measured.
+
+## 2026-11-09 — HUD round timer already existed
+- `hud_timelimit` shows "Time Left" from `CS_MATCHEND` (round time in round-based modes); it was invisible in tests only because they run without a time limit. Screenshots show it standing still during a match pause.
+
 ## 2026-11-09 — hit markers
 - Server command `hitmarker` sent only to clients whose userinfo has `cg_hitmarker 1` (a USERINFO cvar of the Plus cgame), so original clients never see an unknown command; drawn as small boxes (no rotated 2D pictures in the cgame API).
 - Tested on a plain background (`r_clear 1`, no world or entities) with the player hitting a bot every 0.1 s, so a marker is always visible.

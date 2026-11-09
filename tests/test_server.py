@@ -861,5 +861,70 @@ class InstallDetection(GameTestCase):
         self.assertIn("main/Pak0.pk3", log)
 
 
+@require_game
+class BotSettings(GameTestCase):
+    def test_bot_weapons_and_skill(self):
+        # upstream #684
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	while ($player.size < 4) {
+		wait 1
+	}
+	wait 5
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		println ("TBOT " + $player[local.i].netname + " " + $player[local.i].getcurrentdmweapontype)
+	}
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+set", "g_bot_weapons", "shotgun", "+set", "g_bot_skill", "5",
+                        "+map", "dm/mohdm1")
+        log = s.wait_for(r"TBOT .*", count=4, timeout=120)
+        s.send("g_bot_skill 1")
+        time.sleep(3)
+        log = s.log()
+        self.assertEqual(s.quit(), 0)
+        weapons = re.findall(r"TBOT \S+ (\S+)", log)
+        self.assertEqual(weapons, ["shotgun"] * 4)
+        self.assertIn("Bot skill: Expert (reaction x0.3, aim spread x0.3, turn speed x1.8)", log)
+        self.assertIn("Bot skill: Novice (reaction x2.0, aim spread x2.0, turn speed x0.6)", log)
+
+    def _weapon_fire(self, seconds, script=None):
+        if script:
+            self.home.write("maps/dm/mohdm2.scr", script)
+        s = self.server("+set", "g_gametype", "2", "+set", "sv_maxclients", "16", "+set", "sv_maxbots", "12",
+                        "+set", "sv_minPlayers", "12", "+set", "g_showweaponfire", "1", "+map", "dm/mohdm2")
+        s.wait_for(r"==== InitGame ====")
+        time.sleep(seconds)
+        log = s.log()
+        self.assertEqual(s.quit(), 0)
+        return re.findall(r"weapon fire: (.+) at \d+ ms", log)
+
+    def test_bots_with_only_grenades_throw_them(self):
+        # upstream #833: with grenades as their only weapon (gun game mods) bots took out an empty pistol
+        shots = self._weapon_fire(40, """main:
+	event_subscribe "player_spawned" on_spawn
+	level waittill spawn
+end
+
+on_spawn:
+	wait 0.5
+	if (self == NULL || self.health <= 0)
+		end
+	self takeall
+	self give models/weapons/m2frag_grenade.tik
+	self ammo grenade 50
+end
+""")
+        self.assertGreater(len(shots), 5, shots)
+        self.assertEqual(set(shots), {"Frag Grenade"})
+
+    @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 1.5 minutes); set OMOH_SLOW=1")
+    def test_bots_throw_grenades_in_a_normal_match(self):
+        shots = self._weapon_fire(80)
+        self.assertTrue(any(name in ("Frag Grenade", "Stielhandgranate") for name in shots), shots)
+        self.assertTrue(any(name not in ("Frag Grenade", "Stielhandgranate") for name in shots), shots)
+
+
 if __name__ == "__main__":
     unittest.main()
