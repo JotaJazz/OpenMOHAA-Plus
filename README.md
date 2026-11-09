@@ -8,6 +8,8 @@
 [![Builds](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml/badge.svg?branch=main)](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml)
 [![Last commit](https://img.shields.io/github/last-commit/JotaJazz/OpenMOHAA-Plus/main)](https://github.com/JotaJazz/OpenMOHAA-Plus/commits/main)
 
+[Español](README.es.md) · **English**
+
 **Medal of Honor: Allied Assault is still alive.** OpenMOHAA Plus is a fork of
 [OpenMoHAA](https://github.com/openmoh/openmohaa), the open-source reimplementation of Medal of
 Honor: Allied Assault, Spearhead and Breakthrough: the client, the dedicated server and the game
