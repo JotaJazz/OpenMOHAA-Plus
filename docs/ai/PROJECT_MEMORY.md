@@ -3,6 +3,10 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — game install detection
+- Upstream's Windows store lookups were ioquake3's Quake 3 ones (Steam 2200, GOG 1441704920, Microsoft Store "Quake 3"): GOG now uses MOHAA War Chest 1207659126, the others are off. Windows paths not tested here (no Windows); CI compiles them.
+- New `fs_eapath` (EA installer folder, also in the Wine prefix) when the base path has no `main/Pak0.pk3`; the bare "Couldn't load default.cfg" now lists the searched folders and the `fs_basepath` fix.
+
 ## 2026-11-09 — HUD scale and crosshair size (#585, #911)
 - Up to 1920x1080 the HUD was never scaled (drawn at 640x480 pixel size); `ui_hudscale` multiplies the automatic scale, `getScreenWidth` uses the real scale instead of a fixed 1920.
 - Headless screenshot tests: `sv_maxclients 2` avoids the loading screen's continue button, `screenshot silent` avoids the "Wrote" centerprint, `popmenu 0` closes team/weapon menus.

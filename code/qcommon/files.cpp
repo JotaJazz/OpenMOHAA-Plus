@@ -259,6 +259,7 @@ static	cvar_t		*fs_apppath;
 static	cvar_t		*fs_steampath;
 static	cvar_t		*fs_gogpath;
 static	cvar_t		*fs_microsoftstorepath;
+static	cvar_t		*fs_eapath; // Added in OpenMOHAA Plus
 
 static	cvar_t		*fs_basepath;
 static	cvar_t		*fs_basegame;
@@ -3556,6 +3557,101 @@ static void FS_AddPathVar( cvar_t *pathVar ) {
 
 /*
 ================
+FS_HasGameData
+
+Added in OpenMOHAA Plus: does this folder hold the game's main/Pak0.pk3?
+================
+*/
+static qboolean FS_HasGameData( const char *path ) {
+	static const char *names[] = { "Pak0.pk3", "pak0.pk3", "PAK0.PK3" };
+	char ospath[MAX_OSPATH];
+	FILE *f;
+
+	for ( int i = 0; i < ARRAY_LEN( names ); i++ ) {
+		Com_sprintf( ospath, sizeof( ospath ), "%s%cmain%c%s", path, PATH_SEP, PATH_SEP, names[i] );
+		f = Sys_FOpen( ospath, "rb" );
+		if ( f ) {
+			fclose( f );
+			return qtrue;
+		}
+	}
+	return qfalse;
+}
+
+/*
+================
+FS_DetectEAPath
+
+Added in OpenMOHAA Plus: the original installer's default folder (Program Files\EA GAMES\MOHAA),
+also inside the default Wine prefix on other systems
+================
+*/
+static const char *FS_DetectEAPath( void ) {
+	static char found[MAX_OSPATH];
+	char        roots[2][MAX_OSPATH];
+	char        path[MAX_OSPATH];
+	int         i;
+
+	roots[0][0] = roots[1][0] = 0;
+#ifdef _WIN32
+	if ( getenv( "ProgramFiles(x86)" ) ) {
+		Q_strncpyz( roots[0], getenv( "ProgramFiles(x86)" ), sizeof( roots[0] ) );
+	}
+	if ( getenv( "ProgramFiles" ) ) {
+		Q_strncpyz( roots[1], getenv( "ProgramFiles" ), sizeof( roots[1] ) );
+	}
+#else
+	char prefix[MAX_OSPATH];
+
+	if ( getenv( "WINEPREFIX" ) && *getenv( "WINEPREFIX" ) ) {
+		Q_strncpyz( prefix, getenv( "WINEPREFIX" ), sizeof( prefix ) );
+	} else if ( getenv( "HOME" ) ) {
+		Com_sprintf( prefix, sizeof( prefix ), "%s/.wine", getenv( "HOME" ) );
+	} else {
+		return "";
+	}
+	Com_sprintf( roots[0], sizeof( roots[0] ), "%s/drive_c/Program Files (x86)", prefix );
+	Com_sprintf( roots[1], sizeof( roots[1] ), "%s/drive_c/Program Files", prefix );
+#endif
+
+	for ( i = 0; i < 2; i++ ) {
+		if ( !roots[i][0] ) {
+			continue;
+		}
+		Com_sprintf( path, sizeof( path ), "%s%cEA GAMES%cMOHAA", roots[i], PATH_SEP, PATH_SEP );
+		if ( FS_HasGameData( path ) ) {
+			Q_strncpyz( found, path, sizeof( found ) );
+			return found;
+		}
+	}
+	return "";
+}
+
+/*
+================
+FS_MissingGameDataError
+
+Added in OpenMOHAA Plus: tell new players what is missing and how to point the game at it
+================
+*/
+static void FS_MissingGameDataError( void ) {
+	char searched[2048] = "";
+
+	for ( int i = 0; i < ARRAY_LEN( fs_pathVars ); i++ ) {
+		if ( fs_pathVars[i] && fs_pathVars[i]->string[0] ) {
+			Q_strcat( searched, sizeof( searched ), va( "  %s\n", fs_pathVars[i]->string ) );
+		}
+	}
+	Com_Error( ERR_FATAL,
+		"Couldn't load default.cfg: Medal of Honor: Allied Assault game data not found.\n\n"
+		"OpenMOHAA needs the files of an installed copy of the game: the folder that contains main%cPak0.pk3.\n"
+		"Searched:\n%s\n"
+		"Start the game with +set fs_basepath \"<game folder>\", or copy the OpenMOHAA files into the game folder.",
+		PATH_SEP, searched );
+}
+
+/*
+================
 FS_InitPathVars
 ================
 */
@@ -3570,6 +3666,7 @@ static void FS_InitPathVars( void ) {
 	FS_AddPathVar( fs_steampath );
 	FS_AddPathVar( fs_gogpath );
 	FS_AddPathVar( fs_microsoftstorepath );
+	FS_AddPathVar( fs_eapath );
 }
 
 /*
@@ -3605,6 +3702,8 @@ static void FS_Startup(const char* gameName)
 	fs_steampath = Cvar_Get ("fs_steampath", Sys_SteamPath(), CVAR_INIT|CVAR_PROTECTED );
 	fs_gogpath = Cvar_Get ("fs_gogpath", Sys_GogPath(), CVAR_INIT|CVAR_PROTECTED );
 	fs_microsoftstorepath = Cvar_Get ("fs_microsoftstorepath", Sys_MicrosoftStorePath(), CVAR_INIT|CVAR_PROTECTED );
+	// Added in OpenMOHAA Plus: only searched when the base path has no game data
+	fs_eapath = Cvar_Get ("fs_eapath", FS_HasGameData(fs_basepath->string) ? "" : FS_DetectEAPath(), CVAR_INIT|CVAR_PROTECTED );
 
 #ifdef __APPLE__
 	fs_apppath = Cvar_Get ("fs_apppath", Sys_DefaultAppPath(), CVAR_INIT|CVAR_PROTECTED );
@@ -4107,7 +4206,7 @@ void FS_InitFilesystem( void ) {
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
 	if ( FS_ReadFile( "default.cfg", NULL ) <= 0 ) {
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg" );
+		FS_MissingGameDataError(); // Changed in OpenMOHAA Plus: was "Couldn't load default.cfg"
 	}
 
 	Q_strncpyz(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
@@ -4155,7 +4254,7 @@ void FS_Restart( int checksumFeed ) {
 			Com_Error( ERR_DROP, "Invalid game folder\n" );
 			return;
 		}
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg" );
+		FS_MissingGameDataError(); // Changed in OpenMOHAA Plus: was "Couldn't load default.cfg"
 	}
 
 	if ( Q_stricmp(fs_gamedirvar->string, lastValidGame) ) {

@@ -103,7 +103,9 @@ Las builds de desarrollo se publican automáticamente en la
 - [Instalación](docs/markdown/01-intro/01-installation.md), [ejecutar el juego y las expansiones](docs/markdown/02-running/01-running.md), [preguntas frecuentes](docs/markdown/02-running/03-faq.md)
 - [Montar un servidor](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuración](docs/markdown/03-configuration/01-configuration.md)
 
-Desde una build, apúntalo a la carpeta del juego, la que contiene `main/`:
+Desde una build, apúntalo a la carpeta del juego, la que contiene `main/` (no hace falta si la build
+está en esa carpeta, con una instalación de GOG en Windows, o con la carpeta `EA GAMES\MOHAA` del
+instalador original, también dentro del prefijo de Wine por defecto):
 
 ```sh
 ./openmohaa +set fs_basepath /ruta/a/MOHAA

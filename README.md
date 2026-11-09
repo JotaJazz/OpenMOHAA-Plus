@@ -98,7 +98,9 @@ it (see [Building](#building)). Installation works as in OpenMoHAA:
 - [Installing](docs/markdown/01-intro/01-installation.md), [running the game and expansions](docs/markdown/02-running/01-running.md), [FAQ](docs/markdown/02-running/03-faq.md)
 - [Setting up a server](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuration](docs/markdown/03-configuration/01-configuration.md)
 
-From a build, point it at your game folder, the one that contains `main/`:
+From a build, point it at your game folder, the one that contains `main/` (not needed when the
+build sits in that folder, for a GOG install on Windows, or for the original installer's
+`EA GAMES\MOHAA` folder, also inside the default Wine prefix):
 
 ```sh
 ./openmohaa +set fs_basepath /path/to/MOHAA

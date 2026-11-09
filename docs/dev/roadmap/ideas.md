@@ -250,6 +250,13 @@ Joining a modded server usually means finding its pk3 files by hand.
 - **Shape:** use the existing store paths (`fs_steampath`, `fs_gogpath`, `fs_microsoftstorepath`)
   and a first-run prompt for the game folder, so players do not need `+set fs_basepath`.
 - **Why:** lowers the barrier for new players.
+- **Status:** branch `feat/install-detection`: the Windows store lookups searched Quake 3 (Steam app
+  2200, GOG 1441704920, Microsoft Store "Quake 3"); GOG now uses MOHAA War Chest (1207659126) and
+  Steam and the Microsoft Store are skipped (MOHAA is not sold there). `fs_eapath`: the original
+  installer folder `Program Files\EA GAMES\MOHAA`, also in the Wine prefix on Linux and macOS, when the
+  base path has no data. Without data the error lists the searched folders and explains
+  `fs_basepath`. Open: the EA installer's registry key (value name unverified), a first-run folder
+  picker.
 
 ## Performance profiling
 
