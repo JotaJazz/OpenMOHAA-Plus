@@ -397,7 +397,9 @@ decide whether to enable it by default. Not verified at run time.
 - **Status:** #376 fixed on branch `fix/server-browser-dns`: master DNS lookups were blocking
   (`gethostbyname` on the main thread, 5 s each with a hung DNS) and a failed lookup retried the
   same master forever; also a master socket never created had descriptor 0 and was "closed" on
-  timeout, closing stdin. Open: favorites, history, filters.
+  timeout, closing stdin. Favorites (key F, `fav_*`), history (`history_*`), `dm_browser_show`,
+  `dm_browser_search` and the unused `dm_max_ping` on branch `feat/browser-favorites`
+  (`docs/markdown/03-configuration/06-plus-server-browser.md`).
 
 ## Fork identity: versions and updates
 

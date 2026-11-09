@@ -5,6 +5,7 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import re
 import sys
 import subprocess
 import shutil
@@ -388,6 +389,59 @@ class ServerBrowser(GameTestCase):
         c.wait_for(r"^STDIN_ALIVE", start=mark, timeout=10)
         self.assertIn("SLOWDNS getaddrinfo(master.", c.log())
         self.assertEqual(c.quit(), 0)
+
+
+    NO_MASTERS = [arg for i in range(5) for arg in ("+set", f"com_master{i}_host", "")]
+
+    def _list(self, c, expect):
+        mark = len(c.log())
+        c.send("widgetcommand netgamelist refreshserverlist")
+        time.sleep(6)
+        c.send("widgetcommand netgamelist printlist")
+        return c.wait_for(expect, start=mark, timeout=20)[mark:]
+
+    def test_favorites_history_and_search(self):
+        alpha = self.server("+set", "sv_hostname", "Alpha", "+map", "dm/mohdm1")
+        home_b = omoh.Home()
+        self.addCleanup(home_b.cleanup)
+        bravo = omoh.server(home_b, "+set", "sv_hostname", "Bravo", "+map", "dm/mohdm1")
+        self.games.append(bravo)
+        for s in (alpha, bravo):
+            s.wait_for(r"==== InitGame ====")
+            s.send("net_gamespy_port")
+        qa, qb = (int(re.findall(r'"net_gamespy_port" is:"(\d+)', s.wait_for(r'"net_gamespy_port" is:"\d+'))[-1])
+                  for s in (alpha, bravo))
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        client_home.write("serverfavorites.txt", f"127.0.0.1:{alpha.port} {qa}\n")
+        c = omoh.client(client_home, "+set", "developer", "1", *self.NO_MASTERS, "+connect", f"127.0.0.1:{bravo.port}")
+        self.games.append(c)
+        bravo.wait_for(r"entered the battle", timeout=120)
+        c.send(f"fav_add 127.0.0.1:{bravo.port} {qb}")
+        c.wait_for(r"Added favorite 127.0.0.1")
+        c.send(f"fav_del 127.0.0.1:{bravo.port}")
+        c.wait_for(r"Removed favorite 127.0.0.1")
+        c.send("disconnect")
+        time.sleep(3)
+        c.send("history_list")
+        c.wait_for(rf"127\.0\.0\.1:{bravo.port}")
+        c.send("pushmenu joinnetgame")
+        time.sleep(2)
+
+        c.send("dm_browser_show 2")
+        listed = self._list(c, r"Server list \(\d+\):(\n  .*)*\n.*Bravo")
+        self.assertRegex(listed, r"\* .*Alpha \| 127\.0\.0\.1:%d" % alpha.port)
+        self.assertRegex(listed, r"Bravo \(recent\) \| 127\.0\.0\.1:%d" % bravo.port)
+
+        c.send("dm_browser_show 0")
+        c.send("dm_browser_search Alp")
+        listed = self._list(c, r"Server list \((\d+)\):")
+        self.assertIn("Alpha", listed)
+        self.assertNotIn("Bravo", listed)
+        self.assertEqual(c.quit(), 0)
+
+        history = open(client_home.file("serverhistory.txt")).read()
+        self.assertIn(f"127.0.0.1:{bravo.port} {qb}", history)     # query port published by the server
 
 
 @require_game

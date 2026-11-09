@@ -63,6 +63,8 @@ para Call of Duty 2 con su servidor a 40 Hz.
   - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
     roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
   - [tamaño del HUD y de la mira](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
+  - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
+    y el juego ya no se congela cuando el DNS de los masters no responde (#376)
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),

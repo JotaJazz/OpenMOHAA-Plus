@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — server browser favorites, history, filters
+- Half of it existed: favorites sorted first and drawn as header rows (`m_bFavorite`), master-side filters; nothing stored or set favorites, and `dm_max_ping` and the gametype filter cvars were declared but never applied (gametype filters still are not).
+- Favorites and history are queried with `ServerListAuxUpdate`; with no master answering they were never queried (no UDP update sockets, list went idle), and `updatelist` had the same descriptor-0 problem as the master sockets.
+- Servers publish `net_gamespy_port` in serverinfo so the history knows the query port; key F is not covered by a test (no key injection headless).
+
 ## 2026-11-09 — server browser DNS freeze (#376)
 - Reproduced with an `LD_PRELOAD` shim that makes host-name lookups take 5 s (numeric addresses must pass through, or socket setup slows down too): refreshing the list froze the game ~8 s on upstream.
 - Three faults in `gserverlist.c`: blocking `gethostbyname`, no move to the next master on DNS failure, master sockets zero-initialized so a never-created one closed descriptor 0 (stdin) on timeout.

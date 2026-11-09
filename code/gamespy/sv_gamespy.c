@@ -355,7 +355,8 @@ qboolean SV_InitGamespy()
     strcpy(secret_key, secret_gs_key);
 
     net_ip           = Cvar_Get("net_ip", "localhost", CVAR_LATCH);
-    net_gamespy_port = Cvar_Get("net_gamespy_port", va("%i", GAMESPY_DEFAULT_PORT), CVAR_LATCH);
+    // Changed in OpenMOHAA Plus: CVAR_SERVERINFO, so clients can query a recent server directly
+    net_gamespy_port = Cvar_Get("net_gamespy_port", va("%i", GAMESPY_DEFAULT_PORT), CVAR_LATCH | CVAR_SERVERINFO);
 
     if (qr_init(
             NULL,

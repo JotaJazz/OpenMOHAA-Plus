@@ -182,6 +182,10 @@ GServerList	ServerListNew(const char *gamename, const char *enginename, const ch
     list->updatelist = gsimalloc(maxconcupdates * sizeof(UpdateInfo));
     memset(list->updatelist, 0, maxconcupdates * sizeof(UpdateInfo));
     assert(list->updatelist != NULL);
+    // Fixed in OpenMOHAA Plus: not descriptor 0 (stdin), see the master sockets below
+    for (i = 0; i < maxconcupdates; i++) {
+        list->updatelist[i].s = INVALID_SOCKET;
+    }
     strcpy(list->gamename, gamename);
     strcpy(list->seckey, seckey);
     strcpy(list->enginename, enginename);
@@ -259,7 +263,11 @@ static GError FreeUpdateList(GServerList serverlist)
     int i;
     for (i = 0 ; i < serverlist->maxupdates ; i++)
     {
-        closesocket(serverlist->updatelist[i].s);
+        // Fixed in OpenMOHAA Plus: skip sockets never created, forget closed ones
+        if (serverlist->updatelist[i].s != INVALID_SOCKET) {
+            closesocket(serverlist->updatelist[i].s);
+            serverlist->updatelist[i].s = INVALID_SOCKET;
+        }
     }
     return 0;
 
@@ -1093,7 +1101,14 @@ GError ServerListThink(GServerList serverlist)
             if (!serverlist->abortupdate && serverlist->startslindex < ServerListGetNumMasters()) {
                 CreateServerListForAvailableSockets(serverlist, serverlist->async);
             } else if (serverlist->state == sl_listxfer && ServerListHasFinishedFetchingList(serverlist)) {
-                ServerListModeChange(serverlist, sl_idle);
+                // Changed in OpenMOHAA Plus: servers added with ServerListAuxUpdate during the transfer
+                // (favorites) were never queried when no master answered
+                if (serverlist->nextupdate < ArrayLength(serverlist->servers)
+                    && (serverlist->updatelist[0].s != INVALID_SOCKET || !InitUpdateList(serverlist))) {
+                    ServerListModeChange(serverlist, sl_querying);
+                } else {
+                    ServerListModeChange(serverlist, sl_idle);
+                }
             }
             break;
         case sl_querying: 
