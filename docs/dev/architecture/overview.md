@@ -22,8 +22,8 @@ Defined in `cmake/` and the root `CMakeLists.txt`.
 `gamespy`, ...). "Script system" is `cmake/shared_script.cmake`: most of `corepp` plus
 `script/scriptvariable.cpp` and `script/scriptexception.cpp`, linked into both executables and
 both game modules. The server code is linked into the client too (local games run the server
-in-process). A unit test source exists (`code/corepp/tests/test_lz77.cpp`, `cmake/tests/`) but is
-not wired into the build.
+in-process). Unit tests: `cmake/tests/` (`test_lz77`, built when `BUILD_TESTING` is on); game
+regression tests: `tests/`.
 
 ## Source tree (`code/`)
 

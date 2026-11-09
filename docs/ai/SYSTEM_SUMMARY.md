@@ -38,7 +38,8 @@ Details: [overview.md](../dev/architecture/overview.md).
 
 | Kind | Count / command |
 |---|---|
-| CTest | 0 project tests registered (`test_lz77` source exists, not wired in) |
+| CTest | 1 (`test_lz77`) |
+| Game regression tests | `tests/` (server and headless client, need game data): 12, one slow |
 | Docs checker | `python3 -I misc/docs-check/check_docs.py`, unit tests in `misc/docs-check/test_check_docs.py` |
 | Manual headless recipes | [testing.md](../dev/development/testing.md) |
 
