@@ -123,6 +123,109 @@ class ServerScripts(GameTestCase):
         self.assertIn("TSCR a dm/mohdm2", log)
         self.assertIn("sv_scripts: couldn't load 'plus/missing.scr'", log)
         self.assertRegex(log, r"sv_scripts: (couldn't load 'plus/broken.scr'|'plus/broken.scr' failed)")
+class GametypeEvents(GameTestCase):
+    def test_player_damage_can_cancel_or_replace_damage(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	event_subscribe "player_damage" on_damage
+	level waittill spawn
+	thread run
+end
+
+run:
+	while ($player.size < 1)
+		wait 1
+	wait 3
+	local.p = $player[1]
+	level.t_mode = 0
+	local.h = local.p.health
+	local.p damage $world 30 $world (0 0 0) (0 0 0) (0 0 0) 0 0 0 -1
+	waitframe
+	println ("TDMG cancel " + local.h + " " + local.p.health)
+	level.t_mode = 1
+	local.h = local.p.health
+	local.p damage $world 30 $world (0 0 0) (0 0 0) (0 0 0) 0 0 0 -1
+	waitframe
+	println ("TDMG replace " + local.h + " " + local.p.health)
+end
+
+on_damage local.attacker local.damage:
+	if (level.t_mode == 0)
+		end 0
+	end 5
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1", *BOTS, "+map", "dm/mohdm1")
+        log = s.wait_for(r"TDMG replace", timeout=120)
+        self.assertEqual(s.quit(), 0)
+        cancel = re.search(r"TDMG cancel ([\d.]+) ([\d.]+)", log)
+        replace = re.search(r"TDMG replace ([\d.]+) ([\d.]+)", log)
+        self.assertEqual(float(cancel.group(1)), float(cancel.group(2)))
+        self.assertAlmostEqual(float(replace.group(1)) - float(replace.group(2)), 5, delta=0.5)
+
+    def test_player_teamchange_can_refuse(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	event_subscribe "player_teamchange" on_team
+	level waittill spawn
+	thread run
+end
+
+run:
+	while ($player.size < 1)
+		wait 1
+	wait 3
+	local.p = $player[1]
+	println ("TTEAM before " + local.p.dmteam)
+	local.p join_team "axis"
+	waitframe
+	println ("TTEAM after_axis " + local.p.dmteam)
+	local.p join_team "allies"
+	waitframe
+	println ("TTEAM after_allies " + local.p.dmteam)
+end
+
+on_team local.new local.old:
+	println ("TTEAM event " + local.old + " -> " + local.new)
+	if (local.new == "axis")
+		end 0
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", *BOTS, "+map", "dm/mohdm1")
+        log = s.wait_for(r"TTEAM after_allies", timeout=120)
+        self.assertEqual(s.quit(), 0)
+        self.assertRegex(log, r"TTEAM event \w+ -> axis")
+        self.assertNotIn("TTEAM after_axis axis", log)
+        self.assertIn("TTEAM after_allies allies", log)
+
+    def test_round_events(self):
+        self.home.write("maps/obj/obj_team2.scr", """main:
+	event_subscribe "match_start" on_match
+	event_subscribe "round_start" on_round_start
+	event_subscribe "round_end" on_round_end
+	level waittill spawn
+	level waittill roundstart
+	wait 3
+	teamwin axis
+end
+
+on_match:
+	println "TROUND match_start"
+end
+
+on_round_start local.round:
+	println ("TROUND round_start " + local.round)
+end
+
+on_round_end local.winner local.axis local.allies:
+	println ("TROUND round_end " + local.winner + " " + local.axis + " " + local.allies)
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "4", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+map", "obj/obj_team2")
+        log = s.wait_for(r"TROUND round_end", timeout=180)
+        self.assertEqual(s.quit(), 0)
+        self.assertIn("TROUND match_start", log)
+        self.assertIn("TROUND round_start 1", log)
+        self.assertRegex(log, r"TROUND round_end axis 1 0")
 
 
 @require_game

@@ -93,6 +93,11 @@ Upstream #905 asks for an ACL-based admin system with named permissions.
 
 ## Gametype scripting API (CoD2-style callbacks)
 
+Status: level 1 started on branch `feat/gametype-events`: `player_damage` and `player_teamchange`
+(deciding), `match_start`, `round_start`, `round_end`
+(`docs/markdown/04-coding/02-scripting/03-plus-events.md`). Still open: spawn point event, "any
+veto wins" semantics for several subscribers, `Spectator` path for team changes, level 2.
+
 The MOHAA community works mostly in scripts. CoD2 lets scripts own the whole gametype through
 engine callbacks; OpenMoHAA scripts can only observe: `player_damaged` and `player_killed` fire
 after the fact, and only `player_textMessage` can block something (its return value). No new

@@ -323,6 +323,9 @@ public:
     static ScriptDelegate scriptDelegate_damage;
     static ScriptDelegate scriptDelegate_kill;
     static ScriptDelegate scriptDelegate_textMessage;
+    // Added in OpenMOHAA Plus
+    static ScriptDelegate scriptDelegate_preDamage;
+    static ScriptDelegate scriptDelegate_teamChange;
 
 public:
     int m_iNumObjectives;
