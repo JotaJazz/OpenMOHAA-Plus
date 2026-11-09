@@ -82,8 +82,12 @@ extern "C" {
 
 #define CONFIG_PREFIX			"omconfig"
 
-#define CLIENT_WINDOW_TITLE		PRODUCT_NAME
-#define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME
+// PRODUCT_NAME stays "OpenMoHAA" for compatibility (version strings seen by server browsers);
+// the fork name is shown where only humans read it
+#define FORK_NAME				"OpenMOHAA Plus"
+#define FORK_URL				"https://github.com/JotaJazz/OpenMOHAA-Plus"
+#define CLIENT_WINDOW_TITLE		FORK_NAME
+#define CLIENT_WINDOW_MIN_TITLE FORK_NAME
     
 #define MAX_MASTER_SERVERS      5	// number of supported master servers
 

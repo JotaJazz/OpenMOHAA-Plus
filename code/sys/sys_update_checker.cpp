@@ -52,7 +52,7 @@ void Sys_UpdateChecker_Shutdown()
 
 UpdateChecker::UpdateChecker()
 {
-    lastMajor = lastMinor = lastPatch = 0;
+    lastMajor = lastMinor = lastPatch = lastPlus = 0;
     versionChecked                    = false;
 }
 
@@ -103,11 +103,12 @@ bool UpdateChecker::CanHaveRequestThread() const
 #endif
 }
 
-void UpdateChecker::SetLatestVersion(int major, int minor, int patch)
+void UpdateChecker::SetLatestVersion(int major, int minor, int patch, int plus)
 {
     lastMajor = major;
     lastMinor = minor;
     lastPatch = patch;
+    lastPlus  = plus;
 
     versionChecked = true;
 }
@@ -127,11 +128,12 @@ void UpdateChecker::Process()
     }
 
     Com_Printf(
-        "New release v%d.%d.%d published *\\(^ o ^)/*. Your current version is v%s. See www.openmohaa.org\n",
+        "New release v%d.%d.%d-plus.%d published *\\(^ o ^)/*. Your current version is v%s. See " FORK_URL "\n",
         lastMajor,
         lastMinor,
         lastPatch,
-        PRODUCT_VERSION_NUMBER_STRING
+        lastPlus,
+        PRODUCT_VERSION
     );
 
     nextMessageTime = currentTime + std::chrono::milliseconds(Q_max(1, com_updatecheck_interval->integer) * 60 * 1000);
@@ -165,12 +167,19 @@ bool UpdateChecker::CheckNewVersion() const
 
     if (lastPatch > PRODUCT_VERSION_PATCH) {
         return true;
+    } else if (lastPatch < PRODUCT_VERSION_PATCH) {
+        return false;
+    }
+
+    // Added in OpenMOHAA Plus: fork revision on top of the upstream version
+    if (lastPlus > PRODUCT_VERSION_PLUS) {
+        return true;
     }
 
     return false;
 }
 
-bool UpdateChecker::CheckNewVersion(int& major, int& minor, int& patch) const
+bool UpdateChecker::CheckNewVersion(int& major, int& minor, int& patch, int& plus) const
 {
     if (!CheckNewVersion()) {
         return false;
@@ -179,6 +188,7 @@ bool UpdateChecker::CheckNewVersion(int& major, int& minor, int& patch) const
     major = lastMajor;
     minor = lastMinor;
     patch = lastPatch;
+    plus  = lastPlus;
 
     return true;
 }
@@ -252,7 +262,7 @@ void UpdateCheckerThread::InitClient()
     }
 
     result = curlImport.qcurl_easy_setopt(
-        handle, CURLOPT_URL, "https://api.github.com/repos/openmoh/openmohaa/releases/latest"
+        handle, CURLOPT_URL, "https://api.github.com/repos/JotaJazz/OpenMOHAA-Plus/releases/latest"
     );
 
     if (result != CURLE_OK) {
@@ -281,7 +291,7 @@ void UpdateCheckerThread::ShutdownClient()
 #endif
 }
 
-bool UpdateCheckerThread::ParseVersionNumber(const char *value, int& major, int& minor, int& patch) const
+bool UpdateCheckerThread::ParseVersionNumber(const char *value, int& major, int& minor, int& patch, int& plus) const
 {
     const char *p  = value;
     const char *pn = value;
@@ -318,13 +328,34 @@ bool UpdateCheckerThread::ParseVersionNumber(const char *value, int& major, int&
     // Parse the patch number
     //
     p = pn + 1;
-    for (pn = p; *pn && *pn != '.'; pn++) {};
+    for (pn = p; *pn >= '0' && *pn <= '9'; pn++) {};
 
-    if (*pn) {
+    if (pn == p) {
         return false;
     }
 
     patch = std::stoi(std::string(p, pn - p));
+
+    //
+    // Added in OpenMOHAA Plus: optional "-plus.N" fork revision (vX.Y.Z-plus.N)
+    //
+    plus = 0;
+    if (!*pn) {
+        return true;
+    }
+
+    if (strncmp(pn, "-plus.", 6)) {
+        return false;
+    }
+
+    p = pn + 6;
+    for (pn = p; *pn >= '0' && *pn <= '9'; pn++) {};
+
+    if (pn == p || *pn) {
+        return false;
+    }
+
+    plus = std::stoi(std::string(p, pn - p));
 
     return true;
 }
@@ -397,10 +428,11 @@ void UpdateCheckerThread::DoRequest()
     try {
         const nlohmann::json::string_t& tagName = data.at("tag_name");
 
-        int major, minor, patch;
-        ParseVersionNumber(tagName.c_str(), major, minor, patch);
-
-        updateChecker.SetLatestVersion(major, minor, patch);
+        int major, minor, patch, plus;
+        // Fixed in OpenMOHAA Plus: an unparsable tag used to store uninitialized values
+        if (ParseVersionNumber(tagName.c_str(), major, minor, patch, plus)) {
+            updateChecker.SetLatestVersion(major, minor, patch, plus);
+        }
     } catch (const std::exception& e) {}
 #endif
 }
