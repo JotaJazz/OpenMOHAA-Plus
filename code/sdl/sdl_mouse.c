@@ -42,11 +42,18 @@ qboolean IN_SetCursorFromImage(const byte *pic, int width, int height, pCursorFr
 
     cursor_surface = SDL_CreateRGBSurfaceWithFormatFrom(pic, width, height, 32, 4 * width, SDL_PIXELFORMAT_ABGR8888);
     if (!cursor_surface) {
+        cursorFreeFn((byte *)pic);
         return qfalse;
     }
 
     cursor = SDL_CreateColorCursor(cursor_surface, 0, 0);
     SDL_SetCursor(cursor);
+
+    // SDL copies the pixels into the cursor, so the image can be freed right away
+    // (the free function belongs to the renderer, which may be reloaded later)
+    SDL_FreeSurface(cursor_surface);
+    cursor_surface = NULL;
+    cursorFreeFn((byte *)pic);
 
     return qtrue;
 }
@@ -54,9 +61,11 @@ qboolean IN_SetCursorFromImage(const byte *pic, int width, int height, pCursorFr
 void IN_FreeCursor() {
     if (cursor) {
         SDL_FreeCursor(cursor);
+        cursor = NULL;
     }
     if (cursor_surface) {
         SDL_FreeSurface(cursor_surface);
+        cursor_surface = NULL;
     }
     if (cursor_image_data) {
         cursor_free(cursor_image_data);
