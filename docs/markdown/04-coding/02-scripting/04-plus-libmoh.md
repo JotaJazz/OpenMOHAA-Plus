@@ -37,6 +37,9 @@ end
 out after 20 seconds, responses are limited to 1 MiB, and pending requests are dropped when the map
 changes.
 
+When a URL comes from a cvar, set it with quotes (`set my_url "http://host/path"`): without them
+the console treats `//` as the start of a comment and keeps only `http:`.
+
 ## json_parse
 
 ```

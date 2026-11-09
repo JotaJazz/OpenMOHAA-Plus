@@ -280,6 +280,11 @@ already allowed with `s_speaker_type 1`, but only when OpenAL detects headphones
 
 ## Match statistics and integrations
 
+Status: reference script mod `misc/mods/plus-stats` on branch `feat/stats-mod` (which merges
+`feat/server-scripts`, `feat/gametype-events` and `feat/libmoh-http`): kills per player and round
+results POSTed as JSON at every `round_end`. Discord webhooks need a plain-JSON body (the POST body
+is NightFall's typed JSON), so they need a small relay or a raw-body option.
+
 - **Shape:** per-match stats as JSON (kills, accuracy, weapons), Discord webhooks (match start/end,
   joins), a web scoreboard. Built on libmoh's HTTP.
 

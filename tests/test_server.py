@@ -572,3 +572,48 @@ end
         self.assertEqual(s.quit(), 0)
         self.assertIn("TAPI ret 2", log)
         self.assertNotIn("TAPI called", s.log())
+
+
+class _CaptureHandler(BaseHTTPRequestHandler):
+    bodies = []
+
+    def log_message(self, *args):
+        pass
+
+    def do_POST(self):
+        _CaptureHandler.bodies.append(self.rfile.read(int(self.headers.get("Content-Length", 0))).decode())
+        self.send_response(200)
+        self.send_header("Content-Length", "2")
+        self.end_headers()
+        self.wfile.write(b"ok")
+
+
+@require_game
+class ReferenceMods(GameTestCase):
+    def test_plus_stats_posts_round_results(self):
+        import json
+        http = HTTPServer(("127.0.0.1", 0), _CaptureHandler)
+        threading.Thread(target=http.serve_forever, daemon=True).start()
+        self.addCleanup(http.shutdown)
+        _CaptureHandler.bodies = []
+        mod = os.path.join(omoh.REPO, "misc", "mods", "plus-stats", "global")
+        shutil.copytree(mod, os.path.join(self.home.path, "main", "global"))
+        self.home.write("maps/obj/obj_team2.scr", """main:
+	level waittill spawn
+	level waittill roundstart
+	wait 5
+	teamwin axis
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "4", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+set", "sv_scripts", "global/plus/stats.scr",
+                        "+set", "sv_api_client", "1",
+                        "+set", "plus_stats_url", f'"http://127.0.0.1:{http.server_address[1]}/round"',  # quoted: // starts a comment
+                        "+map", "obj/obj_team2")
+        s.wait_for(r"plus-stats: round posted, HTTP 200", timeout=180)
+        self.assertEqual(s.quit(), 0)
+        body = json.loads(_CaptureHandler.bodies[0])
+        content = body["content"]
+        self.assertEqual(content["map"]["content"], "obj/obj_team2")
+        self.assertEqual(content["winner"]["content"], "axis")
+        self.assertEqual(content["axis_wins"]["content"], 1)
