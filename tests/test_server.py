@@ -204,3 +204,30 @@ class NetworkFuzz(GameTestCase):
         s.send("status")
         s.wait_for(r"^map: dm/mohdm1", timeout=20)
         self.assertEqual(s.quit(), 0)
+
+
+@require_game
+class QueryFlood(GameTestCase):
+    def test_query_floods_are_rate_limited_without_amplification(self):
+        s = self.server("+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.settimeout(0.002)
+            for cmd in (b"getstatus", b"getinfo", b"getchallenge", b"rcon x status"):
+                sent = replies = reply_bytes = 0
+                packet = b"\xff\xff\xff\xff\x02" + cmd
+                end = time.time() + 2
+                while time.time() < end + 1:
+                    if time.time() < end:
+                        sock.sendto(packet, ("127.0.0.1", s.port))
+                        sent += 1
+                    try:
+                        reply_bytes += len(sock.recv(65536))
+                        replies += 1
+                    except OSError:
+                        pass
+                self.assertGreater(replies, 0, cmd)          # still answers
+                self.assertLessEqual(replies, 30, cmd)       # per-address limit
+                self.assertLess(reply_bytes, sent * len(packet), cmd)  # no amplification
+                time.sleep(1.5)
+        self.assertEqual(s.quit(), 0)
