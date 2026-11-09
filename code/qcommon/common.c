@@ -2241,7 +2241,7 @@ void Com_Frame( void ) {
 
 	int		msec, minMsec;
 	int		timeVal, timeValSV;
-	static int	lastTime = 0, bias = 0;
+	static int	lastTime = 0, bias = 0, fpsRemainder = 0;
  
 	int		timeBeforeFirstEvents;
 	int		timeBeforeServer;
@@ -2301,13 +2301,24 @@ void Com_Frame( void ) {
             minMsec = SV_FrameMsec();
         else
         {
+            int maxfps = 0;
+
             if (com_minimized->integer && com_maxfpsMinimized->integer > 0)
-                minMsec = 1000 / com_maxfpsMinimized->integer;
+                maxfps = com_maxfpsMinimized->integer;
             else if (com_unfocused->integer && com_maxfpsUnfocused->integer > 0)
-                minMsec = 1000 / com_maxfpsUnfocused->integer;
+                maxfps = com_maxfpsUnfocused->integer;
             else if (com_maxfps->integer > 0)
-                minMsec = 1000 / com_maxfps->integer;
-            else
+                maxfps = com_maxfps->integer;
+
+            if (maxfps > 0) {
+                // spread the truncated 1000 % maxfps over frames so the average frame time is 1000 / maxfps
+                minMsec = 1000 / maxfps;
+                fpsRemainder += 1000 % maxfps;
+                if (fpsRemainder >= maxfps) {
+                    fpsRemainder -= maxfps;
+                    minMsec++;
+                }
+            } else
                 minMsec = 1;
 
             timeVal = com_frameTime - lastTime;
