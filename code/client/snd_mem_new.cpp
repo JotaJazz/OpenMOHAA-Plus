@@ -434,6 +434,7 @@ qboolean S_LoadSound(const char *fileName, sfx_t *sfx, int streamed, qboolean fo
     int          size;
     fileHandle_t file_handle;
     char         tempName[MAX_RES_NAME + 1];
+    char         wavName[MAX_QPATH];
     int          realKhz;
 
     sfx->buffer = 0;
@@ -458,6 +459,12 @@ qboolean S_LoadSound(const char *fileName, sfx_t *sfx, int streamed, qboolean fo
     if (strstr(fileName, ".mp3")) {
         return S_LoadMP3(fileName, sfx);
     }
+
+    // Fixed in OPM
+    //  Some aliases omit the extension (e.g. impact_playerleavewater in ubersound.scr)
+    Q_strncpyz(wavName, fileName, sizeof(wavName));
+    COM_DefaultExtension(wavName, sizeof(wavName), ".wav");
+    fileName = wavName;
 
     size = FS_FOpenFileRead(fileName, &file_handle, qfalse, qtrue);
     if (size <= 0) {
