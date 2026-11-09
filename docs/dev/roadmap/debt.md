@@ -22,6 +22,10 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.
 - No `clang-format` run on fork commits so far.
+- Base paks: the client skips only `pak0`-`pak4` when comparing paks (`NUM_ID_PAKS 5` in
+  `code/qcommon/qcommon.h`) and the server's id-pak guard is commented out in
+  `code/server/sv_client.c`, while MOHAA ships `Pak0`-`pak6`: a client with a different Pak5/pak6
+  could try to download it. Not tested.
 - The fork's `dev` pre-release (`.github/workflows/branches-build.yml`) publishes only `-pdb` archives
   for Windows, and the "Generate Documentation" workflow fails on the fork.
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build

@@ -191,6 +191,11 @@ Play the single-player missions together. Interest exists (the HaZardModding Coo
 
 ## Automatic mod download over HTTP
 
+Status: UDP downloads already worked; HTTP redirection implemented on branch
+`feat/http-downloads` (`sv_allowDownload 1` + `sv_dlURL "http://host/path"` on the server, any web
+server serving the server's home folder; `cl_allowDownload 1` on the client). Only paks the server
+references are offered (ioquake3 behaviour): client-only mods belong in an `fs_game` folder.
+
 Joining a modded server usually means finding its pk3 files by hand.
 
 - **Shape:** the client downloads the pk3 files a server requires from an HTTP URL, as
