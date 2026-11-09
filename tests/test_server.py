@@ -10,7 +10,6 @@ import subprocess
 import sys
 import time
 import shutil
-import subprocess
 import tempfile
 import unittest
 
