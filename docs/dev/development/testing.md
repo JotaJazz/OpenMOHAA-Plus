@@ -13,6 +13,8 @@ after the fix, with the same command; if it cannot be reproduced, say why.
 | Game regression tests | `OMOH_GAME_DIR=<GAME_DIR> python3 -I -m unittest discover -s tests -v` ([tests/README.md](../../../tests/README.md)); skipped without game data |
 | Docs checker tests | `python3 -I -m unittest discover -s misc/docs-check` |
 | Docs checker | `python3 -I misc/docs-check/check_docs.py` (CI: `.github/workflows/docs-check.yml`) |
+| Script tools | `python3 -I -m unittest discover -s misc/scr-tools` (engine test needs `OMOH_GAME_DIR`) |
+| Check a .scr | `python3 misc/scr-tools/scr_check.py --game-dir <GAME_DIR> file.scr` |
 
 ## Headless recipes
 

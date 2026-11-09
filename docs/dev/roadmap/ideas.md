@@ -242,6 +242,11 @@ faster tick; snapshot cost with real clients and gameplay correctness at 40 Hz a
 
 ## Script modding toolkit
 
+Status: implemented on branch `feat/scr-toolkit`: `misc/scr-tools/scr_check.py` (compile check with
+the real compiler, `file:line: error:` output), `misc/scr-tools/gen_editor_data.py` (command list
+from the engine's `dumpallclasses`) and the VS Code extension `misc/vscode-mohaa`. Found and fixed on
+the way: `compilescript` aborted the server on a parse error (branch `fix/compilescript-crash`).
+
 The community works in `.scr`; today a script error shows only when the map loads.
 
 - **Existing pieces:** the in-game `compilescript` command (`G_CompileScript` in

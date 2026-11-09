@@ -54,7 +54,7 @@ regression tests: `tests/`.
 
 Other top-level directories: `cmake/` (build scripts), `docs/` (user docs published with Doxygen
 from `docs/markdown`; technical docs in `docs/dev` and `docs/ai`), `container/` (Docker images),
-`misc/` (packaging, icons, `misc/docs-check`), `.github/workflows/` (CI).
+`misc/` (packaging, icons, `misc/docs-check`, `misc/scr-tools`, `misc/vscode-mohaa`), `.github/workflows/` (CI).
 
 ## Runtime structure
 

@@ -1,0 +1,18 @@
+{
+  "scopeName": "source.mohaa-scr",
+  "name": "MOHAA Script",
+  "patterns": [
+    { "name": "comment.line.double-slash.mohaa-scr", "match": "//.*$" },
+    { "name": "comment.block.mohaa-scr", "begin": "/\\*", "end": "\\*/" },
+    { "name": "string.quoted.double.mohaa-scr", "begin": "\"", "end": "\"",
+      "patterns": [{ "name": "constant.character.escape.mohaa-scr", "match": "\\\\." }] },
+    { "name": "entity.name.function.label.mohaa-scr", "match": "^\\s*[A-Za-z_][A-Za-z0-9_]*(?=(\\s+local\\.[A-Za-z0-9_]+)*\\s*:)" },
+    { "name": "keyword.control.mohaa-scr",
+      "match": "\\b(if|else|while|for|switch|case|default|break|continue|end|goto|thread|waitthread|exec|waitexec|wait|waitframe|waittill|try|catch|throw|makearray|endarray)\\b" },
+    { "name": "variable.language.mohaa-scr", "match": "\\b(local|level|game|parm|group|self|owner)\\b(?=\\.)|\\bself\\b" },
+    { "name": "variable.other.targetname.mohaa-scr", "match": "\\$[A-Za-z0-9_]+" },
+    { "name": "constant.language.mohaa-scr", "match": "\\b(NIL|NULL)\\b" },
+    { "name": "constant.numeric.mohaa-scr", "match": "\\b\\d+(\\.\\d+)?\\b" },
+    { "name": "keyword.operator.mohaa-scr", "match": "==|!=|<=|>=|&&|\\|\\||[-+*/%=<>!]" }
+  ]
+}
