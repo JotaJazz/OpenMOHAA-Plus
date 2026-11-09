@@ -147,6 +147,9 @@ extern cvar_t *g_teamdamage;
 extern cvar_t *g_hitsounds; // Added in OpenMOHAA Plus
 extern cvar_t *g_hitsound;  // Added in OpenMOHAA Plus
 extern cvar_t *g_hitmarkers; // Added in OpenMOHAA Plus
+extern cvar_t *g_antilag;        // Added in OpenMOHAA Plus
+extern cvar_t *g_antilag_maxms;  // Added in OpenMOHAA Plus
+extern cvar_t *g_antilag_debug;  // Added in OpenMOHAA Plus
 extern cvar_t *g_showweaponfire; // Added in OpenMOHAA Plus
 extern cvar_t *g_healthdrop;
 extern cvar_t *g_healrate;

@@ -70,6 +70,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
   - un [mod de partidas competitivas](misc/mods/plus-match/README.md) (cambio de lado en el entretiempo, tiempos muertos)
   - [pausa de partida, sonidos y marcadores de impacto](docs/markdown/03-configuration/08-plus-match-control.md) controlados por el servidor
   - [niveles de habilidad y armas de los bots](docs/markdown/03-configuration/10-plus-bots.md)
+  - [compensación de lag](docs/markdown/03-configuration/11-plus-antilag.md)
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),

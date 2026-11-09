@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "vehicleturret.h"
 #include "debuglines.h"
 #include "g_spawn.h"
+#include "g_antilag.h" // Added in OpenMOHAA Plus
 
 Event EV_Weapon_Shoot("shoot", EV_DEFAULT, "S", "mode", "Shoot the weapon", EV_NORMAL);
 Event EV_Weapon_DoneRaising(
@@ -1471,6 +1472,9 @@ void Weapon::Shoot(Event *ev)
                     VehicleTurretGun *turretGun = static_cast<VehicleTurretGun *>(this);
                     ownerPtr                    = turretGun->GetRemoteOwner();
                 }
+
+                // Added in OpenMOHAA Plus: the other players are where the shooter saw them (g_antilag)
+                AntilagRewind rewind(ownerPtr);
 
                 BulletAttack(
                     pos,
