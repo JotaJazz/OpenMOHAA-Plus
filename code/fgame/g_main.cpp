@@ -973,6 +973,8 @@ void G_SetTime(int svsStartTime, int svsTime)
 
     level.svsStartTime = svsStartTime;
     level.setTime(svsTime);
+    // a same-map restart keeps the Director, so its script timer must not keep the previous level's time
+    Director.SetTime(level.inttime);
 }
 
 /*
