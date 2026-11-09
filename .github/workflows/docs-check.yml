@@ -10,6 +10,7 @@ on:
       - 'misc/docs-check/**'
       - 'tests/**'
       - 'misc/scr-tools/**'
+      - 'misc/i18n/**'
       - '.github/workflows/docs-check.yml'
       - 'code/**'
       - 'cmake/**'
@@ -43,6 +44,9 @@ jobs:
 
       - name: Script tools tests (engine tests skip without game data)
         run: python3 -I -m unittest discover -s misc/scr-tools -v
+
+      - name: Translation tool tests
+        run: python3 -I -m unittest discover -s misc/i18n -v
 
       - name: Check docs
         run: python3 -I misc/docs-check/check_docs.py

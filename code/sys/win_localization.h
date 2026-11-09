@@ -55,7 +55,8 @@ public:
     const char *ConvertString(const char *var);
 
 private:
-    void LoadFile(const char *name);
+    void LoadFile(const char *name, bool bOverride = false); // bOverride: Added in OpenMOHAA Plus
+    void LoadLanguage(void);                                // Added in OpenMOHAA Plus
     void GenerateMissing(const char *file_name);
 };
 #endif

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_font.cpp -- font rendering
 
 #include "tr_local.h"
+#include "../renderercommon/tr_fontfold.h" // Added in OpenMOHAA Plus
 
 #define MAX_LOADED_FONTS 255
 
@@ -277,6 +278,7 @@ fontheader_sgl_t* R_LoadFont_sgl(const char* name)
     }
 
     R_LoadFontShader(header);
+    R_FoldMissingGlyphs(header->indirection); // Added in OpenMOHAA Plus
     if (!header->height || !header->aspectRatio) {
         // invalid height or aspect ratio
         error = qtrue;
@@ -912,7 +914,8 @@ float R_GetFontStringWidth_sgl(const fontheader_sgl_t* font, const char* s)
     for (i = 0; s[i]; i++)
     {
         int indirected;
-        char c = *s;
+        // Fixed in OpenMOHAA Plus: was `char c = *s`, the first character every time (and signed)
+        unsigned char c = s[i];
 
         if (c == '\t')
         {

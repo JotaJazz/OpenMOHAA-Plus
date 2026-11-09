@@ -299,6 +299,12 @@ void UILabel::Draw(void)
         } else {
             string = "";
         }
+
+        // Added in OpenMOHAA Plus: label text goes through the localization like buttons and titles
+        //  (the HUD's "Health" and "Score:" labels could not be translated)
+        if (*string) {
+            string = Sys_LV_CL_ConvertString(string);
+        }
     }
 
     if (*string) {

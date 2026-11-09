@@ -64,6 +64,7 @@ is doing for Call of Duty 2 with its 40 Hz server.
   - [HUD scale and crosshair size](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
   - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
     and no freeze when the master servers' DNS hangs (#376)
+  - [community translations](docs/markdown/03-configuration/07-plus-translations.md) of the game's texts (`cl_language`)
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),

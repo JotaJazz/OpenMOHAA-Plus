@@ -389,6 +389,12 @@ decide whether to enable it by default. Not verified at run time.
 - **Fact:** the engine already loads localization files (`global/localization.txt`).
 - **Shape:** make community translations of menus and texts easy (upstream #936 asks for
   Simplified Chinese; Spanish too).
+- **Status:** branch `feat/translations`: `cl_language` loads `lang/<code>/*.txt` over the game's
+  texts (an extra `localization*.txt` could never translate a text the game already has: first entry
+  wins), UTF-8 files converted to Latin-1, missing glyphs drawn as their base letter, HUD labels now
+  localized, `localize` command, `misc/i18n/loc_tool.py` (template from the player's own paks,
+  checks). No game text in the repository. Open: fonts with accented glyphs, double-byte languages
+  (#936).
 
 ## Reliable server browser
 
