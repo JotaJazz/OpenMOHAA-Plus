@@ -33,15 +33,27 @@ static char    global_buf[MAX_BUFFERS][MAX_LOCALIZATION_LENGTH];
 static char    szTemp[100];
 static size_t  buf_index = 0;
 
+// Added in OpenMOHAA Plus: lets translators check an entry, e.g. localize "&&& has joined the Allies"
+static void Sys_Localize_f(void)
+{
+    if (Cmd_Argc() < 2) {
+        Com_Printf("Usage: localize \"<text>\"\n");
+        return;
+    }
+    Com_Printf("\"%s\" -> \"%s\"\n", Cmd_Args(), Sys_LV_CL_ConvertString(Cmd_Args()));
+}
+
 void Sys_InitLocalization()
 {
     g_localization = new cLocalization;
+    Cmd_AddCommand("localize", Sys_Localize_f);
 }
 
 void Sys_ShutLocalization()
 {
     delete g_localization;
     g_localization = NULL;
+    Cmd_RemoveCommand("localize");
 }
 
 const char *Sys_LV_ConvertString(const char *var)
@@ -67,8 +79,9 @@ typedef char *charstar;
 
 int compare_strings(const void *pe1, const void *pe2)
 {
-    const char *psz1 = (const char *)pe1;
-    const char *psz2 = (const char *)pe2;
+    // Fixed in OpenMOHAA Plus: qsort passes pointers to the elements (char **), not the strings
+    const char *psz1 = *(const char *const *)pe1;
+    const char *psz2 = *(const char *const *)pe2;
     return Q_stricmp(psz1, psz2);
 }
 
@@ -94,9 +107,94 @@ cLocalization::cLocalization()
     }
 
     FS_FreeFileList(ppszFiles);
+
+    LoadLanguage();
 }
 
-void cLocalization::LoadFile(const char *name)
+/*
+================
+cLocalization::LoadLanguage
+
+Added in OpenMOHAA Plus: cl_language <code> loads lang/<code>/*.txt over the game's own
+localization files (the original game only uses the first entry for each text, so an extra
+localization*.txt could never translate a text the game already lists).
+================
+*/
+void cLocalization::LoadLanguage(void)
+{
+    cvar_t *language = Cvar_Get("cl_language", "", CVAR_ARCHIVE | CVAR_LATCH);
+    char  **ppszFiles;
+    int     iFileCount;
+    int     i;
+
+    if (!language->string[0]) {
+        return;
+    }
+    for (const char *c = language->string; *c; c++) {
+        if (!isalnum((unsigned char)*c) && *c != '_' && *c != '-') {
+            Com_Printf("cl_language: invalid language code '%s'\n", language->string);
+            return;
+        }
+    }
+
+    ppszFiles = FS_ListFiles(va("lang/%s", language->string), "txt", qfalse, &iFileCount);
+    qsort(ppszFiles, iFileCount, sizeof(char *), compare_strings);
+    Com_Printf("-- Localization: language '%s', %d file(s) in lang/%s\n", language->string, iFileCount, language->string);
+    for (i = 0; i < iFileCount; i++) {
+        LoadFile(va("lang/%s/%s", language->string, ppszFiles[i]), true);
+    }
+    FS_FreeFileList(ppszFiles);
+}
+
+/*
+================
+Utf8ToLatin1
+
+Added in OpenMOHAA Plus: the game's text is single-byte (Latin-1 / Windows-1252), but editors save
+UTF-8. A valid UTF-8 string with multi-byte characters is converted; characters beyond Latin-1
+become '?'. Anything else (plain ASCII, Latin-1 bytes) is returned unchanged.
+================
+*/
+static str Utf8ToLatin1(const char *in)
+{
+    const unsigned char *p;
+    bool                 multibyte = false;
+    str                  out;
+
+    for (p = (const unsigned char *)in; *p; p++) {
+        int extra = *p < 0x80 ? 0 : (*p & 0xE0) == 0xC0 ? 1 : (*p & 0xF0) == 0xE0 ? 2 : (*p & 0xF8) == 0xF0 ? 3 : -1;
+        if (extra < 0) {
+            return in;
+        }
+        for (int k = 1; k <= extra; k++) {
+            if ((p[k] & 0xC0) != 0x80) {
+                return in;
+            }
+        }
+        multibyte |= extra > 0;
+        p += extra;
+    }
+    if (!multibyte) {
+        return in;
+    }
+
+    for (p = (const unsigned char *)in; *p;) {
+        unsigned int code;
+        if (*p < 0x80) {
+            code = *p++;
+        } else if ((*p & 0xE0) == 0xC0) {
+            code = ((p[0] & 0x1F) << 6) | (p[1] & 0x3F);
+            p += 2;
+        } else {
+            code = 0x100; // three or four bytes: beyond Latin-1
+            p += (*p & 0xF0) == 0xE0 ? 3 : 4;
+        }
+        out += code <= 0xFF ? (char)code : '?';
+    }
+    return out;
+}
+
+void cLocalization::LoadFile(const char *name, bool bOverride)
 {
     TikiScript  tiki;
     const char *token;
@@ -105,6 +203,7 @@ void cLocalization::LoadFile(const char *name)
     size_t      rl;
     size_t      ll;
     size_t      i;
+    int         iReplaced = 0; // Added in OpenMOHAA Plus
 
     Com_Printf("Loading Localization File %s\n", name);
 
@@ -122,7 +221,8 @@ void cLocalization::LoadFile(const char *name)
             }
 
             token               = tiki.GetToken(qtrue);
-            new_entry.m_refName = token;
+            new_entry.m_refName = bOverride ? Utf8ToLatin1(token) : str(token); // Changed in OpenMOHAA Plus
+            token               = new_entry.m_refName.c_str();
 
             rl = strlen(token);
             p  = strstr(token, "&&&");
@@ -157,7 +257,8 @@ void cLocalization::LoadFile(const char *name)
             }
 
             token               = tiki.GetToken(qtrue);
-            new_entry.m_locName = token;
+            new_entry.m_locName = bOverride ? Utf8ToLatin1(token) : str(token); // Changed in OpenMOHAA Plus
+            token               = new_entry.m_locName.c_str();
 
             ll = strlen(token);
             p  = strstr(token, "&&&");
@@ -191,6 +292,10 @@ void cLocalization::LoadFile(const char *name)
 
             if (i == m_entries.NumObjects() + 1) {
                 m_entries.AddObject(new_entry);
+            } else if (bOverride) {
+                // Added in OpenMOHAA Plus: a language file replaces the base text
+                m_entries.ObjectAt(i) = new_entry;
+                iReplaced++;
             }
 
             if (!tiki.TokenAvailable(qtrue)) {
@@ -220,6 +325,9 @@ void cLocalization::LoadFile(const char *name)
     }
 
     Com_Printf("Loaded %d localization entries\n", m_entries.NumObjects());
+    if (bOverride) {
+        Com_Printf("%d entries translated by %s\n", iReplaced, name);
+    }
 }
 
 static int bjb_strnscmp(const char *a, const char *b, size_t n)

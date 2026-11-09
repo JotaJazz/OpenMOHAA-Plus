@@ -445,6 +445,27 @@ class ServerBrowser(GameTestCase):
 
 
 @require_game
+class Translations(GameTestCase):
+    def test_cl_language_overrides_the_game_texts(self):
+        # saved as UTF-8, like a modern editor does; the game shows Latin-1
+        self.home.write("lang/es/localization.txt",
+                        '{ "Health" "Salud" }\r\n{ "&&& has joined the Allies" "&&& se unió a los Aliados" }\r\n')
+        for language, health in (("es", "Salud"), ("", "Health")):
+            c = self.client("+set", "developer", "1", "+set", "cl_language", language)
+            c.wait_for(r"Opening IP socket", timeout=60)
+            c.send("localize Health")
+            c.send("localize &&& has joined the Allies")
+            c.wait_for(r'"&&& has joined the Allies" -> ')
+            self.assertEqual(c.quit(), 0)
+            with open(c.log_path, "rb") as f:
+                log = f.read()
+            self.assertIn(f'"Health" -> "{health}"'.encode(), log)
+            if language:
+                self.assertIn("2 entries translated by lang/es/localization.txt".encode(), log)
+                self.assertIn('-> "&&& se unió a los Aliados"'.encode("latin-1"), log)
+
+
+@require_game
 class Admin(GameTestCase):
     CONFIG = """// test policy
 role mod allow admin.status admin.kick* admin.ban* cvar.*

@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — translations (cl_language)
+- Four upstream gaps stopped translations: the first entry of a text wins (an added `localization_es.txt` was ignored), `UILabel` never localized its text (HUD "Health"), the file-sort comparator compared pointer bytes, and a width loop read the first character every time.
+- The game's fonts hold printable ASCII only: accents were drawn as `?`; now as base letters. Language files may be UTF-8 (converted to Latin-1, keys included: two original keys contain Latin-1 bytes).
+- No game text is committed: `misc/i18n/loc_tool.py` builds the template from the player's own paks; a full Spanish translation would be a community/user file.
+
 ## 2026-11-09 — server browser favorites, history, filters
 - Half of it existed: favorites sorted first and drawn as header rows (`m_bFavorite`), master-side filters; nothing stored or set favorites, and `dm_max_ping` and the gametype filter cvars were declared but never applied (gametype filters still are not).
 - Favorites and history are queried with `ServerListAuxUpdate`; with no master answering they were never queried (no UDP update sockets, list went idle), and `updatelist` had the same descriptor-0 problem as the master sockets.
