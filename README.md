@@ -69,6 +69,7 @@ is doing for Call of Duty 2 with its 40 Hz server.
   - a [competition match mod](misc/mods/plus-match/README.md) (halftime side switch, timeouts)
   - [match pause, hit sounds and hit markers](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server
   - [bot skill levels and weapon choice](docs/markdown/03-configuration/10-plus-bots.md)
+  - [lag compensation](docs/markdown/03-configuration/11-plus-antilag.md)
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),

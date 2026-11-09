@@ -7,6 +7,7 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 import glob
 import tempfile
 import re
+import statistics
 import sys
 import subprocess
 import shutil
@@ -678,6 +679,101 @@ class HitMarkers(GameTestCase):
         opted_out = self._center_pixels("+set", "g_hitmarkers", "1", "+set", "cg_hitmarker", "0")
         self.assertGreater(on, off + 50, (on, off, opted_out))      # crosshair plus the X
         self.assertLess(abs(opted_out - off), 10, (on, off, opted_out))   # the server sends nothing
+
+
+@require_game
+@unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 1 minute); set OMOH_SLOW=1")
+class LagCompensation(GameTestCase):
+    # The server script keeps a bot (huge health) swinging left and right in front of the player and points
+    # the player's view at it every frame; the client, with 150 ms of outgoing delay, holds the trigger
+    # of a submachine gun. Its view (the bullets follow the client's eyes) lags behind like a real
+    # player's. g_antilag_debug logs, per shot, how far sideways the aim passes from the rewound bot
+    # and from where it is now (pitch, recoil and spread left out, so the check is deterministic).
+    SCRIPT = """main:
+	level waittill spawn
+	while (1) {
+		local.human = NIL
+		local.bot = NIL
+		for (local.i = 1; local.i <= $player.size; local.i++) {
+			local.p = $player[local.i]
+			if (!(isBot local.p) && (local.p.dmteam == "allies" || local.p.dmteam == "axis")) local.human = local.p
+		}
+		for (local.i = 1; local.i <= $player.size; local.i++) {
+			local.p = $player[local.i]
+			if (local.human && (isBot local.p)) {
+				if (local.p.dmteam == local.human.dmteam) {
+					if (local.human.dmteam == "axis") local.p join_team "allies"
+					else local.p join_team "axis"
+				} else if (local.p.health > 0) local.bot = local.p
+			}
+		}
+		if (local.human && local.bot) break
+		wait 1
+	}
+	setcvar "g_bot_manualmove" "1"
+	local.human nodamage
+	local.bot.max_health = 1000000
+	local.bot.health = 1000000
+	wait 2
+	local.base = local.human.origin
+	local.eye = local.base + (0 0 82)
+	local.found = 0
+	for (local.yaw = 0; local.yaw < 360 && !local.found; local.yaw += 45) {
+		local.fwd = angles_toforward (0 local.yaw 0)
+		local.left = angles_toleft (0 local.yaw 0)
+		local.c = local.base + local.fwd * 300 + (0 0 50)
+		if ((sighttrace local.eye local.c 1) && (sighttrace local.eye (local.c + local.left * 160) 1) && (sighttrace local.eye (local.c - local.left * 160) 1)) {
+			local.found = 1
+		}
+	}
+	println ("TLAG open direction found=" + local.found)
+	wait 3
+	local.t0 = level.time
+	while (level.time - local.t0 < 20) {
+		local.t = level.time - local.t0
+		local.bot.origin = local.base + local.fwd * 300 + local.left * (150 * sin (local.t * 45))
+		local.human.origin = local.base
+		local.dir = (local.bot.origin + (0 0 50)) - local.eye
+		local.human.viewangles = vector_toangles local.dir
+		waitframe
+	}
+	println "TLAG done"
+end
+"""
+
+    def test_moving_target_with_150ms_lag(self):
+        server_home = omoh.Home()
+        self.addCleanup(server_home.cleanup)
+        server_home.write("maps/dm/mohdm5.scr", self.SCRIPT)
+        s = omoh.server(server_home, "+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxclients", "4",
+                        "+set", "sv_maxbots", "1", "+set", "sv_minPlayers", "2", "+set", "g_antilag", "1",
+                        "+set", "g_antilag_debug", "1", "+map", "dm/mohdm5")
+        self.games.append(s)
+        s.wait_for(r"==== InitGame ====")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+set", "cl_packetdelay", "150", "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"UnnamedSoldier.* has entered the battle", timeout=120)
+        time.sleep(3)
+        c.send("primarydmweapon smg")
+        c.send("join_team axis")
+        s.wait_for(r"TLAG open direction found=1", timeout=60)
+        c.send("+attack")
+        log = s.wait_for(r"TLAG done", timeout=60)
+        c.send("-attack")
+        c.quit()
+        self.assertEqual(s.quit(), 0)
+        shots = [tuple(map(float, m)) for m in
+                 re.findall(r"antilag: .* rewound bot\d+ (\d+) ms; aim passes ([\d.]+) units from it, ([\d.]+)", log)]
+        self.assertGreater(len(shots), 50)
+        rewind = statistics.median(r for r, _, _ in shots)
+        rewound = statistics.median(m for _, m, _ in shots)
+        now = statistics.median(m for _, _, m in shots)
+        # measured: rewinds 230 ms, aim 2 units from the rewound bot and 14 from where it is now
+        self.assertTrue(150 < rewind < 300, rewind)
+        self.assertLess(rewound, 6, (rewound, now))
+        self.assertGreater(now, rewound * 3, (rewound, now))
 
 
 @require_game

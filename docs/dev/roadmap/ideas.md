@@ -219,6 +219,9 @@ Play the single-player missions together. Interest exists (the HaZardModding Coo
 
 ## Competitive netcode: lag compensation and hit validation
 
+Status: lag compensation for bullets implemented on branch `feat/lag-compensation` (`g_antilag`);
+hit validation not started.
+
 - **Shape:** server-side lag compensation when resolving shots (like Quake III "unlagged"), with
   validation against impossible hits; pairs with the faster server tick and the competition mode.
 - **First step:** measure current hit registration with bots and simulated latency

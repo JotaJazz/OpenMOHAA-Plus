@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "entity.h"
 #include "gamecmds.h"
 #include "dm_manager.h"
+#include "g_antilag.h" // Added in OpenMOHAA Plus
 #include "player.h"
 #include "scriptmaster.h"
 #include "scriptexception.h"
@@ -1736,6 +1737,9 @@ void G_ClientEndServerFrames(void)
 
         ent->entity->EndFrame();
     }
+
+    // Added in OpenMOHAA Plus: where everyone is at the end of this frame (g_antilag)
+    G_AntilagStore();
 }
 
 /*

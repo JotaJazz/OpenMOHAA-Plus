@@ -848,6 +848,7 @@ public:
     void HUDPrint(const char *s);
     void Disconnect(void);
     void PlayHitSound(void); // Added in OpenMOHAA Plus
+    const usercmd_t& GetLastUcmd(void) const { return last_ucmd; } // Added in OpenMOHAA Plus (g_antilag)
 
     // team stuff
     int  GetNumKills() const;

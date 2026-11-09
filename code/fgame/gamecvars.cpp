@@ -142,6 +142,9 @@ cvar_t *g_teamdamage;
 cvar_t *g_hitsounds; // Added in OpenMOHAA Plus
 cvar_t *g_hitsound;  // Added in OpenMOHAA Plus
 cvar_t *g_hitmarkers; // Added in OpenMOHAA Plus
+cvar_t *g_antilag;        // Added in OpenMOHAA Plus
+cvar_t *g_antilag_maxms;  // Added in OpenMOHAA Plus
+cvar_t *g_antilag_debug;  // Added in OpenMOHAA Plus
 cvar_t *g_showweaponfire; // Added in OpenMOHAA Plus
 cvar_t *g_healthdrop;
 cvar_t *g_healrate;
@@ -501,6 +504,10 @@ void CVAR_Init(void)
     g_hitsounds = gi.Cvar_Get("g_hitsounds", "0", CVAR_SERVERINFO);
     g_hitsound  = gi.Cvar_Get("g_hitsound", "sound/items/hit_notify.wav", 0);
     g_hitmarkers = gi.Cvar_Get("g_hitmarkers", "0", CVAR_SERVERINFO);
+    // Added in OpenMOHAA Plus: lag compensation for bullets (g_antilag.cpp)
+    g_antilag       = gi.Cvar_Get("g_antilag", "0", CVAR_SERVERINFO);
+    g_antilag_maxms = gi.Cvar_Get("g_antilag_maxms", "300", 0);
+    g_antilag_debug = gi.Cvar_Get("g_antilag_debug", "0", 0);
     g_showweaponfire = gi.Cvar_Get("g_showweaponfire", "0", 0);
     g_healthdrop = gi.Cvar_Get("g_healthdrop", "1", 0);
     if (g_protocol >= protocol_e::PROTOCOL_MOHTA_MIN) {
