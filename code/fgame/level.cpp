@@ -1496,6 +1496,32 @@ void Level::PreSpawnSentient(Event *ev)
         m_LoopProtection = true;
     }
 
+    //
+    // Added in OpenMOHAA Plus
+    //  sv_scripts: server scripts started on every level after the map script, so server mods
+    //  don't have to override stock files such as global/DMprecache.scr
+    //
+    {
+        cvar_t     *sv_scripts = gi.Cvar_Get("sv_scripts", "", 0);
+        const char *p          = sv_scripts->string;
+        const char *token;
+
+        while (*(token = COM_Parse((char **)&p))) {
+            const str scriptName = token;
+
+            try {
+                if (Director.GetScript(scriptName)) {
+                    gi.DPrintf("Adding server script: '%s'\n", scriptName.c_str());
+                    Director.ExecuteThread(scriptName);
+                } else {
+                    gi.Printf("sv_scripts: couldn't load '%s'\n", scriptName.c_str());
+                }
+            } catch (const ScriptException& e) {
+                gi.Printf("sv_scripts: '%s' failed: %s\n", scriptName.c_str(), e.string.c_str());
+            }
+        }
+    }
+
     PathManager.CreatePaths();
 }
 

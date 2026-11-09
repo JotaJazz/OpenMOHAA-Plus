@@ -210,6 +210,12 @@ Joining a modded server usually means finding its pk3 files by hand.
 - **Shape:** integrate a profiler (upstream PR #865 proposes Tracy) to measure server frame cost
   before raising the tick rate or adding a renderer.
 
+## Server scripts (sv_scripts)
+
+Status: implemented on branch `feat/server-scripts`. `sv_scripts` lists scripts started on every
+level after the map script, so server mods (stats, competition rules, votes) need not override
+stock files. Base for script-only mods of the competition, statistics and voting ideas.
+
 ## Script modding toolkit
 
 The community works in `.scr`; today a script error shows only when the map loads.
