@@ -3,6 +3,10 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — Linux AppImage
+- AppImage rather than Flatpak first: no store review, runs on any distro and the Steam Deck; the binaries have no rpath, so `AppRun` sets `LD_LIBRARY_PATH` to the bundled SDL2/OpenAL/cURL.
+- Tested here: the unpacked AppDir (server, client, Spearhead launcher) with the game folder taken from the AppImage's location. Not tested here: `appimagetool` itself (downloading and running it locally was refused); CI builds and publishes it.
+
 ## 2026-11-09 — translations (cl_language)
 - Four upstream gaps stopped translations: the first entry of a text wins (an added `localization_es.txt` was ignored), `UILabel` never localized its text (HUD "Health"), the file-sort comparator compared pointer bytes, and a width loop read the first character every time.
 - The game's fonts hold printable ASCII only: accents were drawn as `?`; now as base letters. Language files may be UTF-8 (converted to Latin-1, keys included: two original keys contain Latin-1 bytes).
