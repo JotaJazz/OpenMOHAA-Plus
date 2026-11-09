@@ -171,6 +171,53 @@ Joining a modded server usually means finding its pk3 files by hand.
 - **Shape:** integrate a profiler (upstream PR #865 proposes Tracy) to measure server frame cost
   before raising the tick rate or adding a renderer.
 
+## Script modding toolkit
+
+The community works in `.scr`; today a script error shows only when the map loads.
+
+- **Existing pieces:** the in-game `compilescript` command (`G_CompileScript` in
+  `code/fgame/gamecmds.cpp`), `dumpevents` / `dumpallclasses`, the generated class reference
+  (`docs/markdown/04-coding/02-scripting/g_allclasses.html`).
+- **Shape:** a command-line `.scr` checker that reuses the real parser without starting the game,
+  and a VS Code extension (syntax highlighting, completion and hover docs generated from the
+  event dump).
+
+## HRTF spatial audio
+
+- **Fact:** OpenAL Soft supports HRTF, but the engine disables it on purpose
+  (`ALC_HRTF_SOFT` in `code/client/snd_openal_new.cpp`).
+- **Shape:** an opt-in cvar (e.g. `s_hrtf 1`) for headphone players.
+- **Test:** render audio through the OpenAL wave backend and compare left/right channels.
+
+## WebAssembly build
+
+- **Fact:** `code/web` is an ioquake3 leftover (its config lists Quake III files) and CMake has no
+  Emscripten support; OpenCoD2-Plus has a web build.
+- **Shape:** browser build that loads the player's own pk3 files. Medium-large.
+
+## Match statistics and integrations
+
+- **Shape:** per-match stats as JSON (kills, accuracy, weapons), Discord webhooks (match start/end,
+  joins), a web scoreboard. Built on libmoh's HTTP.
+
+## Map voting and dynamic rotation
+
+- **Shape:** vote for the next map at the end of a match; rotations that adapt to the player count.
+  Script on top of the gametype scripting API, or C++.
+
+## Helpful connection errors
+
+- **Fact:** a client dropped as "Unpure Client" only sees "Server disconnected for unknown reason"
+  (found while investigating upstream #659).
+- **Shape:** show the real reason (missing or extra pk3, version mismatch, banned) and a command
+  that lists loaded pk3 files and their order.
+
+## Server flood protection
+
+- **Shape:** per-IP rate limits for `getstatus`, `getinfo` and connection attempts; audit that
+  ioquake3's amplification defenses are present.
+- **First step:** check what the code already has.
+
 ## Also discussed
 
 - **Faster server tick:** `sv_fps` above 20 (40 Hz and up) without breaking original clients, as
