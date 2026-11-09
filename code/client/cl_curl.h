@@ -44,7 +44,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define ALTERNATE_CURL_LIB "libcurl.so.3"
 #endif
 
-extern cvar_t *cl_cURLLib;
 
 extern char* (*qcurl_version)(void);
 
@@ -97,6 +96,8 @@ extern const char *(*qcurl_multi_strerror)(CURLMcode);
 #ifdef __cplusplus
 extern "C" { // Fixed in OpenMOHAA Plus: also used from cl_main.cpp
 #endif
+
+extern cvar_t *cl_cURLLib;
 
 qboolean CL_cURL_Init( void );
 void CL_cURL_Shutdown( void );
