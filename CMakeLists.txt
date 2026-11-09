@@ -83,5 +83,10 @@ include(basegame)
 #include(missionpack)
 include(launcher)
 
+# Added in OpenMOHAA Plus: unit tests were defined in cmake/tests but never included
+if(BUILD_TESTING)
+    include(tests/all)
+endif()
+
 include(post_configure)
 #include(installer)

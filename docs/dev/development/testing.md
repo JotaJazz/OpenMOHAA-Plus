@@ -9,11 +9,15 @@ after the fix, with the same command; if it cannot be reproduced, say why.
 
 | What | Command |
 |---|---|
-| CTest | `cd .cmake && ctest --output-on-failure` (CI: `.github/workflows/unit-testing.yml`); currently registers no project test (see debt.md) |
+| CTest (`test_lz77`) | `cd .cmake && ctest --output-on-failure` (CI: `.github/workflows/unit-testing.yml`) |
+| Game regression tests | `OMOH_GAME_DIR=<GAME_DIR> python3 -I -m unittest discover -s tests -v` ([tests/README.md](../../../tests/README.md)); skipped without game data |
 | Docs checker tests | `python3 -I -m unittest discover -s misc/docs-check` |
 | Docs checker | `python3 -I misc/docs-check/check_docs.py` (CI: `.github/workflows/docs-check.yml`) |
 
 ## Headless recipes
+
+Prefer adding a test to `tests/` (helpers in `tests/omoh.py`) over a one-off command.
+
 
 Prefer the dedicated server. For the client, always use all of:
 

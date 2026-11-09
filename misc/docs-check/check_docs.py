@@ -18,7 +18,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 
-CHECKED_FILES = ["AGENTS.md", "LAYOUT.md"]
+CHECKED_FILES = ["AGENTS.md", "LAYOUT.md", "tests/README.md"]
 CHECKED_DIRS = ["docs/dev", "docs/ai"]
 EXCLUDED_DIRS = {"plans"}
 EXCLUDED_SUFFIX = ".local.md"
@@ -26,7 +26,7 @@ MEMORY_FILE = "docs/ai/PROJECT_MEMORY.md"
 MAX_STAGE_BULLETS = 3
 
 # Top-level entries a backticked path must start with to be checked.
-PATH_ROOTS = ("code/", "docs/", "cmake/", "misc/", "container/", ".github/")
+PATH_ROOTS = ("code/", "docs/", "cmake/", "misc/", "container/", ".github/", "tests/")
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 BACKTICK_RE = re.compile(r"`([^`\n]+)`")

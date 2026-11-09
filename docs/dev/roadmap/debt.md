@@ -27,8 +27,6 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
   with source "GitHub Actions" in the repository settings (maintainer decision; it publishes the
   user documentation site). The `dev` pre-release's Windows `-pdb` zips are complete packages
   (executables plus debug symbols), so they are playable.
-- CTest registers no project test: `cmake/tests/lz77.cmake` (via `cmake/tests/all.cmake`) is not
-  included by the build, so `test_lz77` is never built and CI's `ctest` runs nothing of ours.
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
   generates its own parser.
 
