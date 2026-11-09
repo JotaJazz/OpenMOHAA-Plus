@@ -1,0 +1,25 @@
+{
+  "name": "mohaa-scr",
+  "displayName": "MOHAA Script (OpenMOHAA Plus)",
+  "description": "Syntax highlighting, completion and hover docs for Medal of Honor: Allied Assault .scr scripts",
+  "version": "0.1.0",
+  "publisher": "openmohaa-plus",
+  "license": "GPL-2.0",
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Programming Languages"],
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:mohaa-scr"],
+  "contributes": {
+    "languages": [{
+      "id": "mohaa-scr",
+      "aliases": ["MOHAA Script", "mohaa-scr"],
+      "extensions": [".scr"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "mohaa-scr",
+      "scopeName": "source.mohaa-scr",
+      "path": "./syntaxes/mohaa-scr.tmLanguage.json"
+    }]
+  }
+}
