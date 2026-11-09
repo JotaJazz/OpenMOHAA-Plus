@@ -85,6 +85,10 @@ independent of texture size).
 
 ## Server administration
 
+Finding: player information is already readable from scripts (`getip`, `getping`, `getclientnum`,
+`netname`, `kills`, `deaths`, `userinfo`); the missing parts are accounts, permissions (upstream
+#905) and per-command authorization.
+
 Upstream #905 asks for an ACL-based admin system with named permissions.
 
 - **Shape:** accounts and permissions, per-command authorization for rcon and chat commands,
@@ -114,6 +118,13 @@ decisions to scripts.
   decision points to expose.
 
 ## Competition mode (zPAM-like)
+
+Finding (2026-11-09, from code, `code/fgame/dm_manager.h` and `code/fgame/player.cpp`): the original
+game already has a ready-up. With `g_forceready 0` (default 1) a round-based match waits until every
+player on both teams has typed `ready` (`notready` undoes it); `DM_Team::IsReady` gates
+`WaitingForPlayers`. A competition MVP can therefore be mostly a script mod: `g_forceready 0`, the
+round events of the gametype scripting API for halftime and overtime, and `setteam` for side swaps.
+Not verified at run time yet (bots never type `ready`).
 
 Match control for leagues and clan wars, like the maintainer's zPAM Plus for CoD2.
 
