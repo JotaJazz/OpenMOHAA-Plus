@@ -50,7 +50,7 @@ void SV_FinishSvsTimeFixups( void )
 	int i;
 	for( i = 0; i < g_iSvsTimeFixupCount; i++ )
 	{
-		*g_piSvsTimeFixups[ i ] = svs.time;
+		*g_piSvsTimeFixups[ i ] += svs.time;
 	}
 	SV_ClearSvsTimeFixups();
 }
