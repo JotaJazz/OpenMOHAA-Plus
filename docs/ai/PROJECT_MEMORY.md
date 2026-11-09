@@ -3,6 +3,25 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — server browser favorites, history, filters
+- Half of it existed: favorites sorted first and drawn as header rows (`m_bFavorite`), master-side filters; nothing stored or set favorites, and `dm_max_ping` and the gametype filter cvars were declared but never applied (gametype filters still are not).
+- Favorites and history are queried with `ServerListAuxUpdate`; with no master answering they were never queried (no UDP update sockets, list went idle), and `updatelist` had the same descriptor-0 problem as the master sockets.
+- Servers publish `net_gamespy_port` in serverinfo so the history knows the query port; key F is not covered by a test (no key injection headless).
+
+## 2026-11-09 — server browser DNS freeze (#376)
+- Reproduced with an `LD_PRELOAD` shim that makes host-name lookups take 5 s (numeric addresses must pass through, or socket setup slows down too): refreshing the list froze the game ~8 s on upstream.
+- Three faults in `gserverlist.c`: blocking `gethostbyname`, no move to the next master on DNS failure, master sockets zero-initialized so a never-created one closed descriptor 0 (stdin) on timeout.
+- Debugging lesson: a leftover headless client from a failed probe kept running; list `pgrep -x openmohaa` before blaming the code.
+
+## 2026-11-09 — game install detection
+- Upstream's Windows store lookups were ioquake3's Quake 3 ones (Steam 2200, GOG 1441704920, Microsoft Store "Quake 3"): GOG now uses MOHAA War Chest 1207659126, the others are off. Windows paths not tested here (no Windows); CI compiles them.
+- New `fs_eapath` (EA installer folder, also in the Wine prefix) when the base path has no `main/Pak0.pk3`; the bare "Couldn't load default.cfg" now lists the searched folders and the `fs_basepath` fix.
+
+## 2026-11-09 — HUD scale and crosshair size (#585, #911)
+- Up to 1920x1080 the HUD was never scaled (drawn at 640x480 pixel size); `ui_hudscale` multiplies the automatic scale, `getScreenWidth` uses the real scale instead of a fixed 1920.
+- Headless screenshot tests: `sv_maxclients 2` avoids the loading screen's continue button, `screenshot silent` avoids the "Wrote" centerprint, `popmenu 0` closes team/weapon menus.
+- Not done: menus stretch on wide screens (per-axis virtual scale), sharp text (MOHAA bitmap fonts, FreeType only wired to Quake 3 fonts). FOV is already Hor+.
+
 ## 2026-11-09 — server administration (#905)
 - In the server module (`sv_admin.cpp`), not the game: `ad_*` wrap existing console commands with their output redirected to the admin, accounts survive map changes. Without libsodium/yaml-cpp: PBKDF2-SHA256 in-tree (checked against Python's `hashlib`), plain-text config (maintainer choice).
 - A password check costs ~50 ms of server frame: checked only for existing enabled accounts, at most one per second, per-address throttle; `ad_login` hidden from the `developer 2` command log.

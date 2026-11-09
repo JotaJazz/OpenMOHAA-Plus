@@ -717,5 +717,33 @@ end
         self.assertEqual(content["axis_wins"]["content"], 1)
 
 
+@require_game
+class InstallDetection(GameTestCase):
+    def _empty_dir(self):
+        path = tempfile.mkdtemp(prefix="omoh-empty-")
+        self.addCleanup(shutil.rmtree, path, True)
+        return path
+
+    def test_finds_the_ea_install_folder_in_a_wine_prefix(self):
+        prefix = self._empty_dir()
+        ea = os.path.join(prefix, "drive_c", "Program Files (x86)", "EA GAMES")
+        os.makedirs(ea)
+        os.symlink(omoh.game_dir(), os.path.join(ea, "MOHAA"))
+        s = omoh.server(self.home, "+set", "fs_basepath", self._empty_dir(), "+map", "dm/mohdm1",
+                        env={"WINEPREFIX": prefix})
+        self.games.append(s)
+        s.wait_for(r"==== InitGame ====", timeout=120)
+        s.send("fs_eapath")
+        s.wait_for(r'"fs_eapath" is:".*EA GAMES/MOHAA"')
+        self.assertEqual(s.quit(), 0)
+
+    def test_missing_game_data_explains_what_to_do(self):
+        s = omoh.server(self.home, "+set", "fs_basepath", self._empty_dir(), env={"WINEPREFIX": self._empty_dir()})
+        self.games.append(s)
+        log = s.wait_for(r"Start the game with \+set fs_basepath", timeout=60)
+        self.assertIn("game data not found", log)
+        self.assertIn("main/Pak0.pk3", log)
+
+
 if __name__ == "__main__":
     unittest.main()

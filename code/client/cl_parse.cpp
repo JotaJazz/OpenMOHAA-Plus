@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cl_parse.c  -- parse a message received from the server
 
 #include "client.h"
+#include "cl_serverbook.h" // Added in OpenMOHAA Plus
 #include "cl_ui.h"
 #include "../qcommon/bg_compat.h"
 
@@ -602,6 +603,9 @@ void CL_ParseGamestate( msg_t *msg ) {
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
+
+	// Added in OpenMOHAA Plus: remember the server for the browser's history
+	CL_ServerBook_Connected();
 
 	// Fixed in OpenMOHAA Plus: never called, so sv_allowDownload and sv_dlURL
 	// (download redirection) were always unknown to the client

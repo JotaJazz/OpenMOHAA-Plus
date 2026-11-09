@@ -61,6 +61,9 @@ is doing for Call of Duty 2 with its 40 Hz server.
     [stats mod](misc/mods/plus-stats/README.md) built on them
   - [in-game admin accounts](docs/markdown/03-configuration/04-plus-admin.md) with roles and
     per-command permissions, no RCON password needed (`ad_login`)
+  - [HUD scale and crosshair size](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
+  - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
+    and no freeze when the master servers' DNS hangs (#376)
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),
@@ -97,7 +100,9 @@ it (see [Building](#building)). Installation works as in OpenMoHAA:
 - [Installing](docs/markdown/01-intro/01-installation.md), [running the game and expansions](docs/markdown/02-running/01-running.md), [FAQ](docs/markdown/02-running/03-faq.md)
 - [Setting up a server](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuration](docs/markdown/03-configuration/01-configuration.md)
 
-From a build, point it at your game folder, the one that contains `main/`:
+From a build, point it at your game folder, the one that contains `main/` (not needed when the
+build sits in that folder, for a GOG install on Windows, or for the original installer's
+`EA GAMES\MOHAA` folder, also inside the default Wine prefix):
 
 ```sh
 ./openmohaa +set fs_basepath /path/to/MOHAA

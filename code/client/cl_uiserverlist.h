@@ -70,6 +70,9 @@ protected:
     void     MakeLANListing(Event *ev);
     void     UpdateServer(Event *ev);
     void     RefreshStatus();
+    void     ToggleFavorite(void);       // Added in OpenMOHAA Plus
+    void     PrintList(Event *ev);       // Added in OpenMOHAA Plus
+    void     QueryServerBook(void);      // Added in OpenMOHAA Plus
 
     static int  ServerCompareFunction(const UIListCtrlItem *i1, const UIListCtrlItem *i2, int columnname);
     static void UpdateServerListCallBack(GServerList serverlist, int msg, void *instance, void *param1, void *param2);

@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../gamespy/goaceng.h"
 #include "../gamespy/sv_gamespy.h"
 #include "../gamespy/common/gsPlatformSocket.h"
+#include "../gamespy/gs_resolve.h" // Added in OpenMOHAA Plus
+#include "cl_serverbook.h"           // Added in OpenMOHAA Plus
 
 Event EV_FAKKServerList_Connect("connect", EV_DEFAULT, NULL, NULL, "Connect to the specified server");
 
@@ -50,6 +52,8 @@ Event EV_FAKKServerList_LANListing(
 );
 
 Event EV_FAKKServerList_UpdateServer("updateserver", EV_DEFAULT, NULL, NULL, "Update the selected server");
+// Added in OpenMOHAA Plus
+Event EV_FAKKServerList_PrintList("printlist", EV_DEFAULT, NULL, NULL, "Print the listed servers to the console");
 
 class FAKKServerListItem : public UIListCtrlItem
 {
@@ -312,6 +316,7 @@ CLASS_DECLARATION(UIListCtrl, UIFAKKServerList, NULL) {
     {&EV_FAKKServerList_Connect,              &UIFAKKServerList::ConnectServer       },
     {&EV_FAKKServerList_LANListing,           &UIFAKKServerList::MakeLANListing      },
     {&EV_FAKKServerList_UpdateServer,         &UIFAKKServerList::UpdateServer        },
+    {&EV_FAKKServerList_PrintList,            &UIFAKKServerList::PrintList           },
     {NULL,                                    NULL                                   }
 };
 
@@ -373,6 +378,9 @@ void UIFAKKServerList::ConnectServer(Event *ev)
 
         UI_SetReturnMenuToCurrent();
 
+        // Added in OpenMOHAA Plus: the history keeps the query port
+        CL_ServerBook_Selected(pItem->getListItemString(1).c_str(), pItem->m_iGameSpyPort);
+
         Com_sprintf(cmdString, sizeof(cmdString), "connect %s\n", pItem->getListItemString(1).c_str());
         Cbuf_AddText(cmdString);
         ServerListHalt(m_serverList[0]);
@@ -413,6 +421,11 @@ qboolean UIFAKKServerList::KeyEvent(int key, unsigned int time)
     case 'c':
     case 'C':
         CancelRefresh(NULL);
+        return qtrue;
+    case 'f':
+    case 'F':
+        // Added in OpenMOHAA Plus
+        ToggleFavorite();
         return qtrue;
     case 'i':
     case 'I':
@@ -493,6 +506,23 @@ void UIFAKKServerList::RefreshServerList(Event *ev)
         return;
     }
 
+    // Added in OpenMOHAA Plus: the filters apply to new answers, so start over when one changed
+    {
+        cvar_t *filters[] = {
+            Cvar_Get("dm_browser_show", "0", CVAR_ARCHIVE), Cvar_Get("dm_browser_search", "", CVAR_ARCHIVE),
+            Cvar_Get("dm_max_ping", "0", CVAR_ARCHIVE)};
+        bool changed = false;
+
+        for (i = 0; i < ARRAY_LEN(filters); i++) {
+            changed |= filters[i]->modified != qfalse;
+            filters[i]->modified = qfalse;
+        }
+        if (changed) {
+            DeleteAllItems();
+            m_iTotalNumPlayers = 0;
+        }
+    }
+
     for (i = 1; i <= getNumItems(); i++) {
         pNewServerItem = static_cast<FAKKServerListItem *>(GetItem(i));
         m_iTotalNumPlayers -= pNewServerItem->GetNumPlayers();
@@ -562,12 +592,21 @@ void UIFAKKServerList::RefreshServerList(Event *ev)
             AddFilter(filter, "numplayers < maxplayers", sizeof(filter));
         }
 
-        ServerListUpdate2(m_serverList[0], true, filter, GQueryType::qt_status);
+        // Changed in OpenMOHAA Plus: dm_browser_show 1/2 lists only favorite/recent servers, without the
+        // masters
+        static cvar_t *dm_browser_show = Cvar_Get("dm_browser_show", "0", CVAR_ARCHIVE);
+        if (!dm_browser_show->integer) {
+            ServerListUpdate2(m_serverList[0], true, filter, GQueryType::qt_status);
 
-        if (m_serverList[1]) {
-            ServerListUpdate2(m_serverList[1], true, filter, GQueryType::qt_status);
+            if (m_serverList[1]) {
+                ServerListUpdate2(m_serverList[1], true, filter, GQueryType::qt_status);
+            }
         }
     }
+
+    // Added in OpenMOHAA Plus: query favorite and recent servers directly, so they show up even when
+    // the masters are down or do not list them
+    QueryServerBook();
 
     m_bUpdatingList = true;
 
@@ -1182,6 +1221,45 @@ void UIFAKKServerList::UpdateServerListCallBack(
         pNewServerItem->setListItemString(5, ServerGetStringValue(server, "mapname", "(NONE)"));
         pNewServerItem->SetListItemVersion(pszGameVer);
         pNewServerItem->SetDifferentVersion(bDiffVersion);
+
+        //
+        // Added in OpenMOHAA Plus: favorites, history and client-side filters
+        //
+        {
+            static cvar_t *dm_browser_show   = Cvar_Get("dm_browser_show", "0", CVAR_ARCHIVE);
+            static cvar_t *dm_browser_search = Cvar_Get("dm_browser_search", "", CVAR_ARCHIVE);
+            const bool     bFavorite         = CL_ServerBook_IsFavorite(sAddress.c_str());
+            const bool     bRecent           = CL_ServerBook_IsRecent(sAddress.c_str());
+            bool           bHide             = false;
+
+            if (dm_browser_show->integer == 1) {
+                bHide = !bFavorite;
+            } else if (dm_browser_show->integer == 2) {
+                bHide = !bFavorite && !bRecent;
+            } else if (!bFavorite) {
+                // favorites are never hidden by the filters
+                bHide = (dm_max_ping->integer > 0 && ServerGetPing(server) > dm_max_ping->integer)
+                     || (dm_browser_search->string[0] && !Q_stristr(pszHostName, dm_browser_search->string)
+                         && !Q_stristr(ServerGetStringValue(server, "mapname", ""), dm_browser_search->string));
+            }
+
+            if (bHide) {
+                for (i = 1; i <= uiServerList->getNumItems(); i++) {
+                    if (uiServerList->GetItem(i) == pNewServerItem) {
+                        uiServerList->DeleteItem(i);
+                        break;
+                    }
+                }
+                uiServerList->m_iServerQueryCount = uiServerList->getNumItems();
+                return;
+            }
+
+            pNewServerItem->SetFavorite(bFavorite);
+            if (bRecent && !bFavorite) {
+                pNewServerItem->setListItemString(0, va("%s (recent)", sServerName.c_str()));
+            }
+        }
+
         pNewServerItem->SetQueried(true);
         pNewServerItem->SetNumPlayers(ServerGetIntValue(server, "numplayers", 0));
         uiServerList->m_iTotalNumPlayers += pNewServerItem->GetNumPlayers();
@@ -1325,6 +1403,69 @@ void UIFAKKServerList::UpdateServerListCallBack(
 
     // Changed in OPM
     uiServerList->RefreshStatus();
+}
+
+//
+// Added in OpenMOHAA Plus
+//
+static void QueryBookEntry(const char *address, int queryPort, void *data)
+{
+    GServerList  serverList = (GServerList)data;
+    char         ip[64];
+    const char  *colon = strrchr(address, ':');
+    unsigned int resolved;
+
+    Q_strncpyz(ip, address, colon ? Q_min((int)sizeof(ip), (int)(colon - address) + 1) : sizeof(ip));
+    if (inet_addr(ip) == INADDR_NONE) {
+        // a host name: use it once the background lookup has finished
+        struct in_addr in;
+        if (GS_LookupHost(ip, &resolved) != 1) {
+            return;
+        }
+        in.s_addr = resolved;
+        Q_strncpyz(ip, inet_ntoa(in), sizeof(ip));
+    }
+    ServerListAuxUpdate(serverList, ip, queryPort, true, GQueryType::qt_status);
+}
+
+void UIFAKKServerList::QueryServerBook(void)
+{
+    if (!m_serverList[0]) {
+        return;
+    }
+    CL_ServerBook_ForEach(SERVERBOOK_FAVORITES, QueryBookEntry, m_serverList[0]);
+    CL_ServerBook_ForEach(SERVERBOOK_HISTORY, QueryBookEntry, m_serverList[0]);
+}
+
+void UIFAKKServerList::ToggleFavorite(void)
+{
+    FAKKServerListItem *pItem;
+
+    if (getCurrentItem() <= 0) {
+        return;
+    }
+    pItem = static_cast<FAKKServerListItem *>(GetItem(getCurrentItem()));
+    pItem->SetFavorite(CL_ServerBook_ToggleFavorite(pItem->getListItemString(1).c_str(), pItem->m_iGameSpyPort));
+    SortByLastSortColumn();
+}
+
+void UIFAKKServerList::PrintList(Event *ev)
+{
+    int i;
+
+    Com_Printf("Server list (%d):\n", getNumItems());
+    for (i = 1; i <= getNumItems(); i++) {
+        const FAKKServerListItem *pItem = static_cast<const FAKKServerListItem *>(GetItem(i));
+        Com_Printf(
+            "  %s%s | %s | %s | %s players | %s\n",
+            pItem->IsFavorite() ? "* " : "",
+            pItem->getListItemString(0).c_str(),
+            pItem->getListItemString(1).c_str(),
+            pItem->getListItemString(5).c_str(),
+            pItem->getListItemString(3).c_str(),
+            pItem->getListItemString(2).c_str()
+        );
+    }
 }
 
 void UIFAKKServerList::RefreshStatus()

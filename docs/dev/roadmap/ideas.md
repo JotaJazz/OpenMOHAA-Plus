@@ -92,6 +92,12 @@ A hung or crashed server leaves little to go on (the #287 backtrace had no symbo
 Popular upstream requests: #583 (widescreen), #585 (HUD scale cvar), #911 (crosshair scale
 independent of texture size).
 
+Status: `ui_hudscale` (#585) and `cg_crosshair_size`/`cg_crosshair_scale` (#911) on branch
+`feat/hud-scale` (`docs/markdown/03-configuration/05-plus-hud.md`). The FOV is already Hor+
+(`CG_CalcFov`). Open: menus stretch on wide screens because their virtual scale differs per axis
+(`UIWidget::SetVirtualScale`); a 4:3 pillarbox needs a horizontal offset for every top-level menu
+and a decision for full-screen backgrounds.
+
 - **Shape:** client-side (`cgame`, `uilib`, renderer 2D); keep original layout as default.
 - **Test:** headless screenshots at several resolutions and aspect ratios.
 
@@ -244,6 +250,13 @@ Joining a modded server usually means finding its pk3 files by hand.
 - **Shape:** use the existing store paths (`fs_steampath`, `fs_gogpath`, `fs_microsoftstorepath`)
   and a first-run prompt for the game folder, so players do not need `+set fs_basepath`.
 - **Why:** lowers the barrier for new players.
+- **Status:** branch `feat/install-detection`: the Windows store lookups searched Quake 3 (Steam app
+  2200, GOG 1441704920, Microsoft Store "Quake 3"); GOG now uses MOHAA War Chest (1207659126) and
+  Steam and the Microsoft Store are skipped (MOHAA is not sold there). `fs_eapath`: the original
+  installer folder `Program Files\EA GAMES\MOHAA`, also in the Wine prefix on Linux and macOS, when the
+  base path has no data. Without data the error lists the searched folders and explains
+  `fs_basepath`. Open: the EA installer's registry key (value name unverified), a first-run folder
+  picker.
 
 ## Performance profiling
 
@@ -362,6 +375,10 @@ decide whether to enable it by default. Not verified at run time.
 - **Fact:** the `USE_FREETYPE` build option exists and is off; MOHAA fonts are bitmaps.
 - **Shape:** vector fonts for HUD, menus and console keeping the original style.
 - **First step:** check whether FreeType is wired to the game's font code at all.
+- **Checked:** it is not: `USE_FREETYPE` only builds the Quake 3 font code
+  (`code/renderercommon/tr_font.c`); MOHAA text uses its own bitmap fonts (`fontheader_t`,
+  `code/uilib/uifont.h`). Sharp text means rasterizing a TTF into that structure at the screen
+  resolution, with a typeface close to the original and a compatible license.
 
 ## Linux packaging: Flatpak and AppImage
 
@@ -377,6 +394,12 @@ decide whether to enable it by default. Not verified at run time.
 
 - **Shape:** fix the hang when a server does not answer (upstream #376); add favorites, history
   and filters (mods, players, ping).
+- **Status:** #376 fixed on branch `fix/server-browser-dns`: master DNS lookups were blocking
+  (`gethostbyname` on the main thread, 5 s each with a hung DNS) and a failed lookup retried the
+  same master forever; also a master socket never created had descriptor 0 and was "closed" on
+  timeout, closing stdin. Favorites (key F, `fav_*`), history (`history_*`), `dm_browser_show`,
+  `dm_browser_search` and the unused `dm_max_ping` on branch `feat/browser-favorites`
+  (`docs/markdown/03-configuration/06-plus-server-browser.md`).
 
 ## Fork identity: versions and updates
 

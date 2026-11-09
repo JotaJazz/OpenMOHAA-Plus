@@ -1432,8 +1432,21 @@ void CG_DrawCrosshair()
     }
 
     if (shader) {
-        width  = cgi.R_GetShaderWidth(shader) * cgs.uiHiResScale[0];
-        height = cgi.R_GetShaderHeight(shader) * cgs.uiHiResScale[1];
+        width  = cgi.R_GetShaderWidth(shader);
+        height = cgi.R_GetShaderHeight(shader);
+
+        //
+        // Added in OpenMOHAA Plus (upstream #911)
+        //  cg_crosshair_size: size independent of the texture resolution (0 = texture size)
+        //  cg_crosshair_scale: multiplier
+        //
+        if (cg_crosshair_size->value > 0 && width > 0) {
+            height = cg_crosshair_size->value * height / width;
+            width  = cg_crosshair_size->value;
+        }
+        width *= cg_crosshair_scale->value * cgs.uiHiResScale[0];
+        height *= cg_crosshair_scale->value * cgs.uiHiResScale[1];
+
         x      = (cgs.glconfig.vidWidth - width) * 0.5f;
         y      = (cgs.glconfig.vidHeight - height) * 0.5f;
 

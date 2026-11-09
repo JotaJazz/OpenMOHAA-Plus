@@ -131,7 +131,7 @@ Sys_SteamPath
 */
 char *Sys_SteamPath( void )
 {
-#ifndef STANDALONE
+#if 0 // Changed in OpenMOHAA Plus: MOHAA is not sold on Steam (this looked for Quake 3)
 
 #define STEAMPATH_NAME "Quake 3 Arena"
 #define STEAMPATH_APPID "2200"
@@ -192,7 +192,8 @@ char *Sys_GogPath( void )
 {
 #ifndef STANDALONE
 
-#define GOGPATH_ID "1441704920"
+// Changed in OpenMOHAA Plus: Medal of Honor: Allied Assault War Chest (was Quake 3)
+#define GOGPATH_ID "1207659126"
 
 	static char gogPath[ MAX_OSPATH ] = { 0 };
 
@@ -229,7 +230,7 @@ Sys_MicrosoftStorePath
 */
 char* Sys_MicrosoftStorePath(void)
 {
-#ifndef STANDALONE
+#if 0 // Changed in OpenMOHAA Plus: MOHAA is not sold on the Microsoft Store (this looked for Quake 3)
 
 #define MSSTORE_PATH "Quake 3"
 

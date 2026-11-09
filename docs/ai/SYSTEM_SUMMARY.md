@@ -47,6 +47,10 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Server commands | `compilescript` reports parse errors instead of aborting | (phase 2) |
 | Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time | (phase 3) |
 | Server scripts | `sv_scripts` runs listed scripts on every level | (phase 3) |
+| Filesystem | GOG lookup uses MOHAA's ID (was Quake 3), Steam/Microsoft Store lookups off, `fs_eapath` (EA folder, also in Wine), clear error when the game data is missing | (phase 4) |
+| Server browser | Master lookups in the background (`code/gamespy/gs_resolve.cpp`), next master on DNS failure, unused master sockets start as `INVALID_SOCKET` | #376 |
+| Server browser | Favorites and history (`code/client/cl_serverbook.cpp`), queried directly on refresh; `dm_browser_show`, `dm_browser_search`, `dm_max_ping`; servers publish `net_gamespy_port` | (phase 4) |
+| HUD | `ui_hudscale` multiplier; `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |
 | Downloads | HTTP download redirection (`sv_dlURL`): `USE_CURL` defined, `cl_curl.c` fixed, server info parsed | (phase 4) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |

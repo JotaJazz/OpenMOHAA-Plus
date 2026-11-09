@@ -120,6 +120,7 @@ cvar_t        *ui_gmboxspam;
 cvar_t        *ui_debugload;
 cvar_t        *sound_overlay;
 cvar_t        *ui_compass_scale;
+cvar_t        *ui_hudscale; // Added in OpenMOHAA Plus
 
 static intro_stage_t intro_stage;
 static char          server_mapname[64];
@@ -1135,7 +1136,8 @@ getScreenWidth
 static float getScreenWidth()
 {
     if (uid.bHighResScaling) {
-        return maxWidthRes;
+        // Fixed in OpenMOHAA Plus: was maxWidthRes, wrong for non-16:9 screens and other scales
+        return uid.vidWidth / uid.scaleRes[0];
     } else {
         return uid.vidWidth;
     }
@@ -3890,15 +3892,21 @@ void UI_ResolutionChange(void)
     CL_FillUIImports();
     CL_FillUIDef();
 
+    // Added in OpenMOHAA Plus
+    //  ui_hudscale multiplies the automatic scale (upstream #585)
+    ui_hudscale = Cvar_Get("ui_hudscale", "1", CVAR_ARCHIVE | CVAR_LATCH);
+    float hudScale = ui_hudscale->value < 0.5f ? 0.5f : (ui_hudscale->value > 4.0f ? 4.0f : ui_hudscale->value);
+
     // Added in OPM
     //  Scaling for high resolutions
     if (uid.vidWidth > maxWidthRes && uid.vidHeight > maxHeightRes) {
-        const float vidRatio = (float)uid.vidWidth / (float)uid.vidHeight;
+        hudScale *= (float)uid.vidHeight / maxHeightRes;
+    }
 
-        uid.scaleRes[0] = (float)uid.vidWidth / (maxHeightRes * vidRatio);
-        uid.scaleRes[1] = (float)uid.vidHeight / maxHeightRes;
-        //uid.scaleRes[0] = (float)uid.vidWidth / maxWidthRes;
-        //uid.scaleRes[1] = (float)uid.vidHeight / maxHeightRes;
+    if (hudScale != 1.0f) {
+        // Changed in OpenMOHAA Plus: same factor on both axes (was vidHeight / maxHeightRes for both)
+        uid.scaleRes[0]     = hudScale;
+        uid.scaleRes[1]     = hudScale;
         uid.bHighResScaling = qtrue;
     } else {
         uid.scaleRes[0]     = 1;

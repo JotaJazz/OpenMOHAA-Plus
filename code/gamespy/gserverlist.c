@@ -38,6 +38,7 @@ Fax(714)549-0757
  * Optionally for best results, the game should return a list of masters from the same community.
  */
 #include "goaceng.h"
+#include "gs_resolve.h" // Added in OpenMOHAA Plus
 #include "gserver.h"
 #if defined(applec) || defined(THINK_C) || defined(__MWERKS__) && !defined(__KATANA__)
     #include "::nonport.h"
@@ -170,6 +171,7 @@ Creates and returns a new (empty) GServerList. */
 GServerList	ServerListNew(const char *gamename, const char *enginename, const char *seckey, int maxconcupdates, void *CallBackFn, int CallBackFnType, void *instance)
 {
     GServerList list;
+    int i;
 
     list = (GServerList) gsimalloc(sizeof(struct GServerListImplementation));
     assert(list != NULL);
@@ -180,6 +182,10 @@ GServerList	ServerListNew(const char *gamename, const char *enginename, const ch
     list->updatelist = gsimalloc(maxconcupdates * sizeof(UpdateInfo));
     memset(list->updatelist, 0, maxconcupdates * sizeof(UpdateInfo));
     assert(list->updatelist != NULL);
+    // Fixed in OpenMOHAA Plus: not descriptor 0 (stdin), see the master sockets below
+    for (i = 0; i < maxconcupdates; i++) {
+        list->updatelist[i].s = INVALID_SOCKET;
+    }
     strcpy(list->gamename, gamename);
     strcpy(list->seckey, seckey);
     strcpy(list->enginename, enginename);
@@ -202,6 +208,11 @@ GServerList	ServerListNew(const char *gamename, const char *enginename, const ch
     }
     list->slsockets = (GServerListSocket)gsimalloc(sizeof(struct GServerListSocketImplementation) * list->numslsockets);
     memset(list->slsockets, 0, sizeof(struct GServerListSocketImplementation) * list->numslsockets);
+    // Fixed in OpenMOHAA Plus: 0 is a valid descriptor (stdin). A master socket that was never
+    // created (DNS failure) passed the INVALID_SOCKET check, timed out and closed descriptor 0.
+    for (i = 0; i < list->numslsockets; i++) {
+        list->slsockets[i].s = INVALID_SOCKET;
+    }
     list->startslindex = 0;
     list->lastsltime = current_time();
 
@@ -252,7 +263,11 @@ static GError FreeUpdateList(GServerList serverlist)
     int i;
     for (i = 0 ; i < serverlist->maxupdates ; i++)
     {
-        closesocket(serverlist->updatelist[i].s);
+        // Fixed in OpenMOHAA Plus: skip sockets never created, forget closed ones
+        if (serverlist->updatelist[i].s != INVALID_SOCKET) {
+            closesocket(serverlist->updatelist[i].s);
+            serverlist->updatelist[i].s = INVALID_SOCKET;
+        }
     }
     return 0;
 
@@ -263,7 +278,6 @@ static GError FreeUpdateList(GServerList serverlist)
 static GError CreateServerListSocket(GServerList serverlist, GServerListSocket slsocket, gbool async)
 {
     struct   sockaddr_in saddr;
-    struct hostent *hent;
     int lasterr;
     int port;
     const char *host;
@@ -285,10 +299,15 @@ static GError CreateServerListSocket(GServerList serverlist, GServerListSocket s
     saddr.sin_addr.s_addr = inet_addr(host);
     if (saddr.sin_addr.s_addr == INADDR_NONE)
     {
-        hent = gethostbyname(host);
-        if (!hent)
-            return GE_NODNS; 
-        saddr.sin_addr.s_addr = *(u_long *)hent->h_addr_list[0];
+        // Changed in OpenMOHAA Plus (upstream #376): gethostbyname blocked the game while the DNS
+        // lookup hung, and a failed lookup retried the same master forever. Look up in the
+        // background and move on to the next master until this one is resolved.
+        unsigned int address;
+        if (GS_LookupHost(host, &address) != 1) {
+            serverlist->startslindex++;
+            return GE_NODNS;
+        }
+        saddr.sin_addr.s_addr = address;
     }
     slsocket->s = socket ( AF_INET, SOCK_STREAM, IPPROTO_TCP );
     if (slsocket->s == INVALID_SOCKET)
@@ -1082,7 +1101,14 @@ GError ServerListThink(GServerList serverlist)
             if (!serverlist->abortupdate && serverlist->startslindex < ServerListGetNumMasters()) {
                 CreateServerListForAvailableSockets(serverlist, serverlist->async);
             } else if (serverlist->state == sl_listxfer && ServerListHasFinishedFetchingList(serverlist)) {
-                ServerListModeChange(serverlist, sl_idle);
+                // Changed in OpenMOHAA Plus: servers added with ServerListAuxUpdate during the transfer
+                // (favorites) were never queried when no master answered
+                if (serverlist->nextupdate < ArrayLength(serverlist->servers)
+                    && (serverlist->updatelist[0].s != INVALID_SOCKET || !InitUpdateList(serverlist))) {
+                    ServerListModeChange(serverlist, sl_querying);
+                } else {
+                    ServerListModeChange(serverlist, sl_idle);
+                }
             }
             break;
         case sl_querying: 

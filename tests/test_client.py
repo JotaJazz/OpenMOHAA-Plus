@@ -5,6 +5,10 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import re
+import sys
+import subprocess
+import shutil
 import functools
 import http.server
 import threading
@@ -286,6 +290,158 @@ class Downloads(GameTestCase):
         self.assertTrue(os.path.exists(pak))
         self.assertTrue(any("zzz_dltest.pk3" in r and " 200 " in r for r in record.requests), record.requests)
         self.assertNotIn("clientDownload", s.log())
+
+
+def green_pixels(path, x0, x1, y0, y1):
+    """Count saturated green pixels (the HUD health bar) in a region given as screen fractions."""
+    width, height, rows = read_tga(path)
+    return sum(1 for row in rows[int(y0 * height):int(y1 * height)]
+               for r, g, b in row[int(x0 * width):int(x1 * width)] if g > 120 and r < 80 and b < 80)
+
+
+@require_game
+class HudScale(GameTestCase):
+    def shot(self, scale):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        # sv_maxclients 2: a one-player local game waits on the loading screen's continue button
+        c = omoh.client(home, "+set", "developer", "1", "+set", "r_mode", "-1", "+set", "r_customwidth", "1920",
+                        "+set", "r_customheight", "1080", "+set", "ui_hudscale", str(scale), "+set", "g_gametype",
+                        "2", "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        self.games.append(c)
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("join_team allies")
+        time.sleep(1)
+        c.send("primarydmweapon rifle")
+        time.sleep(8)
+        c.send("screenshot hud")
+        time.sleep(3)
+        self.assertEqual(c.quit(), 0)
+        return green_pixels(os.path.join(home.path, "main", "screenshots", "hud.tga"), 0.0, 0.1, 0.75, 1.0)
+
+    def test_crosshair_scale_and_size(self):
+        # upstream #911: crosshair size independent of the texture (cg_crosshair_size) and a multiplier
+        c = self.client("+set", "developer", "1", "+set", "r_mode", "-1",
+                        "+set", "r_customwidth", "1280", "+set", "r_customheight", "720", "+set", "g_gametype", "2",
+                        "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        time.sleep(6)
+        c.send("popmenu 0")    # team and weapon menus cover the crosshair
+        c.send("popmenu 0")
+        time.sleep(2)
+        names = ("off", "normal", "scale3", "size64")
+        for cvars in ("ui_crosshair 0", "ui_crosshair 1", "cg_crosshair_scale 3",
+                      "cg_crosshair_scale 1; cg_crosshair_size 64"):
+            for cvar in cvars.split("; "):
+                c.send(cvar)
+            time.sleep(1)
+            c.send("screenshot silent")    # a named screenshot centerprints "Wrote ..." over the crosshair
+            time.sleep(1)
+        self.assertEqual(c.quit(), 0)
+        shots = dict(zip(names, sorted(glob.glob(self.home.file("screenshots/shot*.tga")))))
+        self.assertEqual(len(shots), 4)
+        def changed(name):    # pixels the crosshair changes in the screen center
+            w, h, rows = read_tga(shots[name])
+            _, _, off = read_tga(shots["off"])
+            y0, y1, x0, x1 = int(h * 0.39), int(h * 0.61), int(w * 0.4375), int(w * 0.5625)
+            return sum(1 for y in range(y0, y1) for x in range(x0, x1)
+                       if sum(abs(a - b) for a, b in zip(rows[y][x], off[y][x])) > 60)
+
+        count = {n: changed(n) for n in ("normal", "scale3", "size64")}
+        self.assertGreater(count["normal"], 5, count)
+        self.assertGreater(count["scale3"], count["normal"] * 2, count)
+        self.assertGreater(count["size64"], count["normal"] * 2, count)
+
+    def test_ui_hudscale_scales_the_hud(self):
+        # upstream #585: at 1920x1080 the HUD is drawn at its 640x480 pixel size; ui_hudscale enlarges it
+        normal, double = self.shot(1), self.shot(2)
+        self.assertGreater(normal, 300)
+        self.assertGreater(double / normal, 3.0, (normal, double))   # twice the size on both axes
+
+
+@require_game
+@unittest.skipUnless(sys.platform.startswith("linux") and shutil.which("gcc"), "needs Linux and gcc (LD_PRELOAD)")
+class ServerBrowser(GameTestCase):
+    def test_slow_dns_does_not_freeze_the_game(self):
+        # upstream #376: refreshing the internet server list froze the game while master DNS lookups hung
+        shim = os.path.join(self.home.path, "slowdns.so")
+        subprocess.run(["gcc", "-shared", "-fPIC", "-o", shim,
+                        os.path.join(os.path.dirname(os.path.abspath(__file__)), "slowdns.c"), "-ldl"], check=True)
+        c = self.client("+set", "developer", "1", env={"LD_PRELOAD": shim})
+        c.wait_for(r"Opening IP socket", timeout=60)
+        time.sleep(10)
+        c.send("pushmenu joinnetgame")
+        time.sleep(2)
+        c.send("widgetcommand netgamelist refreshserverlist")
+        time.sleep(0.5)
+        mark = len(c.log())
+        start = time.time()
+        c.send("echo BROWSER_ALIVE")
+        c.wait_for(r"^BROWSER_ALIVE", start=mark, timeout=30)
+        self.assertLess(time.time() - start, 2.0)          # was 5 s per master lookup
+        time.sleep(6)                                       # past the master socket timeout
+        mark = len(c.log())
+        c.send("echo STDIN_ALIVE")                          # a never-created master socket closed fd 0
+        c.wait_for(r"^STDIN_ALIVE", start=mark, timeout=10)
+        self.assertIn("SLOWDNS getaddrinfo(master.", c.log())
+        self.assertEqual(c.quit(), 0)
+
+
+    NO_MASTERS = [arg for i in range(5) for arg in ("+set", f"com_master{i}_host", "")]
+
+    def _list(self, c, expect):
+        mark = len(c.log())
+        c.send("widgetcommand netgamelist refreshserverlist")
+        time.sleep(6)
+        c.send("widgetcommand netgamelist printlist")
+        return c.wait_for(expect, start=mark, timeout=20)[mark:]
+
+    def test_favorites_history_and_search(self):
+        alpha = self.server("+set", "sv_hostname", "Alpha", "+map", "dm/mohdm1")
+        home_b = omoh.Home()
+        self.addCleanup(home_b.cleanup)
+        bravo = omoh.server(home_b, "+set", "sv_hostname", "Bravo", "+map", "dm/mohdm1")
+        self.games.append(bravo)
+        for s in (alpha, bravo):
+            s.wait_for(r"==== InitGame ====")
+            s.send("net_gamespy_port")
+        qa, qb = (int(re.findall(r'"net_gamespy_port" is:"(\d+)', s.wait_for(r'"net_gamespy_port" is:"\d+'))[-1])
+                  for s in (alpha, bravo))
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        client_home.write("serverfavorites.txt", f"127.0.0.1:{alpha.port} {qa}\n")
+        c = omoh.client(client_home, "+set", "developer", "1", *self.NO_MASTERS, "+connect", f"127.0.0.1:{bravo.port}")
+        self.games.append(c)
+        bravo.wait_for(r"entered the battle", timeout=120)
+        c.send(f"fav_add 127.0.0.1:{bravo.port} {qb}")
+        c.wait_for(r"Added favorite 127.0.0.1")
+        c.send(f"fav_del 127.0.0.1:{bravo.port}")
+        c.wait_for(r"Removed favorite 127.0.0.1")
+        c.send("disconnect")
+        time.sleep(3)
+        c.send("history_list")
+        c.wait_for(rf"127\.0\.0\.1:{bravo.port}")
+        c.send("pushmenu joinnetgame")
+        time.sleep(2)
+
+        c.send("dm_browser_show 2")
+        listed = self._list(c, r"Server list \(\d+\):(\n  .*)*\n.*Bravo")
+        self.assertRegex(listed, r"\* .*Alpha \| 127\.0\.0\.1:%d" % alpha.port)
+        self.assertRegex(listed, r"Bravo \(recent\) \| 127\.0\.0\.1:%d" % bravo.port)
+
+        c.send("dm_browser_show 0")
+        c.send("dm_browser_search Alp")
+        listed = self._list(c, r"Server list \((\d+)\):")
+        self.assertIn("Alpha", listed)
+        self.assertNotIn("Bravo", listed)
+        self.assertEqual(c.quit(), 0)
+
+        history = open(client_home.file("serverhistory.txt")).read()
+        self.assertIn(f"127.0.0.1:{bravo.port} {qb}", history)     # query port published by the server
 
 
 @require_game

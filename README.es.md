@@ -62,6 +62,9 @@ para Call of Duty 2 con su servidor a 40 Hz.
     [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
   - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
     roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
+  - [tamaño del HUD y de la mira](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
+  - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
+    y el juego ya no se congela cuando el DNS de los masters no responde (#376)
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),
@@ -102,7 +105,9 @@ Las builds de desarrollo se publican automáticamente en la
 - [Instalación](docs/markdown/01-intro/01-installation.md), [ejecutar el juego y las expansiones](docs/markdown/02-running/01-running.md), [preguntas frecuentes](docs/markdown/02-running/03-faq.md)
 - [Montar un servidor](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuración](docs/markdown/03-configuration/01-configuration.md)
 
-Desde una build, apúntalo a la carpeta del juego, la que contiene `main/`:
+Desde una build, apúntalo a la carpeta del juego, la que contiene `main/` (no hace falta si la build
+está en esa carpeta, con una instalación de GOG en Windows, o con la carpeta `EA GAMES\MOHAA` del
+instalador original, también dentro del prefijo de Wine por defecto):
 
 ```sh
 ./openmohaa +set fs_basepath /ruta/a/MOHAA

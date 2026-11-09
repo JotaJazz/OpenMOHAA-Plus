@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "cl_serverbook.h" // Added in OpenMOHAA Plus
 #include "../server/server.h"
 #include "cl_ui.h"
 #include "../corepp/tiki.h"
@@ -3721,6 +3722,7 @@ void CL_Init( void ) {
 	Cmd_AddCommand ("cinematic", CL_PlayCinematic_f);
 	Cmd_AddCommand ("stoprecord", CL_StopRecord_f);
 	Cmd_AddCommand ("connect", CL_Connect_f);
+	CL_ServerBook_Init(); // Added in OpenMOHAA Plus: fav_* and history_* commands
 	Cmd_AddCommand ("menuconnect", CL_MenuConnect_f);
 	Cmd_AddCommand ("reconnect", CL_Reconnect_f);
 	Cmd_AddCommand ("localservers", CL_LocalServers_f);
