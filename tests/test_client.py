@@ -389,6 +389,26 @@ class HudScale(GameTestCase):
         self.assertGreater(count["scale3"], count["normal"] * 3, count)
         self.assertGreater(count["size64"], count["normal"] * 2, count)
 
+    def test_menus_keep_4_3_on_wide_screens(self):
+        # upstream #583: at 1280x720 a 4:3 menu is 960 pixels wide, so the left 160 pixels are side bar
+        def left_bar_pixels(aspect):
+            home = omoh.Home()
+            self.addCleanup(home.cleanup)
+            c = omoh.client(home, "+set", "ui_menuaspect", str(aspect), "+set", "r_mode", "-1",
+                            "+set", "r_customwidth", "1280", "+set", "r_customheight", "720")
+            self.games.append(c)
+            c.wait_for(r"Opening IP socket", timeout=60)
+            time.sleep(8)                      # the main menu is up
+            c.send("screenshot silent")
+            time.sleep(2)
+            self.assertEqual(c.quit(), 0)
+            w, h, rows = read_tga(glob.glob(os.path.join(home.path, "main", "screenshots", "shot*.tga"))[0])
+            return sum(1 for y in range(int(h * 0.6), int(h * 0.95)) for x in range(0, int(w * 0.11))
+                       if sum(rows[y][x]) > 30)
+
+        self.assertEqual(left_bar_pixels(1), 0)          # black side bar
+        self.assertGreater(left_bar_pixels(0), 1000)     # stretched menu background
+
     def test_ui_hudscale_scales_the_hud(self):
         # upstream #585: at 1920x1080 the HUD is drawn at its 640x480 pixel size; ui_hudscale enlarges it
         normal, double = self.shot(1), self.shot(2)

@@ -62,7 +62,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
     [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
   - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
     roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
-  - [tamaño del HUD y de la mira](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
+  - [tamaño del HUD y de la mira, y menús en 4:3](docs/markdown/03-configuration/05-plus-hud.md) en pantallas anchas (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
   - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
     y el juego ya no se congela cuando el DNS de los masters no responde (#376)
   - [fuentes con tildes y ñ](docs/markdown/03-configuration/09-plus-fonts.md), más nítidas en alta resolución

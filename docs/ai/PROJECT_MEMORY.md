@@ -3,6 +3,9 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — 4:3 menus on wide screens (#583)
+- Smaller than expected: menu containers center themselves (`UIWidgetContainer::AlignPosition`) and children are relative to them, so one scale for both axes in `SetVirtualScale` gives centered 4:3 menus and loading screens; the container's background fill draws the bars. `ui_menuaspect 0` keeps the stretched original.
+
 ## 2026-11-09 — browser game type filters
 - The original filter cvars (`dm_free_for_all` ... `dm_liberation_match`, `dm_filter_pure`, `dm_run_fast`/`dm_run_normal`) were declared and never applied; now applied client-side from `gametype_i`, `pure` and `sprinton` (masters may not understand filters), favorites exempt.
 

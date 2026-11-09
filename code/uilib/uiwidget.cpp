@@ -2441,6 +2441,13 @@ void UIWidget::SetVirtualScale(vec2_t out)
     } else {
         out[0] = uid.vidWidth / 640.0;
         out[1] = uid.vidHeight / 480.0;
+
+        // Added in OpenMOHAA Plus (upstream #583): keep the 4:3 shape of the menus on wide screens.
+        //  The menu container centers itself, and its background fill draws the side bars.
+        const cvar_t *menuAspect = uii.Cvar_Find("ui_menuaspect");
+        if (menuAspect && menuAspect->integer) {
+            out[0] = out[1] = Q_min(out[0], out[1]);
+        }
     }
 }
 
