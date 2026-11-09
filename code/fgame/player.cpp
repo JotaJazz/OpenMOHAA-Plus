@@ -9892,6 +9892,15 @@ void Player::ArmorDamage(Event *ev)
             && (g_gametype->integer < GT_TEAM || attacker->GetDM_Team() != GetDM_Team())) {
             attacker->PlayHitSound();
         }
+
+        // Added in OpenMOHAA Plus: hit marker (g_hitmarkers), only for clients that draw it (cg_hitmarker
+        //  in their userinfo), so original clients never get a command they do not know
+        if (g_hitmarkers->integer && g_gametype->integer != GT_SINGLE_PLAYER && attacker
+            && attacker->IsSubclassOfPlayer() && attacker != this && attacker->client
+            && (g_gametype->integer < GT_TEAM || attacker->GetDM_Team() != GetDM_Team())
+            && atoi(Info_ValueForKey(attacker->client->pers.userinfo, "cg_hitmarker"))) {
+            gi.SendServerCommand(attacker->edict - g_entities, "hitmarker");
+        }
     }
 
     Event *event = new Event(0, 11);

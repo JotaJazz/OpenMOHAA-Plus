@@ -3895,6 +3895,8 @@ void UI_ResolutionChange(void)
     // Added in OpenMOHAA Plus
     //  ui_hudscale multiplies the automatic scale (upstream #585)
     ui_hudscale = Cvar_Get("ui_hudscale", "1", CVAR_ARCHIVE | CVAR_LATCH);
+    // Added in OpenMOHAA Plus: 1 keeps menus 4:3 with side bars on wide screens (upstream #583), 0 stretches
+    Cvar_Get("ui_menuaspect", "1", CVAR_ARCHIVE | CVAR_LATCH);
     float hudScale = ui_hudscale->value < 0.5f ? 0.5f : (ui_hudscale->value > 4.0f ? 4.0f : ui_hudscale->value);
 
     // Added in OPM

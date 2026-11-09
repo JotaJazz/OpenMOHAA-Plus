@@ -61,13 +61,13 @@ is doing for Call of Duty 2 with its 40 Hz server.
     [stats mod](misc/mods/plus-stats/README.md) built on them
   - [in-game admin accounts](docs/markdown/03-configuration/04-plus-admin.md) with roles and
     per-command permissions, no RCON password needed (`ad_login`)
-  - [HUD scale and crosshair size](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
+  - [HUD scale, crosshair size and 4:3 menus](docs/markdown/03-configuration/05-plus-hud.md) on wide screens (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
   - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
     and no freeze when the master servers' DNS hangs (#376)
   - [fonts with accented letters](docs/markdown/03-configuration/09-plus-fonts.md), sharper at high resolutions
   - [community translations](docs/markdown/03-configuration/07-plus-translations.md) of the game's texts (`cl_language`)
   - a [competition match mod](misc/mods/plus-match/README.md) (halftime side switch, timeouts)
-  - [match pause and hit sounds](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server
+  - [match pause, hit sounds and hit markers](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),

@@ -350,6 +350,7 @@ extern "C" {
 		clientInfo_t clientinfo[MAX_CLIENTS];
 		radarClient_t radars[MAX_CLIENTS];
 		qhandle_t radarShaders[2];
+        int hitMarkerTime; // Added in OpenMOHAA Plus: when the server last reported a hit by this player
     } cg_t;
 
     typedef struct {
@@ -481,6 +482,7 @@ extern "C" {
     extern cvar_t *cg_crosshair_friend;
     extern cvar_t *cg_crosshair_size;  // Added in OpenMOHAA Plus
     extern cvar_t *cg_crosshair_scale; // Added in OpenMOHAA Plus
+    extern cvar_t *cg_hitmarker;       // Added in OpenMOHAA Plus
     extern cvar_t *ui_crosshair;
     extern cvar_t *vm_offset_max;
     extern cvar_t *vm_offset_speed;

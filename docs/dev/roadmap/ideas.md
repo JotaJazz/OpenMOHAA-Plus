@@ -94,9 +94,9 @@ independent of texture size).
 
 Status: `ui_hudscale` (#585) and `cg_crosshair_size`/`cg_crosshair_scale` (#911) on branch
 `feat/hud-scale` (`docs/markdown/03-configuration/05-plus-hud.md`). The FOV is already Hor+
-(`CG_CalcFov`). Open: menus stretch on wide screens because their virtual scale differs per axis
-(`UIWidget::SetVirtualScale`); a 4:3 pillarbox needs a horizontal offset for every top-level menu
-and a decision for full-screen backgrounds.
+(`CG_CalcFov`). Menus: `ui_menuaspect 1` (default, branch `feat/menu-aspect`) uses one scale for
+both axes in `UIWidget::SetVirtualScale`; menu containers already center themselves and their
+background fill draws the side bars. Cinematics are not covered.
 
 - **Shape:** client-side (`cgame`, `uilib`, renderer 2D); keep original layout as default.
 - **Test:** headless screenshots at several resolutions and aspect ratios.
@@ -449,8 +449,9 @@ checked with a working and a broken synthetic mod. Real community mods still hav
 - **Shape:** hitsounds, hit markers, round timer on the HUD; off by default and enabled by the
   server, so the Plus client gives no unfair advantage.
 - **Status:** hit sounds (`g_hitsounds`, `g_hitsound`) on branch `feat/pause-hitsounds`, played with
-  the client's `play` command so original clients hear them. Open: hit markers (needs HUD drawing in
-  the Plus client), round timer.
+  the client's `play` command so original clients hear them. Hit markers (`g_hitmarkers`, client opt-out
+  `cg_hitmarker`, sent only to clients that advertise it in their userinfo) on branch
+  `feat/hitmarkers`. Open: round timer on the HUD.
 
 ## Master server and community portal (long term)
 

@@ -316,6 +316,12 @@ static void CG_ServerCommand(qboolean modelOnly)
         return;
     }
 
+    // Added in OpenMOHAA Plus: the server reports a hit by this player (g_hitmarkers)
+    if (!strcmp(cmd, "hitmarker")) {
+        cg.hitMarkerTime = cg.time;
+        return;
+    }
+
     if (!strcmp(cmd, "cs")) {
         CG_ConfigStringModified(cgi.getConfigStringIdNormalized(atoi(cgi.Argv(1))), modelOnly);
         return;
