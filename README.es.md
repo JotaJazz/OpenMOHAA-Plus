@@ -33,65 +33,95 @@ para Call of Duty 2 con su servidor a 40 Hz.
 </table>
 <p align="center"><sub>Capturas de OpenMoHAA; el motor y el código del juego son los mismos.</sub></p>
 
-## Qué funciona hoy
+## Qué ofrece OpenMOHAA Plus
 
-- **Todo lo que hace OpenMoHAA:** la campaña completa de un jugador de los tres juegos, todos los
-  modos multijugador oficiales (Free-For-All, Team Deathmatch, por rondas, Objetivo, Tug-of-War,
-  Liberation), mods como Freeze-Tag, bots integrados, compatibilidad con los assets, scripts y
-  servidores originales ([diferencias con el original](docs/markdown/01-intro/04-differences.md)).
-- **Correcciones de bugs reportados en el proyecto original**, cada una reproducida antes y después
-  en el juego real:
-  - `s_dialogscale` mayor que 1 ahora sube el volumen de los diálogos (#885)
-  - `com_maxfps` limita a la tasa pedida: 144 da 144 fps, no 166 (#530)
-  - el cronómetro del HUD sigue visible al cargar una partida (#916)
-  - los scripts de mapa ya no ejecutan de golpe sus esperas tras reiniciar el mismo mapa, lo que
-    desconectaba a todos en servidores de un solo mapa (#287)
-  - sin crash al cambiar de mapa cuando el módulo del juego queda cargado, como en Alpine/musl (#918)
-  - `sv_pure 1` ya no rechaza a clientes que leyeron un pk3 extra en el menú (#659)
-  - `rehashbans` ya no conserva bans borrados (#926)
-  - scripts: los comandos de `registercmd` se ejecutan (#672), `amount`/`dmamount` de los ítems se
-    pueden leer (#920), `waitForState` espera (#702)
-  - cargan los sonidos cuyo alias omite `.wav` (#589), una doble liberación del cursor, y archivos de
-    release ejecutables en Linux y macOS (#923)
-- **Nuevo en Plus:**
-  - servidores a 40 Hz (`sv_fps 40`) y tiempos por frame con `sv_perf`
-  - eventos de script para cambiar el daño y rechazar cambios de equipo, eventos de ronda
-    ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md)), funciones HTTP y JSON
-    compatibles con NightFall ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)),
-    scripts de servidor sin sobrescribir archivos del juego (`sv_scripts`), y un
-    [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
-  - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
-    roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
-  - [tamaño del HUD y de la mira, y menús en 4:3](docs/markdown/03-configuration/05-plus-hud.md) en pantallas anchas (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
-  - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
-    y el juego ya no se congela cuando el DNS de los masters no responde (#376)
-  - [fuentes con tildes y ñ](docs/markdown/03-configuration/09-plus-fonts.md), más nítidas en alta resolución
-  - [traducciones de la comunidad](docs/markdown/03-configuration/07-plus-translations.md) para los textos del juego (`cl_language`)
-  - un [mod de partidas competitivas](misc/mods/plus-match/README.md) (cambio de lado en el entretiempo, tiempos muertos)
-  - [pausa de partida, sonidos y marcadores de impacto](docs/markdown/03-configuration/08-plus-match-control.md) controlados por el servidor
-  - [niveles de habilidad y armas de los bots](docs/markdown/03-configuration/10-plus-bots.md)
-  - [compensación de lag](docs/markdown/03-configuration/11-plus-antilag.md)
-  - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
-    audio HRTF para audífonos (`s_hrtf 1`)
-  - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),
-    [misc/vscode-mohaa](misc/vscode-mohaa)), reportes de congelamientos y crashes, y una suite de
-    tests sin ventanas
+Todo lo que hace [OpenMoHAA](https://github.com/openmoh/openmohaa): la campaña completa de un
+jugador de los tres juegos, todos los modos multijugador oficiales (Free-For-All, Team Deathmatch,
+por rondas, Objetivo, Tug-of-War, Liberation), mods como Freeze-Tag, bots integrados, y
+compatibilidad con los assets, scripts y servidores originales
+([diferencias con el original](docs/markdown/01-intro/04-differences.md)). Además:
 
-  Los números son [issues del proyecto original](https://github.com/openmoh/openmohaa/issues). La
-  lista completa, con los riesgos de cada cambio, está en
-  [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) y
-  [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
+### Para jugadores
 
-## Lo que viene
+- [tamaño del HUD y de la mira, y menús en 4:3](docs/markdown/03-configuration/05-plus-hud.md) en
+  pantallas anchas (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
+- [fuentes con tildes y ñ](docs/markdown/03-configuration/09-plus-fonts.md), más nítidas en alta
+  resolución, y [traducciones de la comunidad](docs/markdown/03-configuration/07-plus-translations.md)
+  para los textos del juego (`cl_language`)
+- un [buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md) con
+  favoritos, historial, búsqueda y filtros por tipo de juego que funcionan, que ya no se congela
+  cuando el DNS de los masters no responde (#376)
+- descarga automática de mods por HTTP (`sv_dlURL`), y el motivo cuando un servidor te expulsa
+- la carpeta del juego se encuentra sola en instalaciones de GOG y en la original `EA GAMES\MOHAA`
+  (también dentro de Wine), y un AppImage para Linux y la Steam Deck
+- audio HRTF para audífonos (`s_hrtf 1`)
 
-Funciones nuevas más allá del juego original, en el espíritu de OpenCoD2-Plus. Planeado, todavía no
-hecho:
+### Para servidores y juego competitivo
 
-- **Modo competición** (estilo zPAM) con más eventos de gametype: puntaje por equipo, cambio de
-  lado en el entretiempo.
-- **Mejores bots** y compensación de lag.
-- **Más bugs del proyecto original**, elegidos según lo que se pueda reproducir y verificar.
-- **La misma corrección para el módulo del cliente en musl** que recibió el servidor en #918.
+- servidores a 40 Hz (`sv_fps 40`) con la cadencia de disparo original de 20 Hz, y tiempos por
+  frame con `sv_perf`
+- [compensación de lag](docs/markdown/03-configuration/11-plus-antilag.md) para las balas
+  (`g_antilag`)
+- [pausa de partida, sonidos y marcadores de impacto](docs/markdown/03-configuration/08-plus-match-control.md),
+  y un [mod de partidas competitivas](misc/mods/plus-match/README.md) (cambio de lado en el
+  entretiempo, tiempos muertos)
+- [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con roles
+  y permisos por comando, sin la contraseña de RCON (`ad_login`)
+- [niveles de habilidad, elección de armas y granadas de los bots](docs/markdown/03-configuration/10-plus-bots.md)
+- reportes de congelamientos y crashes
+
+### Para modders y scripters
+
+- eventos de script para cambiar el daño y rechazar cambios de equipo, eventos de ronda
+  ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md))
+- funciones HTTP y JSON compatibles con NightFall
+  ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)), y un
+  [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellas
+- scripts de servidor sin sobrescribir archivos del juego (`sv_scripts`)
+- un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),
+  [misc/vscode-mohaa](misc/vscode-mohaa))
+
+### Correcciones de bugs reportados en el proyecto original
+
+Cada una reproducida antes y después en el juego real:
+
+- `s_dialogscale` mayor que 1 ahora sube el volumen de los diálogos (#885)
+- `com_maxfps` limita a la tasa pedida: 144 da 144 fps, no 166 (#530)
+- el cronómetro del HUD sigue visible al cargar una partida (#916)
+- los scripts de mapa ya no ejecutan de golpe sus esperas tras reiniciar el mismo mapa, lo que
+  desconectaba a todos en servidores de un solo mapa (#287)
+- sin crash al cambiar de mapa cuando el módulo del juego queda cargado, como en Alpine/musl (#918)
+- `sv_pure 1` ya no rechaza a clientes que leyeron un pk3 extra en el menú (#659)
+- `rehashbans` ya no conserva bans borrados (#926)
+- scripts: los comandos de `registercmd` se ejecutan (#672), `amount`/`dmamount` de los ítems se
+  pueden leer (#920), `waitForState` espera (#702)
+- cargan los sonidos cuyo alias omite `.wav` (#589), una doble liberación del cursor, y archivos de
+  release ejecutables en Linux y macOS (#923)
+
+Los números son [issues del proyecto original](https://github.com/openmoh/openmohaa/issues). Las
+opciones del servidor que cambian cómo se juega una partida (40 Hz, compensación de lag, sonidos y
+marcadores de impacto) vienen apagadas, así que un servidor se juega como el original hasta que su
+administrador las activa. La lista completa, con los riesgos de cada
+cambio, está en [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) y
+[docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
+
+## Estado (noviembre de 2026)
+
+El trabajo sigue un [plan por fases](docs/dev/roadmap/ideas.md#prioritized-plan):
+
+| Fase | Estado |
+|---|---|
+| 0. Bases (versiones, tests, reportes de crash) | terminada |
+| 1. Calidad (sanitizers, fuzzing, profiling, sincronización con el original) | terminada |
+| 2. Plataforma de scripts (eventos de gametype, HTTP/JSON, herramientas) | terminada |
+| 3. Competitivo y online | casi terminada: faltan bots que jueguen objetivos (#602) y validar impactos imposibles |
+| 4. Experiencia del jugador | casi terminada: faltan demos de partidas, un Flatpak y cargar partidas guardadas del juego original (#601) |
+| 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | sin empezar |
+
+En paralelo se siguen corrigiendo bugs del proyecto original, elegidos según lo que se pueda
+reproducir y verificar (el próximo: la misma corrección para el módulo del cliente en musl que
+recibió el servidor en #918). Probado en Linux con los datos originales de Allied Assault; Windows
+y macOS se compilan en CI pero se prueban menos, y Spearhead y Breakthrough no se prueban aquí.
 
 > [!NOTE]
 > **Todavía en desarrollo.** Espera bugs y piezas faltantes. Los cambios de comportamiento respecto

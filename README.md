@@ -33,60 +33,91 @@ is doing for Call of Duty 2 with its 40 Hz server.
 </table>
 <p align="center"><sub>Screenshots from OpenMoHAA; the engine and game code are the same.</sub></p>
 
-## What works today
+## What OpenMOHAA Plus offers
 
-- **Everything OpenMoHAA does:** the whole single-player campaign of the three games, all official
-  multiplayer modes (Free-For-All, Team Deathmatch, Round-based, Objective, Tug-of-War,
-  Liberation), mods such as Freeze-Tag, built-in bots, compatibility with the original assets,
-  scripts and servers ([differences from the original](docs/markdown/01-intro/04-differences.md)).
-- **Fixes for bugs reported upstream**, each one reproduced before and after on the real game:
-  - `s_dialogscale` above 1 now raises dialog volume (#885)
-  - `com_maxfps` caps at the requested rate: 144 gives 144 fps, not 166 (#530)
-  - the HUD stopwatch survives loading a save (#916)
-  - map scripts no longer burst all their waits after a same-map restart, which dropped every
-    player on single-map servers (#287)
-  - no crash on map change when the game module stays loaded, as on Alpine/musl (#918)
-  - `sv_pure 1` no longer rejects clients that read an extra pk3 in the menu (#659)
-  - `rehashbans` no longer keeps removed bans (#926)
-  - script fixes: `registercmd` commands run (#672), item `amount`/`dmamount` are readable (#920),
-    `waitForState` waits (#702)
-  - sounds whose alias omits `.wav` load (#589), a cursor double free, and executable release
-    archives on Linux and macOS (#923)
-- **New in Plus:**
-  - 40 Hz servers (`sv_fps 40`) and `sv_perf` frame timings
-  - script events to change damage and refuse team changes, round events
-    ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md)), HTTP and JSON functions
-    compatible with NightFall ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)),
-    server scripts without overwriting game files (`sv_scripts`), and a
-    [stats mod](misc/mods/plus-stats/README.md) built on them
-  - [in-game admin accounts](docs/markdown/03-configuration/04-plus-admin.md) with roles and
-    per-command permissions, no RCON password needed (`ad_login`)
-  - [HUD scale, crosshair size and 4:3 menus](docs/markdown/03-configuration/05-plus-hud.md) on wide screens (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
-  - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
-    and no freeze when the master servers' DNS hangs (#376)
-  - [fonts with accented letters](docs/markdown/03-configuration/09-plus-fonts.md), sharper at high resolutions
-  - [community translations](docs/markdown/03-configuration/07-plus-translations.md) of the game's texts (`cl_language`)
-  - a [competition match mod](misc/mods/plus-match/README.md) (halftime side switch, timeouts)
-  - [match pause, hit sounds and hit markers](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server
-  - [bot skill levels and weapon choice](docs/markdown/03-configuration/10-plus-bots.md)
-  - [lag compensation](docs/markdown/03-configuration/11-plus-antilag.md)
-  - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
-    HRTF audio for headphones (`s_hrtf 1`)
-  - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),
-    [misc/vscode-mohaa](misc/vscode-mohaa)), freeze and crash reports, a headless test suite
+Everything [OpenMoHAA](https://github.com/openmoh/openmohaa) does: the whole single-player campaign
+of the three games, all official multiplayer modes (Free-For-All, Team Deathmatch, Round-based,
+Objective, Tug-of-War, Liberation), mods such as Freeze-Tag, built-in bots, and compatibility with
+the original assets, scripts and servers
+([differences from the original](docs/markdown/01-intro/04-differences.md)). On top of that:
 
-  Numbers are [upstream issues](https://github.com/openmoh/openmohaa/issues). The full list, with
-  the risks each one brings, is in [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) and
-  [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
+### For players
 
-## What comes next
+- [HUD scale, crosshair size and 4:3 menus](docs/markdown/03-configuration/05-plus-hud.md) on wide
+  screens (`ui_hudscale`, `cg_crosshair_size`, `ui_menuaspect`)
+- [fonts with accented letters](docs/markdown/03-configuration/09-plus-fonts.md), sharper at high
+  resolutions, and [community translations](docs/markdown/03-configuration/07-plus-translations.md)
+  of the game's texts (`cl_language`)
+- a [server browser](docs/markdown/03-configuration/06-plus-server-browser.md) with favorites,
+  history, search and working game type filters, that no longer freezes when the master servers'
+  DNS hangs (#376)
+- automatic mod downloads over HTTP (`sv_dlURL`), and the reason shown when a server drops you
+- the game folder found on its own for GOG and the original `EA GAMES\MOHAA` install (also inside
+  Wine), an AppImage for Linux and the Steam Deck
+- HRTF audio for headphones (`s_hrtf 1`)
 
-New features beyond the original game, in the spirit of OpenCoD2-Plus. Planned, not done yet:
+### For servers and competitive play
 
-- **Competition mode** (zPAM-like) on more gametype events: team scores, halftime side swaps.
-- **Better bots** and lag compensation.
-- **More upstream bugs**, picked by what can be reproduced and verified.
-- **Same fix for the client module on musl** that the server got in #918.
+- 40 Hz servers (`sv_fps 40`) with the original 20 Hz fire rates, and `sv_perf` frame timings
+- [lag compensation](docs/markdown/03-configuration/11-plus-antilag.md) for bullets (`g_antilag`)
+- [match pause, hit sounds and hit markers](docs/markdown/03-configuration/08-plus-match-control.md),
+  and a [competition match mod](misc/mods/plus-match/README.md) (halftime side switch, timeouts)
+- [in-game admin accounts](docs/markdown/03-configuration/04-plus-admin.md) with roles and
+  per-command permissions, no RCON password needed (`ad_login`)
+- [bot skill levels, weapon choice and grenades](docs/markdown/03-configuration/10-plus-bots.md)
+- freeze and crash reports
+
+### For modders and scripters
+
+- script events to change damage and refuse team changes, round events
+  ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md))
+- HTTP and JSON functions compatible with NightFall
+  ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)), and a
+  [stats mod](misc/mods/plus-stats/README.md) built on them
+- server scripts without overwriting game files (`sv_scripts`)
+- a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),
+  [misc/vscode-mohaa](misc/vscode-mohaa))
+
+### Fixes for bugs reported upstream
+
+Each one reproduced before and after on the real game:
+
+- `s_dialogscale` above 1 now raises dialog volume (#885)
+- `com_maxfps` caps at the requested rate: 144 gives 144 fps, not 166 (#530)
+- the HUD stopwatch survives loading a save (#916)
+- map scripts no longer burst all their waits after a same-map restart, which dropped every player
+  on single-map servers (#287)
+- no crash on map change when the game module stays loaded, as on Alpine/musl (#918)
+- `sv_pure 1` no longer rejects clients that read an extra pk3 in the menu (#659)
+- `rehashbans` no longer keeps removed bans (#926)
+- script fixes: `registercmd` commands run (#672), item `amount`/`dmamount` are readable (#920),
+  `waitForState` waits (#702)
+- sounds whose alias omits `.wav` load (#589), a cursor double free, and executable release
+  archives on Linux and macOS (#923)
+
+Numbers are [upstream issues](https://github.com/openmoh/openmohaa/issues). The server options that
+change how a match plays (40 Hz, lag compensation, hit sounds and markers) are off by default, so a
+server plays like the original until its admin turns them on. The full list, with the risks each change brings, is in
+[docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) and
+[docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
+
+## Status (November 2026)
+
+The work follows a [plan in phases](docs/dev/roadmap/ideas.md#prioritized-plan):
+
+| Phase | State |
+|---|---|
+| 0. Foundations (versions, tests, crash reports) | done |
+| 1. Quality (sanitizers, fuzzing, profiling, upstream sync) | done |
+| 2. Script platform (gametype events, HTTP/JSON, toolkit) | done |
+| 3. Competitive and online | nearly done: bots that play objectives (#602) and validation of impossible hits are left |
+| 4. Player experience | nearly done: match demos, a Flatpak and loading saves from the original game (#601) are left |
+| 5. Big bets (campaign co-op, WebAssembly, Vulkan, community portal) | not started |
+
+Upstream bugs keep being fixed alongside, picked by what can be reproduced and verified (next: the
+same musl fix for the client module that the server got in #918). Tested on Linux with the original
+Allied Assault data; Windows and macOS are built by CI but less tested, and Spearhead and
+Breakthrough are not tested here.
 
 > [!NOTE]
 > **Still in development.** Expect bugs and missing pieces. Behaviour changes against the original
