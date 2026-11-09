@@ -22,8 +22,11 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.
 - No `clang-format` run on fork commits so far.
-- The fork's `dev` pre-release (`.github/workflows/branches-build.yml`) publishes only `-pdb` archives
-  for Windows, and the "Generate Documentation" workflow fails on the fork.
+- The "Generate Documentation" workflow (`.github/workflows/doxygen-publish.yml`) fails on the fork
+  because GitHub Pages is not enabled for the repository (deploy returns 404). Fix: enable Pages
+  with source "GitHub Actions" in the repository settings (maintainer decision; it publishes the
+  user documentation site). The `dev` pre-release's Windows `-pdb` zips are complete packages
+  (executables plus debug symbols), so they are playable.
 - CTest registers no project test: `cmake/tests/lz77.cmake` (via `cmake/tests/all.cmake`) is not
   included by the build, so `test_lz77` is never built and CI's `ctest` runs nothing of ours.
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
