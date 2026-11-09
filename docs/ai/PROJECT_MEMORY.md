@@ -3,6 +3,10 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — phase 0 started
+- `feat/fork-identity`: version `0.83.0-plus.1`, update checker reads the fork's releases and parses `-plus.N` tags; an unparsable tag no longer stores uninitialized values.
+- Corrected an earlier note: the `dev` pre-release's Windows `-pdb` zips include the executables; the docs workflow fails only because GitHub Pages is not enabled on the fork.
+
 ## 2026-11-09 — idea backlog prioritized
 - `docs/dev/roadmap/ideas.md` now holds 36 ideas plus a plan: 11 clusters (overlaps and dependencies) and 6 phases, foundations first, then the script platform the community favors.
 - Found while brainstorming: the update checker queries upstream's releases (`code/sys/sys_update_checker.cpp`), so fork players would be sent to upstream; first task of phase 0.
