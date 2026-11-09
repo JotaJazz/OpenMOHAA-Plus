@@ -17,7 +17,10 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 
 - `Client Initialization Complete` prints a negative time (`start - end` in `code/client/cl_main.cpp`).
 - The client can hang on shutdown after a SIGTERM or after being dropped by a server.
-- After an "Unpure Client" drop the client shows "Server disconnected for unknown reason".
+- The 1.11 `errormessage` menu shows `com_errorMessage` on one centered line, so long reasons (e.g.
+  the "Unpure Client ..." text) are clipped on screen; the console has the full text.
+- "Unknown client game command: disconnect" is still printed by cgame for mid-connection drops
+  (harmless).
 - `Item::SetDMMaxAmount` sets the amount instead of the maximum (may be original behaviour).
 - `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.

@@ -137,6 +137,26 @@ class FrameRate(GameTestCase):
 
 
 @require_game
+class Disconnect(GameTestCase):
+    def test_client_shows_the_disconnect_reason(self):
+        s = self.server("+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"entered the battle", timeout=120)
+        s.send("kicknum 0")
+        # kicks arrive as a "droperror" packet; mid-connection drops (unpure client) as a reliable
+        # "disconnect" command: both must leave the reason in com_errorMessage
+        c.wait_for(r"Server disconnected: \S|Server dropped connection\. Reason: \S", timeout=30)
+        c.send("com_errorMessage")
+        c.wait_for(r'"com_errorMessage" is:"[^"]+"', timeout=10)
+        c.quit()
+        self.assertEqual(s.quit(), 0)
+
+
+@require_game
 class PureServer(GameTestCase):
     MENU_FILES = ("ui/connecting.urc", "ui/errormessage.urc", "textures/mohmenu/internet.tga")
 
