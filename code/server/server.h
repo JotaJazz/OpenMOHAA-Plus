@@ -533,6 +533,7 @@ unsigned int SV_Client_GetMaxPendingCommands(client_t *cl);
 // sv_ccmds.c
 //
 void SV_Heartbeat_f( void );
+void SV_Perf_f( void ); // Added in OpenMOHAA Plus
 
 //
 // sv_snapshot.c

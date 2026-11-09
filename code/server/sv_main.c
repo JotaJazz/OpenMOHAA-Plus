@@ -1031,6 +1031,80 @@ int SV_FrameMsec(void)
 
 /*
 ==================
+Server frame profiling (Added in OpenMOHAA Plus)
+
+Microsecond timings of every game frame (ge->RunFrame) and of sending snapshots, reported by
+the sv_perf command, to measure headroom before raising sv_fps.
+==================
+*/
+#define SV_PERF_BUCKETS 7
+static const int svPerfBucketLimits[SV_PERF_BUCKETS - 1] = { 250, 500, 1000, 2000, 5000, 10000 };
+
+typedef struct {
+	int			count;
+	long long	total;
+	long long	max;
+	int			buckets[SV_PERF_BUCKETS];
+} svPerfStat_t;
+
+static svPerfStat_t svPerfGame, svPerfSend;
+static long long	svPerfSince;
+
+static void SV_PerfAdd( svPerfStat_t *stat, long long usec ) {
+	int i;
+
+	stat->count++;
+	stat->total += usec;
+	if ( usec > stat->max ) {
+		stat->max = usec;
+	}
+	for ( i = 0; i < SV_PERF_BUCKETS - 1 && usec >= svPerfBucketLimits[i]; i++ ) {
+	}
+	stat->buckets[i]++;
+}
+
+static void SV_PerfPrint( const char *name, const svPerfStat_t *stat ) {
+	char	line[256];
+	int		i;
+
+	if ( !stat->count ) {
+		Com_Printf( "%-6s no samples\n", name );
+		return;
+	}
+	Com_sprintf( line, sizeof( line ), "%-6s n=%d avg=%.3fms max=%.3fms |", name, stat->count,
+		stat->total / 1000.0 / stat->count, stat->max / 1000.0 );
+	for ( i = 0; i < SV_PERF_BUCKETS; i++ ) {
+		Q_strcat( line, sizeof( line ), va( " %s%gms:%d",
+			i < SV_PERF_BUCKETS - 1 ? "<" : ">=",
+			( i < SV_PERF_BUCKETS - 1 ? svPerfBucketLimits[i] : svPerfBucketLimits[SV_PERF_BUCKETS - 2] ) / 1000.0,
+			stat->buckets[i] ) );
+	}
+	Com_Printf( "%s\n", line );
+}
+
+/*
+==================
+SV_Perf_f
+
+sv_perf [reset]: print server frame timings since the last reset
+==================
+*/
+void SV_Perf_f( void ) {
+	if ( Cmd_Argc() > 1 && !Q_stricmp( Cmd_Argv( 1 ), "reset" ) ) {
+		Com_Memset( &svPerfGame, 0, sizeof( svPerfGame ) );
+		Com_Memset( &svPerfSend, 0, sizeof( svPerfSend ) );
+		svPerfSince = Sys_Microseconds();
+		Com_Printf( "sv_perf: reset\n" );
+		return;
+	}
+	Com_Printf( "sv_perf: sv_fps %d, %.1f s sampled, budget %.3fms per game frame\n", sv_fps->integer,
+		svPerfSince ? ( Sys_Microseconds() - svPerfSince ) / 1000000.0 : 0.0, 1000.0 / sv_fps->integer );
+	SV_PerfPrint( "game", &svPerfGame );
+	SV_PerfPrint( "send", &svPerfSend );
+}
+
+/*
+==================
 SV_Frame
 
 Player movement occurs as a result of packet events, which
@@ -1131,8 +1205,12 @@ void SV_Frame( int msec ) {
 		{
 			const char *err;
 
+			long long perfStart = Sys_Microseconds();
+
 			// let everything in the world think and move
 			ge->RunFrame( svs.time, frameMsec );
+
+			SV_PerfAdd( &svPerfGame, Sys_Microseconds() - perfStart );
 
 			err = ge->errorMessage;
 			if( err )
@@ -1151,7 +1229,11 @@ void SV_Frame( int msec ) {
 	SV_CheckTimeouts();
 
 	// send messages back to the clients
-	SV_SendClientMessages();
+	{
+		long long perfStart = Sys_Microseconds();
+		SV_SendClientMessages();
+		SV_PerfAdd( &svPerfSend, Sys_Microseconds() - perfStart );
+	}
 
 	// send a heartbeat to the master if needed
 	SV_MasterHeartbeat();

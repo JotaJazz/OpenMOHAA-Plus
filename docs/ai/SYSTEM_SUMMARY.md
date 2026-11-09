@@ -32,6 +32,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Script commands | `registercmd` dispatched; item `amount`/`dmamount`... readable; `waitForState` waits | #672, #920, #702 |
 | SDL input | Cursor pointers cleared, cursor image freed immediately | (found via #534) |
 | CI | Executable bits restored before release zips | #923 |
+| Profiling | `sv_perf` server frame timings, `Sys_Microseconds` | (phase 1) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests
