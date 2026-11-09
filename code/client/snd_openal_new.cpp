@@ -1414,7 +1414,8 @@ static void S_OPENAL_Start2DSound(
                 pChannel->iTime = 0;
             }
 
-            if (s_entity[iEntNum].time < pChannel->iTime) {
+            // Fixed in OpenMOHAA Plus: iEntNum may carry S_FLAG_DO_CALLBACK (out of bounds read)
+            if (s_entity[iRealEntNum].time < pChannel->iTime) {
                 // Fixed in OPM
                 //  Not sure if it's the real solution, but script_origin entities are usually
                 //  never sent to client so the sound will immediately get stopped
