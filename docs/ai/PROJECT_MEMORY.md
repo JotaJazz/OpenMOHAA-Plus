@@ -3,6 +3,9 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — HUD round timer already existed
+- `hud_timelimit` shows "Time Left" from `CS_MATCHEND` (round time in round-based modes); it was invisible in tests only because they run without a time limit. Screenshots show it standing still during a match pause.
+
 ## 2026-11-09 — hit markers
 - Server command `hitmarker` sent only to clients whose userinfo has `cg_hitmarker 1` (a USERINFO cvar of the Plus cgame), so original clients never see an unknown command; drawn as small boxes (no rotated 2D pictures in the cgame API).
 - Tested on a plain background (`r_clear 1`, no world or entities) with the player hitting a bot every 0.1 s, so a marker is always visible.

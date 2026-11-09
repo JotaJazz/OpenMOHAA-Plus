@@ -45,7 +45,7 @@ Every branch named in a "Status" line below was merged into `main` on 2026-11-09
 | 0 | all | - |
 | 1 | all (flood protection already existed) | - |
 | 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
-| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds; ready-up, player info, anti-wallhack and votes already existed | hit markers and round timer on the HUD, better bots, competitive netcode |
+| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds, hit markers; ready-up, player info, anti-wallhack, votes and the HUD round timer already existed | better bots, competitive netcode |
 | 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
 | 5 | - | all |
 
@@ -451,7 +451,8 @@ checked with a working and a broken synthetic mod. Real community mods still hav
 - **Status:** hit sounds (`g_hitsounds`, `g_hitsound`) on branch `feat/pause-hitsounds`, played with
   the client's `play` command so original clients hear them. Hit markers (`g_hitmarkers`, client opt-out
   `cg_hitmarker`, sent only to clients that advertise it in their userinfo) on branch
-  `feat/hitmarkers`. Open: round timer on the HUD.
+  `feat/hitmarkers`. The round timer was already on the HUD (`hud_timelimit`, "Time Left" from
+  `CS_MATCHEND`, round time in round-based modes); it stops during a match pause.
 
 ## Master server and community portal (long term)
 
