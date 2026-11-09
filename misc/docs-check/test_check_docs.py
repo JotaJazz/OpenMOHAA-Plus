@@ -1,6 +1,8 @@
 """Unit tests for check_docs.py. Run: python3 -m unittest discover -s misc/docs-check"""
 
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import textwrap
@@ -43,7 +45,7 @@ class LinkTests(RepoTestCase):
         self.assertEqual(self.kinds(), ["broken-link"])
 
     def test_external_and_anchor_links_are_ignored(self):
-        self.write("AGENTS.md", "[a](https://example.com) [b](#section) [c](mailto:x@example.com)\n")
+        self.write("AGENTS.md", "[a](https://example.com) [b](#section) [c](mailto:noreply@example.com)\n")
         self.assertEqual(self.problems(), [])
 
 
@@ -61,8 +63,19 @@ class PathTests(RepoTestCase):
         self.assertEqual(self.problems(), [])
 
     def test_paths_inside_code_fences_are_ignored(self):
-        self.write("AGENTS.md", "```\n`code/not/there.c`\n```\n")
+        self.write("AGENTS.md", "```\n`code/not/there.c`\n```\n~~~\n`code/not/there.c`\n~~~\n")
         self.assertEqual(self.problems(), [])
+
+    def test_gitignored_path_is_reported_in_a_git_repo(self):
+        if not shutil.which("git"):
+            self.skipTest("git not available")
+        subprocess.run(["git", "init", "-q", self.root], check=True)
+        self.write(".gitignore", "/code/generated\n")
+        self.write("code/generated/out.cpp", "")
+        self.write("AGENTS.md", "Built into `code/generated` and `code/server/sv_init.c`.\n")
+        problems = self.problems()
+        self.assertEqual([p.kind for p in problems], ["missing-path"])
+        self.assertIn("code/generated", problems[0].message)
 
 
 class PersonalDataTests(RepoTestCase):
@@ -92,6 +105,21 @@ class PersonalDataTests(RepoTestCase):
     def test_secret_tokens_are_reported(self):
         self.write("AGENTS.md", "token ghp_" + "a" * 36 + "\n")
         self.assertEqual(self.kinds(), ["personal-data"])
+
+    def test_ip_at_sentence_end_is_reported(self):
+        self.write("AGENTS.md", "Server at 10.0.0.5.\n")
+        self.assertEqual(self.kinds(), ["personal-data"])
+
+    def test_more_personal_path_forms_are_reported(self):
+        for text in ("/Users/alice/x", "/media/alice", "c:\\games", "C:/Users/alice", "\\\\wsl$\\Distro",
+                     "github_pat_" + "a" * 30, "gho_" + "b" * 36, "alice@example.org"):
+            with self.subTest(text=text):
+                self.write("AGENTS.md", f"see {text} here\n")
+                self.assertEqual(self.kinds(), ["personal-data"])
+
+    def test_noreply_and_placeholder_emails_pass(self):
+        self.write("AGENTS.md", "noreply@anthropic.com and user@users.noreply.github.com <EMAIL>\n")
+        self.assertEqual(self.problems(), [])
 
 
 class MemoryTests(RepoTestCase):

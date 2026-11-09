@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Check the OpenMOHAA Plus technical docs (AGENTS.md, LAYOUT.md, docs/dev, docs/ai).
 
-Flags broken relative links, repository paths in backticks that do not exist,
-personal data (home/mount/drive paths, non-documentation IPs, tokens) and
+Flags broken relative links, repository paths in backticks that git would not commit
+(tracked or untracked-but-not-ignored; plain filesystem check outside a git repo),
+personal data (home/mount/drive paths, non-documentation IPs, emails, tokens) and
 PROJECT_MEMORY stages that are malformed or have more than 3 bullets.
 Upstream user docs (docs/markdown) and local plans are not checked.
 
@@ -13,6 +14,7 @@ import argparse
 import ipaddress
 import os
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 
@@ -29,19 +31,31 @@ PATH_ROOTS = ("code/", "docs/", "cmake/", "misc/", "container/", ".github/")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 BACKTICK_RE = re.compile(r"`([^`\n]+)`")
 STAGE_RE = re.compile(r"^## \d{4}-\d{2}-\d{2} — \S")
-IPV4_RE = re.compile(r"(?<![\w.])(\d{1,3}(?:\.\d{1,3}){3})(?![\w.])")
+IPV4_RE = re.compile(r"(?<![\w.])(\d{1,3}(?:\.\d{1,3}){3})(?!\w|\.\d)")
 ALLOWED_NETS = [ipaddress.ip_network(n) for n in
                 ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24",
                  "127.0.0.0/8", "0.0.0.0/32")]
 PERSONAL_RES = [
     (re.compile(r"/home/[A-Za-z0-9_.-]+"), "home directory path"),
+    (re.compile(r"/Users/[A-Za-z0-9_.-]+"), "home directory path"),
+    (re.compile(r"/media/[A-Za-z0-9_.-]+"), "mounted media path"),
     (re.compile(r"/mnt/[a-z](?:/|\b)"), "mounted drive path"),
-    (re.compile(r"(?<![A-Za-z])[A-Z]:\\\\?[A-Za-z]"), "Windows drive path"),
-    (re.compile(r"\bghp_[A-Za-z0-9]{36}\b"), "GitHub token"),
+    (re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]+[A-Za-z]"), "Windows drive path"),
+    (re.compile(r"\\\\wsl", re.IGNORECASE), "WSL share path"),
+    (re.compile(r"\bgh[opsu]_[A-Za-z0-9]{36}\b"), "GitHub token"),
+    (re.compile(r"\bgithub_pat_[A-Za-z0-9_]{22,}"), "GitHub token"),
     (re.compile(r"\b(?:sk|pk)-[A-Za-z0-9]{20,}\b"), "API key"),
     (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "AWS key"),
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "private key"),
 ]
+
+
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+
+
+def allowed_email(addr):
+    local, domain = addr.lower().split("@", 1)
+    return "noreply" in local or "noreply" in domain
 
 
 @dataclass
@@ -76,15 +90,34 @@ def check_links(root, rel, lineno, line):
             yield Problem(rel, lineno, "broken-link", target)
 
 
-def check_paths(root, rel, lineno, line):
+def repo_paths(root):
+    """Paths git would commit (tracked + untracked, not ignored) and their parent dirs.
+
+    Returns None outside a git work tree, so callers fall back to the filesystem.
+    """
+    try:
+        out = subprocess.run(["git", "-C", root, "ls-files", "-co", "--exclude-standard"],
+                             capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    paths = set()
+    for f in out.splitlines():
+        parts = f.split("/")
+        for i in range(1, len(parts) + 1):
+            paths.add("/".join(parts[:i]))
+    return paths
+
+
+def check_paths(root, rel, lineno, line, known=None):
     for token in BACKTICK_RE.findall(line):
         token = token.strip()
         if not token.startswith(PATH_ROOTS) or " " in token:
             continue
         if any(c in token for c in "<>*{}$"):
             continue
-        path = re.sub(r":\d+(?:-\d+)?$", "", token)
-        if not os.path.exists(os.path.join(root, path)):
+        path = re.sub(r":\d+(?:-\d+)?$", "", token).rstrip("/")
+        exists = path in known if known is not None else os.path.exists(os.path.join(root, path))
+        if not exists:
             yield Problem(rel, lineno, "missing-path", token)
 
 
@@ -92,6 +125,9 @@ def check_personal(rel, lineno, line):
     for regex, what in PERSONAL_RES:
         for m in regex.finditer(line):
             yield Problem(rel, lineno, "personal-data", f"{what}: {m.group(0)}")
+    for m in EMAIL_RE.finditer(line):
+        if not allowed_email(m.group(0)):
+            yield Problem(rel, lineno, "personal-data", f"email address: {m.group(0)}")
     for m in IPV4_RE.finditer(line):
         try:
             ip = ipaddress.ip_address(m.group(1))
@@ -116,27 +152,27 @@ def check_memory(rel, lines):
         yield Problem(rel, stage_line, "memory-stage", f"{bullets} bullets (max {MAX_STAGE_BULLETS})")
 
 
-def check_file(root, rel):
+def check_file(root, rel, known=None):
     with open(os.path.join(root, rel), encoding="utf-8") as f:
         lines = f.read().splitlines()
     problems, in_fence = [], False
     for lineno, line in enumerate(lines, 1):
         problems.extend(check_personal(rel, lineno, line))
-        if line.lstrip().startswith("```"):
+        if line.lstrip().startswith(("```", "~~~")):
             in_fence = not in_fence
             continue
         if not in_fence:
             problems.extend(check_links(root, rel, lineno, line))
-            problems.extend(check_paths(root, rel, lineno, line))
+            problems.extend(check_paths(root, rel, lineno, line, known))
     if rel == MEMORY_FILE:
         problems.extend(check_memory(rel, lines))
     return problems
 
 
 def check_repo(root):
-    problems = []
+    problems, known = [], repo_paths(root)
     for rel in doc_files(root):
-        problems.extend(check_file(root, rel))
+        problems.extend(check_file(root, rel, known))
     return problems
 
 

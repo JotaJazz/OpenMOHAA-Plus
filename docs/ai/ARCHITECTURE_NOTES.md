@@ -6,7 +6,7 @@ Full rules: [boundaries.md](../dev/architecture/boundaries.md). Decisions: [ADR 
 - Modules (`fgame`, `cgame`, renderers) reach the engine only via `gi` / `cgi` / `ri`.
 - Bump the matching API version constant when an import/export table changes.
 - Keep savegame and network formats compatible with the original game.
-- Mark deviations from original behaviour with `// Fixed in OPM` / `// Added in OPM` + reason.
+- Mark deviations from original behaviour with the `... in OPM` markers from `CONTRIBUTING.md` + reason.
 - Assume a module may stay resident after unload: no engine bulk-free of its memory unless it is
   really gone; init code tolerates surviving globals.
 - Readable script properties need an `EV_GETTER` event; anything holding scripts/strings across
@@ -14,7 +14,8 @@ Full rules: [boundaries.md](../dev/architecture/boundaries.md). Decisions: [ADR 
 
 ## Must not
 - Include engine-private headers (`code/server`, `code/client`, `code/sys`) from a module.
-- Edit `code/parser/generated` or vendored `code/thirdparty` / `code/gamespy` sources by hand.
+- Hand-edit parser output (generated at build time from `code/parser/bison_source.txt` /
+  `code/parser/lex_source.txt`) or vendored `code/thirdparty` / `code/gamespy` sources.
 - Keep function pointers from the renderer across `vid_restart`.
 - Address map entities by number in scripts or tests when bots may be enabled.
 - Submit fork commits or assistant-written text upstream.

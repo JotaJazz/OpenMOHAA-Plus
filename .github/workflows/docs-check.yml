@@ -9,6 +9,8 @@ on:
       - 'docs/ai/**'
       - 'misc/docs-check/**'
       - '.github/workflows/docs-check.yml'
+      - 'code/**'
+      - 'cmake/**'
   pull_request:
     paths:
       - 'AGENTS.md'
@@ -17,7 +19,12 @@ on:
       - 'docs/ai/**'
       - 'misc/docs-check/**'
       - '.github/workflows/docs-check.yml'
+      - 'code/**'
+      - 'cmake/**'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   docs-check:

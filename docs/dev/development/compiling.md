@@ -7,15 +7,14 @@ short Linux path used for development.
 ## Linux (Debian/Ubuntu, also WSL)
 
 ```sh
-sudo apt-get install -y cmake ninja-build clang lld flex bison libsdl2-dev libopenal-dev libcurl4-openssl-dev
+# dependencies: see the apt line in docs/markdown/04-coding/01-compiling.md
 cmake -S . -B .cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=<PREFIX>
 cmake --build .cmake
 cmake --install .cmake          # binaries and modules go to <PREFIX>/lib/openmohaa
 ```
 
-- `.cmake/` is the conventional build dir; it is untracked (add it to your global gitignore or
-  ignore the `??` entry).
+- `.cmake/` is the conventional build dir; it is gitignored (it contains absolute local paths).
 - Useful options (root `CMakeLists.txt`): `BUILD_SERVER`, `BUILD_CLIENT`, `BUILD_RENDERER_GL2`,
   `USE_RENDERER_DLOPEN`, `USE_OPENAL_DLOPEN`, `USE_INTERNAL_LIBS`.
 - Scratch builds (agents, experiments) go to a separate directory: export with

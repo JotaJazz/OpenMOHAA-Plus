@@ -1,16 +1,20 @@
 # Development guide
 
-Commands: [building.md](../dev/development/building.md), [testing.md](../dev/development/testing.md).
+Commands: [compiling.md](../dev/development/compiling.md), [testing.md](../dev/development/testing.md).
 Git and commits: [fork-workflow.md](../dev/development/fork-workflow.md).
 
 ## Workflow
 1. Read the upstream issue and comments; check for an existing upstream PR.
 2. Find the root cause in code; grep every caller of the function you touch.
-3. Reproduce headless (never a visible window, never sound); keep the exact command.
+3. Reproduce headless ([testing.md](../dev/development/testing.md)); keep the exact command, or
+   state why it cannot be reproduced.
 4. Smallest complete fix, matching surrounding style; mark original-behaviour deviations.
 5. Re-run the same command; also run a nearby regression check.
-6. Commit with the verification evidence; update docs in the same commit (table below).
-7. Add a PROJECT_MEMORY stage; put leftovers in `docs/dev/roadmap/debt.md`.
+6. Commit with the verification evidence; docs that the change makes wrong are updated in the
+   same commit (table below).
+7. After merging a batch into `main`, update `SYSTEM_SUMMARY.md` and add one `PROJECT_MEMORY.md`
+   stage on `main` (not on fix branches, to avoid merge conflicts); put leftovers in
+   `docs/dev/roadmap/debt.md`.
 
 ## Quality bar
 - Builds with no new errors; touched behaviour verified before/after on real binaries.
@@ -24,7 +28,7 @@ Git and commits: [fork-workflow.md](../dev/development/fork-workflow.md).
 | New/removed build output, CMake option, directory under `code/` | `docs/dev/architecture/overview.md`, `SYSTEM_SUMMARY.md` |
 | New cross-directory include or module interface change | `docs/dev/architecture/boundaries.md`, maybe an ADR |
 | Architectural or policy decision | New ADR + index in `docs/dev/architecture/adr/README.md`, `ARCHITECTURE_NOTES.md` |
-| Fix merged into `main` | `SYSTEM_SUMMARY.md` subsystem table, `PROJECT_MEMORY.md` stage |
+| Batch of fixes merged into `main` | `SYSTEM_SUMMARY.md` subsystem table, `PROJECT_MEMORY.md` stage (on `main`) |
 | Fix leaves a risk/gap, or an issue is rejected | `docs/dev/roadmap/debt.md` |
 | New test technique or tool | `docs/dev/development/testing.md` |
 | Upstream merge | `SYSTEM_SUMMARY.md` (upstream base), conflicts noted in `PROJECT_MEMORY.md` |

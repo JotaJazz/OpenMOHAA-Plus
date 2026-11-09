@@ -11,7 +11,7 @@ duplicated here.
 | Game module, events, script VM, savegames | [architecture/game-and-script.md](architecture/game-and-script.md) |
 | Client audio and platform notes | [architecture/client-audio.md](architecture/client-audio.md) |
 | Decisions | [architecture/adr/README.md](architecture/adr/README.md) |
-| Building | [development/building.md](development/building.md) |
+| Building | [development/compiling.md](development/compiling.md) |
 | Testing (headless recipes) | [development/testing.md](development/testing.md) |
 | Fork, branches, commits | [development/fork-workflow.md](development/fork-workflow.md) |
 | Risks, gaps, rejected issues | [roadmap/debt.md](roadmap/debt.md) |

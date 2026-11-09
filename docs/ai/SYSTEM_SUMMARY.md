@@ -10,11 +10,12 @@ Last updated: 2026-11-09. Live snapshot; update when the facts below change.
 | Default branch | `main`; fix branches are merged with `--no-ff` and deleted |
 | Upstream base | `a2f34019` (docs: clarify contribution guidelines) |
 | Fork-only files | `AGENTS.md`, `docs/dev/`, `docs/ai/`, `misc/docs-check/`, `.github/workflows/docs-check.yml` |
+| Upstream files modified (merge conflict risk) | `LAYOUT.md` (pointer), `.gitignore`, `README.md`, the files touched by the fixes below |
 
 ## Build outputs
 
-`openmohaa`, `omohaaded`, `game.so`, `cgame.so`, `renderer_opengl1.so`, `launch_openmohaa_*`,
-`test_lz77`. Details: [overview.md](../dev/architecture/overview.md).
+`openmohaa`, `omohaaded`, `game.so`, `cgame.so`, `renderer_opengl1.so`, `launch_openmohaa_*`.
+Details: [overview.md](../dev/architecture/overview.md).
 
 ## Subsystem state (fork changes on top of upstream)
 
@@ -30,13 +31,14 @@ Last updated: 2026-11-09. Live snapshot; update when the facts below change.
 | Script VM | Director time synced in `G_SetTime` (no burst after same-map restart) | #287 |
 | Script commands | `registercmd` dispatched; item `amount`/`dmamount`... readable; `waitForState` waits | #672, #920, #702 |
 | SDL input | Cursor pointers cleared, cursor image freed immediately | (found via #534) |
-| CI | Executable bits restored before release zips; docs checker workflow | #923 |
+| CI | Executable bits restored before release zips | #923 |
+| Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests
 
 | Kind | Count / command |
 |---|---|
-| CTest | 1 (`test_lz77`) |
+| CTest | 0 project tests registered (`test_lz77` source exists, not wired in) |
 | Docs checker | `python3 -I misc/docs-check/check_docs.py`, unit tests in `misc/docs-check/test_check_docs.py` |
 | Manual headless recipes | [testing.md](../dev/development/testing.md) |
 

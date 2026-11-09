@@ -15,6 +15,5 @@ event tables, so a resident module can reuse them.
 
 ## Consequences
 - Module init code must tolerate surviving globals.
-- `cgame` still frees `TAG_CGAME` unconditionally (`CL_ShutdownCGame`); same risk on musl, open in
-  `docs/dev/roadmap/debt.md`.
+- Known follow-ups are tracked in `docs/dev/roadmap/debt.md`, not here.
 - Test by emulating musl: `LD_PRELOAD` a `dlclose()` that does nothing (see testing guide).

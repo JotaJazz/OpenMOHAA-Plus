@@ -8,7 +8,7 @@ Policy: [ADR 0001](../architecture/adr/0001-fork-keeps-ai-assisted-work.md),
 | Remote | Repository | Use |
 |---|---|---|
 | `origin` | `JotaJazz/OpenMOHAA-Plus` | push branches and `main` |
-| `upstream` | `openmoh/openmohaa` | read-only source of upstream changes and issues |
+| `upstream` | `openmoh/openmohaa` | read-only source of upstream changes and issues; push disabled with `git remote set-url --push upstream DISABLED` |
 
 ## Sync with upstream
 
@@ -24,10 +24,10 @@ git push origin main
 2. `git switch -c fix/<topic> main`.
 3. Reproduce headless, fix the root cause, reproduce again ([testing.md](testing.md)).
 4. Commit (format below), `git push -u origin fix/<topic>`.
-5. Add a stage to `docs/ai/PROJECT_MEMORY.md`; record rejected or open items in
-   `docs/dev/roadmap/debt.md`.
-6. Merge batches into `main` with `--no-ff`, smoke test, push, delete merged branches
+5. Merge batches into `main` with `--no-ff`, smoke test, push, delete merged branches
    (`git push origin --delete fix/<topic>`, `git branch -d fix/<topic>`).
+6. On `main`, update `docs/ai/SYSTEM_SUMMARY.md`, add one `docs/ai/PROJECT_MEMORY.md` stage for the
+   batch, and record rejected or open items in `docs/dev/roadmap/debt.md`.
 
 ## Commit message
 

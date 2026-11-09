@@ -9,9 +9,9 @@ deliberate deviations in code (`// Fixed in OPM`, `// Added in OPM`; several hun
 
 ## Decision
 Match the original game unless the original behaviour is clearly a bug with no content relying on
-it. Every deviation is marked `// Fixed in OPM` or `// Added in OPM` with a one-line reason, and
-its commit message states the behaviour change. Requests that are working-as-intended in the
-original (e.g. `map` vs `spmap`, entity numbers shifting with `sv_maxbots`) are documented, not
+it. Every deviation is marked with the `... in OPM` markers defined in `CONTRIBUTING.md` and a
+one-line reason, and its commit message states the behaviour change. Requests that are
+working-as-intended in the original (e.g. `map` vs `spmap`, entity numbers shifting with `sv_maxbots`) are documented, not
 changed.
 
 ## Consequences

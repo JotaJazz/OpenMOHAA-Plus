@@ -10,10 +10,11 @@ OpenMOHAA Plus: fork of OpenMoHAA (Medal of Honor: Allied Assault engine and gam
 ## Hard rules
 - Never submit work, PRs, issues or comments to `openmoh/openmohaa` (upstream forbids AI-generated
   contributions). Work stays in this fork. ([ADR 0001](docs/dev/architecture/adr/0001-fork-keeps-ai-assisted-work.md))
-- Never open a visible window or play sound when running the game; use the headless recipes in
-  [testing.md](docs/dev/development/testing.md).
-- Reproduce a bug before fixing it and verify after with the same command; state what was not checked.
-- Keep original-game behaviour unless clearly a bug; mark deviations `// Fixed in OPM`.
+- Never open a visible window or play sound when running the game ([testing.md](docs/dev/development/testing.md)).
+- Reproduce a bug before fixing it (or state why it cannot be) and verify after with the same
+  command; state what was not checked.
+- Keep original-game behaviour unless clearly a bug; mark deviations with the `... in OPM` markers
+  defined in `CONTRIBUTING.md`.
 - Do not edit upstream user docs (`docs/markdown`, `docs/README.md`), vendored code or generated
   parser sources.
 - Never commit game data (pk3), personal paths or credentials.

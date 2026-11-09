@@ -48,5 +48,9 @@ out
 ####################
 /code/parser/generated
 
-# Local agent instructions (OpenMOHAA Plus: shared rules live in AGENTS.md)
+# OpenMOHAA Plus local files: agent instructions (shared rules live in AGENTS.md),
+# the dev build dir (contains absolute local paths), local doc plans
 /CLAUDE.md
+/.cmake/
+docs/**/plans/
+*.local.md

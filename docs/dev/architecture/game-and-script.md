@@ -8,7 +8,7 @@ Notes that are not obvious from a single file. Paths are relative to the repo ro
 |---|---|---|
 | Load | `Sys_GetGameAPI` in `code/sys/new/sys_main_new.c` | dlopen `game.so`, call `GetGameAPI` |
 | Init | `G_InitGame` in `code/fgame/g_main.cpp` | `L_InitEvents()` builds event tables, `Director.Reset()` |
-| Same-map restart | `SV_MapRestart_f` → `SV_SpawnServer(..., differentmap=false)` | Module is **not** reloaded; globals survive |
+| Same-map restart or load | `SV_SpawnServer` (`code/server/sv_init.c`) with an unchanged map name and `restart` or `loadgame` set (local `differentmap` is false) | Module is **not** reloaded; globals survive |
 | Shutdown | `SV_ShutdownGameProgs` in `code/server/sv_game.c` | `ge->Shutdown()`, unload, then free `TAG_GAME` only if really unloaded |
 
 A module can stay resident after `dlclose()` (always on musl, sometimes on glibc). Code that runs
@@ -22,8 +22,9 @@ keeps the event tables: they are filled once from static constructors and cannot
 - Each type has its own lookup list; a property readable from scripts needs an explicit
   `EV_GETTER` registered under the same name. Pattern: `max_health` in `code/fgame/entity.cpp`.
 - `ResponseDef` tables at the end of each class bind events to member functions.
-- `Listener::Register(label, thread)` / `Unregister(label)` suspend and resume script threads;
-  label `STRING_NULL` (0) resumes on the next frame (used by `waitmove`, `waitForState`).
+- `Listener::Register(label, thread)` / `Unregister(label)` suspend and resume script threads.
+  Label `STRING_NULL` (0) is an anonymous wait: the thread resumes when the owner calls
+  `Unregister(STRING_NULL)` (`waitmove` when the move ends, `waitForState` when the state is entered).
 
 ## Script VM (`code/script`, `code/fgame/scriptmaster.cpp`)
 
