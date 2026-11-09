@@ -11,6 +11,10 @@ if(NOT CURL_FOUND)
     set(CURL_INCLUDE_DIRS ${INTERNAL_CURL_DIR})
 endif()
 
+# Fixed in OpenMOHAA Plus: HAS_LIBCURL enables loading libcurl at run time (code/sys/sys_curl.c).
+# It was defined by the per-directory CMake files that #781 replaced, so curl was never loaded.
+list(APPEND CURL_DEFINITIONS HAS_LIBCURL=1)
+
 list(APPEND CLIENT_DEFINITIONS ${CURL_DEFINITIONS})
 list(APPEND CLIENT_INCLUDE_DIRS ${CURL_INCLUDE_DIRS})
 
