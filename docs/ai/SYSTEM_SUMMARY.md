@@ -42,6 +42,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Build | `HAS_LIBCURL` defined again, so libcurl loads (update checker, libmoh, downloads) | (phase 2) |
 | Game API | `GAME_API_VERSION 1016` (`gi.HTTP_*`); savegames use `GAME_ARCHIVE_VERSION 15` | (phase 2) |
 | Script events | `player_damage`, `player_teamchange`, `match_start`, `round_start`, `round_end` | (phase 2) |
+| Script commands | `team_swap` (halftime side swap, `DM_Manager::SwapTeams`); `team_getscore` is a return event | (phase 2) |
 | Script functions | libmoh: `create_api_request`, `json_parse`, `json_stringify` (`code/fgame/libmoh.cpp`, `code/server/sv_http.cpp`) | (phase 2) |
 | Server commands | `compilescript` reports parse errors instead of aborting | (phase 2) |
 | Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time | (phase 3) |
@@ -62,5 +63,5 @@ Details: [overview.md](../dev/architecture/overview.md).
 ## Open work
 
 See [debt.md](../dev/roadmap/debt.md) and the feature backlog [ideas.md](../dev/roadmap/ideas.md)
-(prioritized plan and progress at its top). Next: gametype API level 2, server administration;
+(prioritized plan and progress at its top). Next: server administration (#905), competition reference mod;
 upstream bug fixing continues in parallel.

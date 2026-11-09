@@ -257,6 +257,108 @@ end
         self.assertIn("TROUND round_start 1", log)
         self.assertRegex(log, r"TROUND round_end axis 1 0")
 
+    def test_team_swap_in_team_deathmatch(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	while ($player.size < 4) {
+		wait 1
+	}
+	wait 3
+	team_setscore "axis" 5
+	local.before = waitthread teams
+	team_swap
+	wait 2
+	local.after = waitthread teams
+	local.alive = 0
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		if ($player[local.i].health > 0) {
+			local.alive++
+		}
+	}
+	local.ax = team_getscore "axis"
+	local.al = team_getscore "allies"
+	println ("TSWAP before=" + local.before + " after=" + local.after + " alive=" + local.alive + " score=" + local.ax + "/" + local.al)
+end
+
+teams:
+	local.s = ""
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		local.s = local.s + $player[local.i].dmteam + ","
+	}
+end local.s
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+map", "dm/mohdm1")
+        log = s.wait_for(r"TSWAP before", timeout=180)
+        self.assertEqual(s.quit(), 0)
+        m = re.search(r"TSWAP before=(\S*) after=(\S*) alive=(\d+) score=(\d+)/(\d+)", log)
+        flip = {"axis": "allies", "allies": "axis"}
+        self.assertEqual(m.group(2).split(",")[:-1], [flip[t] for t in m.group(1).split(",")[:-1]])
+        self.assertEqual(m.group(3), "4")
+        self.assertEqual(m.group(4, 5), ("0", "5"))
+
+    def test_team_swap_at_halftime(self):
+        self.home.write("maps/obj/obj_team2.scr", """main:
+	event_subscribe "round_end" on_round_end
+	event_subscribe "round_start" on_round_start
+	level waittill spawn
+	level waittill roundstart
+	wait 3
+	local.ax = team_getscore "axis"
+	local.al = team_getscore "allies"
+	if (local.ax + local.al == 0) {
+		teamwin axis    // the map restarts every round: only end round 1
+	}
+end
+
+teams:
+	local.s = ""
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		local.s = local.s + $player[local.i].dmteam + ","
+	}
+end local.s
+
+on_round_end local.winner local.axis local.allies:
+	local.before = waitthread teams
+	team_swap
+	local.after = waitthread teams
+	local.ax = team_getscore "axis"
+	local.al = team_getscore "allies"
+	println ("TSWAP before=" + local.before + " after=" + local.after + " score=" + local.ax + "/" + local.al)
+end
+
+on_round_start local.round:
+	if (local.round == 2) {
+		wait 3
+		local.alive = 0
+		for (local.i = 1; local.i <= $player.size; local.i++) {
+			if ($player[local.i].health > 0) {
+				local.alive++
+			}
+		}
+		local.t = waitthread teams
+		local.ax = team_getscore "axis"
+		local.al = team_getscore "allies"
+		println ("TSWAP round2 teams=" + local.t + " alive=" + local.alive + " score=" + local.ax + "/" + local.al)
+	}
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "4", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+map", "obj/obj_team2")
+        log = s.wait_for(r"TSWAP round2", timeout=240)
+        self.assertEqual(s.quit(), 0)
+        swap = re.search(r"TSWAP before=(\S*) after=(\S*) score=(\d+)/(\d+)", log)
+        self.assertIsNotNone(swap, log[-3000:])
+        before, after = swap.group(1).split(",")[:-1], swap.group(2).split(",")[:-1]
+        flip = {"axis": "allies", "allies": "axis"}
+        self.assertEqual(len(before), 4)
+        self.assertEqual(after, [flip[t] for t in before])
+        self.assertEqual(swap.group(3, 4), ("0", "1"))     # axis won round 1; the win moved with the side
+        r2 = re.search(r"TSWAP round2 teams=(\S*) alive=(\d+) score=(\d+)/(\d+)", log)
+        self.assertEqual(r2.group(1), swap.group(2))      # the new round keeps the swapped sides
+        self.assertEqual(r2.group(2), "4")
+        self.assertEqual(r2.group(3, 4), ("0", "1"))
+
 
 @require_game
 class ServerScripts(GameTestCase):

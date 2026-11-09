@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "playerstart.h"
 #include "scriptexception.h"
 
+#include <utility>
+
 cvar_t *g_tempaxisscore;
 cvar_t *g_tempaxiswinsinrow;
 cvar_t *g_tempalliesscore;
@@ -1555,6 +1557,47 @@ teamtype_t DM_Manager::GetAutoJoinTeam(void)
         return (random() >= 0.5f) ? TEAM_ALLIES : TEAM_AXIS;
     } else {
         return TEAM_AXIS;
+    }
+}
+
+//
+// Added in OpenMOHAA Plus
+//  Halftime side swap: every axis player becomes allies and vice versa, and the team scores follow
+//  the players. Living players respawn at their new side's spawn points.
+//
+void DM_Manager::SwapTeams(void)
+{
+    Container<Player *> allies = m_team_allies.m_players;
+    Container<Player *> axis   = m_team_axis.m_players;
+    int                 i;
+
+    m_team_allies.m_players = axis;
+    m_team_axis.m_players   = allies;
+
+    std::swap(m_team_allies.m_teamwins, m_team_axis.m_teamwins);
+    std::swap(m_team_allies.m_wins_in_a_row, m_team_axis.m_wins_in_a_row);
+    std::swap(m_team_allies.m_iKills, m_team_axis.m_iKills);
+    std::swap(m_team_allies.m_iDeaths, m_team_axis.m_iDeaths);
+
+    for (i = 1; i <= m_team_allies.m_players.NumObjects(); i++) {
+        SwapTeamPlayer(m_team_allies.m_players.ObjectAt(i), &m_team_allies);
+    }
+    for (i = 1; i <= m_team_axis.m_players.NumObjects(); i++) {
+        SwapTeamPlayer(m_team_axis.m_players.ObjectAt(i), &m_team_axis);
+    }
+
+    m_team_allies.UpdateTeamStatus();
+    m_team_axis.UpdateTeamStatus();
+}
+
+void DM_Manager::SwapTeamPlayer(Player *player, DM_Team *team)
+{
+    player->SetDM_Team(team);
+    player->RemoveFromVehiclesAndTurrets();
+    player->RemoveOwnedProjectiles();
+
+    if (!player->IsDead() && !player->IsSpectator()) {
+        player->PostEvent(EV_Player_Respawn, 0);
     }
 }
 

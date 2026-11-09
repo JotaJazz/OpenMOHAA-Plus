@@ -44,12 +44,12 @@ Every branch named in a "Status" line below was merged into `main` on 2026-11-09
 |---|---|---|
 | 0 | all | - |
 | 1 | all (flood protection already existed) | - |
-| 2 | gametype API level 1, libmoh MVP, script toolkit | gametype API level 2 (team scores, halftime swap) |
+| 2 | gametype API levels 1 and 2 (`team_swap`), libmoh MVP, script toolkit | match pause |
 | 3 | `sv_fps 40`, `sv_scripts`, plus-stats reference mod; ready-up, player info, anti-wallhack and votes already existed | competition mode, server QoL (hitsounds), server administration (#905), better bots, competitive netcode |
 | 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
 | 5 | - | all |
 
-Next: gametype API level 2 (unblocks competition mode), then server administration.
+Next: server administration (#905), then the competition reference mod.
 
 ## Automated test suite
 
@@ -111,7 +111,9 @@ Upstream #905 asks for an ACL-based admin system with named permissions.
 
 Status: level 1 started on branch `feat/gametype-events`: `player_damage` and `player_teamchange`
 (deciding), `match_start`, `round_start`, `round_end`
-(`docs/markdown/04-coding/02-scripting/03-plus-events.md`). Still open: spawn point event, "any
+(`docs/markdown/04-coding/02-scripting/03-plus-events.md`). Level 2: `team_swap` (halftime) on branch
+`feat/team-swap`, `team_getscore` made readable; the rest of level 2 already existed (`teamwin`,
+`team_setscore`, `join_team`, `respawn`, `addkills`); pause is still missing. Still open: spawn point event, "any
 veto wins" semantics for several subscribers, `Spectator` path for team changes, level 2.
 
 The MOHAA community works mostly in scripts. CoD2 lets scripts own the whole gametype through

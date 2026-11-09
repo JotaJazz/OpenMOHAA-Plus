@@ -2068,7 +2068,7 @@ Event EV_ScriptThread_TeamGetScore
     "s",
     "team",
     "Get a team's current score.",
-    EV_NORMAL
+    EV_RETURN // Fixed in OpenMOHAA Plus: was EV_NORMAL, so scripts could not read the value
 );
 Event EV_ScriptThread_TeamSetScore
 (
@@ -2077,6 +2077,16 @@ Event EV_ScriptThread_TeamSetScore
     "siI",
     "team score bAdd",
     "Change/Add score to a team.",
+    EV_NORMAL
+);
+Event EV_ScriptThread_TeamSwap // Added in OpenMOHAA Plus
+(
+    "team_swap",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Swaps the axis and allies teams (halftime): every player changes side and the team scores follow\n"
+    "the players. Living players respawn at their new side.",
     EV_NORMAL
 );
 Event EV_ScriptThread_VisionGetNaked
@@ -2382,6 +2392,7 @@ CLASS_DECLARATION(Listener, ScriptThread, NULL) {
     {&EV_ScriptThread_SetTimer,                &ScriptThread::SetTimer                },
     {&EV_ScriptThread_TeamGetScore,            &ScriptThread::TeamGetScore            },
     {&EV_ScriptThread_TeamSetScore,            &ScriptThread::TeamSetScore            },
+    {&EV_ScriptThread_TeamSwap,                &ScriptThread::TeamSwap                },
     {&EV_ScriptThread_TraceDetails,            &ScriptThread::TraceDetails            },
     {&EV_ScriptThread_VisionGetNaked,          &ScriptThread::VisionGetNaked          },
     {&EV_ScriptThread_VisionSetNaked,          &ScriptThread::VisionSetNaked          },
@@ -5588,6 +5599,15 @@ void ScriptThread::TeamGetScore(Event *ev)
     if (team) {
         ev->AddInteger(team->m_teamwins);
     }
+}
+
+void ScriptThread::TeamSwap(Event *ev)
+{
+    if (g_gametype->integer < GT_TEAM) {
+        throw ScriptException("team_swap needs a team game type");
+    }
+
+    dmManager.SwapTeams();
 }
 
 void ScriptThread::TeamSetScore(Event *ev)
