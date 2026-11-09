@@ -15,6 +15,7 @@ OMOH_GAME_DIR=<GAME_DIR> OMOH_SLOW=1 python3 -I -m unittest discover -s tests -v
 | `OMOH_GAME_DIR` | game folder that contains `main/` (Allied Assault data); without it every test is skipped |
 | `OMOH_BIN_DIR` | folder with `omohaaded`, `openmohaa`, `game.so`, `cgame.so`; default: the first of `.cmake/RelWithDebInfo`, `.cmake/Release`, `.cmake/Debug`, `.cmake`, `build` |
 | `OMOH_SLOW` | also run slow tests (minutes) |
+| `OMOH_MODS_DIR` | folder of mod `.pk3` files; each is loaded on a server with bots and must run without crashes or script errors (`OMOH_MOD_MAP`, `OMOH_MOD_GAMETYPE` pick map and gametype; defaults `dm/mohdm1`, 1) |
 | `OMOH_KEEP_HOME` | keep each test's temporary home (logs, screenshots, saves) and print its path |
 
 | File | Covers |

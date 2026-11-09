@@ -308,7 +308,9 @@ The community works in `.scr`; today a script error shows only when the map load
 
 ## Mod compatibility tests
 
-Part of the automated test suite.
+Part of the automated test suite. Status: harness on branch `test/mod-compat` (`OMOH_MODS_DIR`);
+checked with a working and a broken synthetic mod. Real community mods still have to be collected
+(not downloaded by tests).
 
 
 - **Shape:** load popular mods (Freeze-Tag and others) headless with bots as part of the test
