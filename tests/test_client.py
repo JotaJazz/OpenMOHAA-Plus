@@ -172,6 +172,27 @@ class Disconnect(GameTestCase):
 
 
 @require_game
+class FastServer(GameTestCase):
+    def test_client_plays_on_a_40hz_server(self):
+        s = self.server("+set", "sv_fps", "40", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+set", "snaps", "40", "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"entered the battle", timeout=120)
+        time.sleep(15)
+        mark = len(s.log())
+        s.send("status")
+        status = s.wait_for(r"^map: dm/mohdm1", timeout=20, start=mark)[mark:]
+        c.quit()
+        self.assertEqual(s.quit(), 0)
+        self.assertRegex(status, r"\n\s*0\s+\d+\s+\d+\s")      # client 0 still connected
+        for bad in ("ERROR:", "Server disconnected", "Server dropped connection"):
+            self.assertNotIn(bad, c.log())
+
+
+@require_game
 class PureServer(GameTestCase):
     MENU_FILES = ("ui/connecting.urc", "ui/errormessage.urc", "textures/mohmenu/internet.tga")
 
