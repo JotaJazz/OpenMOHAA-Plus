@@ -13,6 +13,7 @@ import shutil
 import tempfile
 import unittest
 
+import omoh
 from omoh import GameTestCase, require_game
 
 BOTS = ["+set", "sv_maxbots", "2", "+set", "sv_minPlayers", "2"]
@@ -268,3 +269,34 @@ class QueryFlood(GameTestCase):
                 self.assertLess(reply_bytes, sent * len(packet), cmd)  # no amplification
                 time.sleep(1.5)
         self.assertEqual(s.quit(), 0)
+
+
+def mod_paks():
+    folder = os.environ.get("OMOH_MODS_DIR", "")
+    if not os.path.isdir(folder):
+        return []
+    return sorted(os.path.join(folder, f) for f in os.listdir(folder) if f.lower().endswith(".pk3"))
+
+
+@require_game
+@unittest.skipUnless(mod_paks(), "set OMOH_MODS_DIR to a folder of mod .pk3 files")
+class ModCompatibility(GameTestCase):
+    """Each mod pk3 is loaded on a server with bots; it must run without crashes or script errors."""
+
+    def test_mods_run_with_bots(self):
+        for pak in mod_paks():
+            with self.subTest(mod=os.path.basename(pak)):
+                home = omoh.Home()
+                self.addCleanup(home.cleanup)
+                os.makedirs(os.path.join(home.path, "main"))
+                shutil.copy(pak, os.path.join(home.path, "main"))
+                s = omoh.server(home, "+set", "developer", "1", "+set", "g_gametype",
+                                os.environ.get("OMOH_MOD_GAMETYPE", "1"), *BOTS,
+                                "+map", os.environ.get("OMOH_MOD_MAP", "dm/mohdm1"))
+                self.games.append(s)
+                s.wait_for(r"entered the battle", count=2, timeout=120)
+                time.sleep(20)
+                self.assertIsNone(s.proc.poll(), "server died")
+                self.assertEqual(s.quit(), 0)
+                errors = [l for l in s.log().splitlines() if "Script Error" in l]
+                self.assertFalse(errors, "\n".join(errors[:10]))
