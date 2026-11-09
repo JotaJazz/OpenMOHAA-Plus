@@ -259,6 +259,25 @@ end
 
 
 @require_game
+class ServerScripts(GameTestCase):
+    def test_sv_scripts_run_on_every_level(self):
+        self.home.write("plus/a.scr", 'main:\n\tprintln ("TSCR a " + (getcvar "mapname"))\nend\n')
+        self.home.write("plus/b.scr", 'main:\n\tlevel waittill spawn\n\tprintln "TSCR b spawned"\nend\n')
+        self.home.write("plus/broken.scr", "main:\n\tif (1 {\nend\n")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1",
+                        "+set", "sv_scripts", "plus/a.scr plus/missing.scr plus/broken.scr plus/b.scr",
+                        "+map", "dm/mohdm1")
+        s.wait_for(r"TSCR b spawned", timeout=90)
+        s.send("map dm/mohdm2")
+        log = s.wait_for(r"TSCR b spawned", count=2, timeout=90)
+        self.assertEqual(s.quit(), 0)
+        self.assertIn("TSCR a dm/mohdm1", log)
+        self.assertIn("TSCR a dm/mohdm2", log)
+        self.assertIn("sv_scripts: couldn't load 'plus/missing.scr'", log)
+        self.assertRegex(log, r"sv_scripts: (couldn't load 'plus/broken.scr'|'plus/broken.scr' failed)")
+
+
+@require_game
 class Bans(GameTestCase):
     def test_rehashbans_ignores_blank_lines(self):
         # upstream #926: removing a line's text leaves a blank line; the removed ban must not stay
