@@ -1360,7 +1360,7 @@ void	Sys_UnloadDll( void *dllHandle );
 
 qboolean Sys_DllExtension(const char* name);
 
-void	Sys_UnloadGame( void );
+qboolean	Sys_UnloadGame( void );
 void	*Sys_GetGameAPI( void *parms );
 
 void	Sys_UnloadCGame( void );
