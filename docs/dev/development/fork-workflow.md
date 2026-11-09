@@ -18,6 +18,11 @@ git switch main && git merge upstream/main     # resolve conflicts, build, smoke
 git push origin main
 ```
 
+Automated: `.github/workflows/upstream-sync.yml` runs weekly (and on demand from the Actions tab),
+merges `upstream/main` into a branch `upstream-sync/<date>` and opens a pull request inside the
+fork; on conflicts the job fails and lists the files. GitHub disables scheduled workflows in forks
+until they are enabled in the repository's Actions tab.
+
 ## Fixing an upstream issue
 
 New features follow the same branch flow; check [ideas.md](../roadmap/ideas.md) first.
