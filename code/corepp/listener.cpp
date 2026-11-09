@@ -396,8 +396,8 @@ int HashCode<Event *>(Event *const& key)
 template<>
 int HashCode<command_t>(const command_t& key)
 {
-    const char *p;
-    int         hash = 0;
+    const char  *p;
+    unsigned int hash = 0; // Changed in OpenMOHAA Plus: unsigned, signed overflow is undefined
 
     if (key.type == EV_NORMAL || key.type == EV_RETURN) {
         for (p = key.command; *p; p++) {
@@ -409,7 +409,7 @@ int HashCode<command_t>(const command_t& key)
         }
     }
 
-    return hash;
+    return (int)hash;
 }
 
 #if defined(ARCHIVE_SUPPORTED)

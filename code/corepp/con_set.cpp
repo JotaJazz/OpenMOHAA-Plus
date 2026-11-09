@@ -32,14 +32,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 template<>
 int HashCode<const char *>(const char *const& key)
 {
-    const char *p;
-    int         hash = 0;
+    const char  *p;
+    unsigned int hash = 0; // Changed in OpenMOHAA Plus: unsigned, signed overflow is undefined
 
     for (p = key; *p; p++) {
         hash = *p + 31 * hash;
     }
 
-    return hash;
+    return (int)hash;
 }
 
 template<>

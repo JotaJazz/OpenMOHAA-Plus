@@ -29,6 +29,30 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
   generates its own parser.
 
+## Sanitizer findings (headless suite on an ASan + UBSan build, 2026-11-09)
+
+Fixed: out-of-bounds read in `S_OPENAL_Start2DSound` (branch `fix/snd-callback-entity`), signed
+overflow in the event and string hash functions (branch `fix/ubsan-cleanups`). Still reported by
+UBSan, not fixed:
+
+- Misaligned loads of packed model data (`code/tiki/tiki_skel.cpp`, `code/renderergl1/tr_model.cpp`,
+  `code/renderergl1/tr_image.c`) and of GameSpy query data: harmless on x86, a risk on strict
+  alignment CPUs.
+- vptr checks: `World`, `Actor`, `ScriptEvent`, `UIWindowManager` objects accessed through pointers
+  that UBSan does not consider of that type (`code/fgame/worldspawn.cpp`, `code/fgame/g_main.cpp`,
+  `code/uilib/uiwinman.cpp`); needs investigation (static objects across modules or real type
+  confusion).
+- `RB_Color4f` gets 0-255 bytes from `code/renderergl1/tr_draw.c` and multiplies them by 255 again
+  (float to `unsigned char` overflow). Passing the bytes through unchanged turns the health bar red
+  and removes the compass background, so the HUD currently depends on this behaviour; the callers'
+  intended color values must be worked out before changing it.
+- `qsort` with a NULL base and 0 elements in `FS_Startup`; libmad index computations (vendored).
+
+Recipe: Debug build (LTO off) with `-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer` in
+C/CXX flags and `-fsanitize=address,undefined` in linker flags, in a scratch directory; link
+`omohaaded`/`openmohaa` to the `-dbg` binaries and run the suite with `OMOH_BIN_DIR` and
+`ASAN_OPTIONS=detect_leaks=0`.
+
 ## Rejected or not reproducible (with reason)
 
 | Issue | Decision | Reason |
