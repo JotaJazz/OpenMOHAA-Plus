@@ -3888,7 +3888,8 @@ const char *FS_ReferencedPakPureChecksums( void ) {
 		*/
 		for ( search = fs_searchpaths ; search ; search = search->next ) {
 			// is the element a pak file and has it been referenced based on flag?
-			if ( search->pack && (search->pack->referenced & nFlags)) {
+			// skip paks rejected by the pure server: they may carry stale references from before connecting
+			if ( search->pack && (search->pack->referenced & nFlags) && FS_PakIsPure(search->pack) ) {
 				Q_strcat( info, sizeof( info ), va("%i ", search->pack->pure_checksum ) );
 				if (nFlags & (FS_CGAME_REF | FS_UI_REF)) {
 					break;
