@@ -51,6 +51,8 @@ cvar_t *s_show_cpu;
 cvar_t *s_show_num_active_sounds;
 cvar_t *s_show_sounds;
 cvar_t *s_speaker_type;
+// Added in OpenMOHAA Plus: 0 = HRTF only if OpenAL detects headphones (s_speaker_type 1), 1 = force HRTF
+cvar_t *s_hrtf;
 cvar_t *s_obstruction_cal_time;
 cvar_t *s_lastSoundTime;
 // Added in OPM
@@ -378,6 +380,7 @@ static bool S_OPENAL_InitContext()
     attrlist[3] = qfalse;
 
     s_speaker_type->modified = false;
+    s_hrtf->modified         = false;
 
 #ifdef ALC_SOFT_output_mode
     attrlist[4] = ALC_OUTPUT_MODE_SOFT;
@@ -408,6 +411,12 @@ static bool S_OPENAL_InitContext()
         attrlist[5] = ALC_QUAD_SOFT;
         break;
     }
+
+    if (s_hrtf->integer) {
+        // Added in OpenMOHAA Plus: force HRTF stereo, many systems don't report headphones
+        attrlist[5] = ALC_STEREO_HRTF_SOFT;
+        attrlist[7] = ALC_TRUE;
+    }
 #else
 #    pragma message("OpenAL: ALC_OUTPUT_MODE_SOFT unavailable")
 
@@ -435,6 +444,21 @@ static bool S_OPENAL_InitContext()
     }
 
     Com_Printf("OpenAL: Context created successfully.\n");
+
+#ifdef ALC_HRTF_STATUS_SOFT
+    {
+        // Added in OpenMOHAA Plus: report whether HRTF is actually used
+        ALCint hrtf = ALC_FALSE, status = 0;
+
+        qalcGetIntegerv(al_device, ALC_HRTF_SOFT, 1, &hrtf);
+        qalcGetIntegerv(al_device, ALC_HRTF_STATUS_SOFT, 1, &status);
+        if (hrtf) {
+            Com_Printf("OpenAL: HRTF enabled (%s)\n", qalcGetString(al_device, ALC_HRTF_SPECIFIER_SOFT));
+        } else {
+            Com_Printf("OpenAL: HRTF disabled (status %d)\n", status);
+        }
+    }
+#endif
 
     qalcMakeContextCurrent(al_context_id);
     alDieIfError();
@@ -599,6 +623,7 @@ qboolean S_OPENAL_Init()
     s_show_num_active_sounds = Cvar_Get("s_show_num_active_sounds", "0", 0);
     s_show_sounds            = Cvar_Get("s_show_sounds", "0", 0);
     s_speaker_type           = Cvar_Get("s_speaker_type", "0", CVAR_ARCHIVE);
+    s_hrtf                   = Cvar_Get("s_hrtf", "0", CVAR_ARCHIVE);
     s_obstruction_cal_time   = Cvar_Get("s_obstruction_cal_time", "500", CVAR_ARCHIVE);
     //
     // Added in OPM
@@ -2561,9 +2586,10 @@ void S_OPENAL_Update()
         pChannel->fNewPitchMult = 0;
     }
 
-    if (s_speaker_type->modified) {
+    if (s_speaker_type->modified || s_hrtf->modified) {
         Cbuf_AddText("snd_restart\n");
         s_speaker_type->modified = false;
+        s_hrtf->modified         = false;
     }
 
     if (s_reverb->modified) {

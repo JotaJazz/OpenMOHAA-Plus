@@ -237,6 +237,9 @@ The community works in `.scr`; today a script error shows only when the map load
 
 ## HRTF spatial audio
 
+Status: implemented on branch `feat/hrtf` (`s_hrtf 1`). Correction to the note below: HRTF was
+already allowed with `s_speaker_type 1`, but only when OpenAL detects headphones.
+
 - **Fact:** OpenAL Soft supports HRTF, but the engine disables it on purpose
   (`ALC_HRTF_SOFT` in `code/client/snd_openal_new.cpp`).
 - **Shape:** an opt-in cvar (e.g. `s_hrtf 1`) for headphone players.

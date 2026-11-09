@@ -27,6 +27,8 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
   with source "GitHub Actions" in the repository settings (maintainer decision; it publishes the
   user documentation site). The `dev` pre-release's Windows `-pdb` zips are complete packages
   (executables plus debug symbols), so they are playable.
+- The #885 gain fix has no automated test yet (needs time-aligned audio measurement with the OpenAL
+  wave backend; manual method in `docs/dev/development/testing.md`).
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
   generates its own parser.
 

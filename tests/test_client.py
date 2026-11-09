@@ -118,6 +118,21 @@ end
 
 
 @require_game
+class Hrtf(GameTestCase):
+    def test_s_hrtf_forces_hrtf(self):
+        c = self.client("+set", "s_hrtf", "1")
+        c.wait_for(r"OpenAL: HRTF (enabled|disabled)", timeout=60)
+        self.assertEqual(c.quit(), 0)
+        self.assertRegex(c.log(), r"OpenAL: HRTF enabled \(")
+
+    def test_hrtf_off_by_default(self):
+        c = self.client()
+        c.wait_for(r"OpenAL: HRTF (enabled|disabled)", timeout=60)
+        self.assertEqual(c.quit(), 0)
+        self.assertIn("OpenAL: HRTF disabled", c.log())
+
+
+@require_game
 class FrameRate(GameTestCase):
     def test_maxfps_caps_at_the_requested_rate(self):
         # upstream #530: 1000 / com_maxfps used to truncate (85 -> ~90 fps)
