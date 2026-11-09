@@ -603,6 +603,10 @@ void CL_ParseGamestate( msg_t *msg ) {
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
+	// Fixed in OpenMOHAA Plus: never called, so sv_allowDownload and sv_dlURL
+	// (download redirection) were always unknown to the client
+	CL_ParseServerInfo();
+
 	// stop recording now so the demo won't have an unnecessary level load at the end.
 	if(cl_autoRecordDemo->integer && clc.demorecording)
 		CL_StopRecord_f();

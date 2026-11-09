@@ -5,6 +5,9 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import functools
+import http.server
+import threading
 import os
 import struct
 import time
@@ -230,3 +233,60 @@ class PureServer(GameTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _quiet_handler(directory):
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        requests = []
+
+        def log_message(self, fmt, *args):
+            Handler.requests.append(fmt % args)
+    return functools.partial(Handler, directory=directory), Handler
+
+
+@require_game
+class Downloads(GameTestCase):
+    def _mod_server(self, dl_url=None):
+        import zipfile as zf
+        server_home = omoh.Home()
+        self.addCleanup(server_home.cleanup)
+        os.makedirs(os.path.join(server_home.path, "main"))
+        with zf.ZipFile(os.path.join(server_home.path, "main", "zzz_dltest.pk3"), "w") as z:
+            z.writestr("maps/dm/mohdm1.scr", "main:\n\tlevel waittill spawn\n\tprintln \"DLTEST\"\nend\n")
+        args = ["+set", "sv_allowDownload", "1", "+set", "g_gametype", "1"]
+        if dl_url:
+            args += ["+set", "sv_dlURL", f'"{dl_url}"']   # quoted: // starts a comment
+        s = omoh.server(server_home, *args, "+map", "dm/mohdm1")
+        self.games.append(s)
+        s.wait_for(r"==== InitGame ====")
+        return server_home, s
+
+    def _join(self, s):
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+set", "cl_allowDownload", "1", "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"entered the battle", timeout=120)
+        c.quit()
+        return os.path.join(client_home.path, "main", "zzz_dltest.pk3")
+
+    def test_udp_download(self):
+        _, s = self._mod_server()
+        pak = self._join(s)
+        self.assertEqual(s.quit(), 0)
+        self.assertTrue(os.path.exists(pak))
+        self.assertIn("clientDownload", s.log())
+
+    def test_http_redirect_download(self):
+        handler, record = _quiet_handler(".")
+        web = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        threading.Thread(target=web.serve_forever, daemon=True).start()
+        self.addCleanup(web.server_close)
+        self.addCleanup(web.shutdown)
+        home, s = self._mod_server(f"http://127.0.0.1:{web.server_address[1]}")
+        web.RequestHandlerClass.keywords["directory"] = home.path   # serve the server's home folder
+        pak = self._join(s)
+        self.assertEqual(s.quit(), 0)
+        self.assertTrue(os.path.exists(pak))
+        self.assertTrue(any("zzz_dltest.pk3" in r and " 200 " in r for r in record.requests), record.requests)
+        self.assertNotIn("clientDownload", s.log())

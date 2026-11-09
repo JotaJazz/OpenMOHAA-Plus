@@ -32,6 +32,10 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
   (executables plus debug symbols), so they are playable.
 - The #885 gain fix has no automated test yet (needs time-aligned audio measurement with the OpenAL
   wave backend; manual method in `docs/dev/development/testing.md`).
+- Base paks: the client skips only `pak0`-`pak4` when comparing paks (`NUM_ID_PAKS 5` in
+  `code/qcommon/qcommon.h`) and the server's id-pak guard is commented out in
+  `code/server/sv_client.c`, while MOHAA ships `Pak0`-`pak6`: a client with a different Pak5/pak6
+  could try to download it. Not tested.
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
   generates its own parser.
 

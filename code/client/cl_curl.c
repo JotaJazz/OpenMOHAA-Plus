@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifdef USE_CURL
 #include "client.h"
+#include "../qcommon/q_version.h"
 
 #ifdef USE_CURL_DLOPEN
 #include "../sys/sys_loadlib.h"
@@ -274,14 +275,15 @@ void CL_cURL_BeginDownload( const char *localName, const char *remoteURL )
 			"failed");
 		return;
 	}
-	clc.download = FS_SV_FOpenFileWrite(clc.downloadTempName);
+	// Fixed in OpenMOHAA Plus: same file functions as the UDP download (cl_parse.cpp)
+	clc.download = FS_BaseDir_FOpenFileWrite_HomeData(clc.downloadTempName);
 	if(!clc.download) {
 		Com_Error(ERR_DROP, "CL_cURL_BeginDownload: failed to open "
 			"%s for writing", clc.downloadTempName);
 		return;
 	}
 
-	if(com_developer->integer)
+	if(developer->integer)
 		qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_VERBOSE, 1);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_URL, clc.downloadURL);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_TRANSFERTEXT, 0);
@@ -349,7 +351,7 @@ void CL_cURL_PerformDownload(void)
 	}
 	FS_FCloseFile(clc.download);
 	if(msg->msg == CURLMSG_DONE && msg->data.result == CURLE_OK) {
-		FS_SV_Rename(clc.downloadTempName, clc.downloadName, qfalse);
+		FS_BaseDir_Rename_HomeData(clc.downloadTempName, clc.downloadName, qfalse);
 		clc.downloadRestart = qtrue;
 	}
 	else {
