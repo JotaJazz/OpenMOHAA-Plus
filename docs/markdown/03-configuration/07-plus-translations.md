@@ -34,6 +34,6 @@ translations are made and shared by the community.
 
 The game uses single-byte text (Latin-1 / Windows-1252) and its fonts only contain English letters.
 Files saved as UTF-8 are converted when loaded. Accented letters and `ñ ¿ ¡` are drawn as their base
-letter (`a`, `n`, `?`, `!`) unless the translation also ships fonts (`fonts/*.RitualFont` and their
-textures) that contain them. Languages outside Latin-1, such as Chinese (upstream #936), need
+letter (`a`, `n`, `?`, `!`) unless fonts that contain them are installed:
+[`zzz-plus-fonts.pk3`](09-plus-fonts.md) does that for the HUD, menu and console fonts. Languages outside Latin-1, such as Chinese (upstream #936), need
 double-byte font support, which the game does not have.

@@ -64,6 +64,7 @@ is doing for Call of Duty 2 with its 40 Hz server.
   - [HUD scale and crosshair size](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
   - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
     and no freeze when the master servers' DNS hangs (#376)
+  - [fonts with accented letters](docs/markdown/03-configuration/09-plus-fonts.md), sharper at high resolutions
   - [community translations](docs/markdown/03-configuration/07-plus-translations.md) of the game's texts (`cl_language`)
   - a [competition match mod](misc/mods/plus-match/README.md) (halftime side switch, timeouts)
   - [match pause and hit sounds](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server

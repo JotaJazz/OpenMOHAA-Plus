@@ -11,6 +11,7 @@ on:
       - 'tests/**'
       - 'misc/scr-tools/**'
       - 'misc/i18n/**'
+      - 'misc/fonts/**'
       - '.github/workflows/docs-check.yml'
       - 'code/**'
       - 'cmake/**'
@@ -47,6 +48,9 @@ jobs:
 
       - name: Translation tool tests
         run: python3 -I -m unittest discover -s misc/i18n -v
+
+      - name: Font tool tests (skip without Pillow)
+        run: python3 -m unittest discover -s misc/fonts -v
 
       - name: Check docs
         run: python3 -I misc/docs-check/check_docs.py

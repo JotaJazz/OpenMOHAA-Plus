@@ -50,6 +50,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Filesystem | GOG lookup uses MOHAA's ID (was Quake 3), Steam/Microsoft Store lookups off, `fs_eapath` (EA folder, also in Wine), clear error when the game data is missing | (phase 4) |
 | Server browser | Master lookups in the background (`code/gamespy/gs_resolve.cpp`), next master on DNS failure, unused master sockets start as `INVALID_SOCKET` | #376 |
 | Server browser | Favorites and history (`code/client/cl_serverbook.cpp`), queried directly on refresh; `dm_browser_show`, `dm_browser_search`, `dm_max_ping`; servers publish `net_gamespy_port` | (phase 4) |
+| Fonts | `misc/fonts/make_fonts.py`: DejaVu-based RitualFont replacements with Latin-1, 2x textures, original widths; `zzz-plus-fonts.pk3` built in CI | (phase 4) |
 | Localization | `cl_language` overlay (`lang/<code>/`), UTF-8 to Latin-1, `localize` command, labels localized, missing Latin-1 glyphs drawn as base letters (`code/renderercommon/tr_fontfold.h`), sorted localization files | (phase 4) |
 | Packaging | Linux AppImage (x86_64, aarch64) built in CI, `misc/linux/AppRun` picks the game folder | #890 |
 | Competition mod | `misc/mods/plus-match` (scripts only): rounds, halftime side swap, draw, team timeouts | (phase 3) |

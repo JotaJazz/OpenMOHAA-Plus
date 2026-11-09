@@ -5,6 +5,7 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import tempfile
 import re
 import sys
 import subprocess
@@ -552,6 +553,41 @@ end
 
     def test_hit_sounds_are_off_by_default(self):
         self.assertNotIn("sound/plus_hit_test.wav", self._play(0))
+
+
+def _build_fonts(pk3):
+    """Run misc/fonts/make_fonts.py (needs Pillow and DejaVu, outside this isolated interpreter)."""
+    tool = os.path.join(omoh.REPO, "misc", "fonts", "make_fonts.py")
+    python = shutil.which("python3")
+    if not python:
+        return False
+    result = subprocess.run([python, tool, "--out", pk3], cwd=tempfile.gettempdir(), capture_output=True, text=True)
+    return result.returncode == 0
+
+
+@require_game
+class Fonts(GameTestCase):
+    def test_generated_fonts_load_and_draw(self):
+        pk3 = os.path.join(self.home.path, "main", "zzz-plus-fonts.pk3")
+        os.makedirs(os.path.dirname(pk3), exist_ok=True)
+        if not _build_fonts(pk3):
+            self.skipTest("misc/fonts/make_fonts.py needs Pillow and the DejaVu fonts")
+        self.home.write("lang/es/localization.txt", '{ "Health" "Salud ñáé ¿¡" }\r\n')
+        c = self.client("+set", "developer", "1", "+set", "cl_language", "es", "+set", "ui_hudscale", "2",
+                        "+set", "g_gametype", "2", "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        time.sleep(5)
+        c.send("screenshot silent")
+        time.sleep(2)
+        self.assertEqual(c.quit(), 0)
+        log = c.log()
+        self.assertIn("zzz-plus-fonts.pk3", log)
+        for bad in ("Error parsing font", "Couldn't load font", "top-down", "character in font"):
+            self.assertNotIn(bad, log)
+        self.assertTrue(glob.glob(self.home.file("screenshots/shot*.tga")))
 
 
 @require_game
