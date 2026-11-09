@@ -61,6 +61,7 @@ is doing for Call of Duty 2 with its 40 Hz server.
     [stats mod](misc/mods/plus-stats/README.md) built on them
   - [in-game admin accounts](docs/markdown/03-configuration/04-plus-admin.md) with roles and
     per-command permissions, no RCON password needed (`ad_login`)
+  - [HUD scale and crosshair size](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),

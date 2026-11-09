@@ -83,6 +83,8 @@ cvar_t *cg_huddraw_force;
 cvar_t *cg_drawsvlag;
 cvar_t *cg_crosshair;
 cvar_t *cg_crosshair_friend;
+cvar_t *cg_crosshair_size;  // Added in OpenMOHAA Plus
+cvar_t *cg_crosshair_scale; // Added in OpenMOHAA Plus
 cvar_t *ui_crosshair;
 cvar_t *vm_offset_max;
 cvar_t *vm_offset_speed;
@@ -176,6 +178,8 @@ void CG_RegisterCvars(void)
     // as it doesn't have crosshair_friend texture
     cg_crosshair_friend = cgi.Cvar_Get("cg_crosshair_friend", "textures/hud/crosshair_friend", CVAR_ARCHIVE);
     ui_crosshair                  = cgi.Cvar_Get("ui_crosshair", "1", CVAR_ARCHIVE);
+    cg_crosshair_size             = cgi.Cvar_Get("cg_crosshair_size", "0", CVAR_ARCHIVE);
+    cg_crosshair_scale            = cgi.Cvar_Get("cg_crosshair_scale", "1", CVAR_ARCHIVE);
     vm_offset_max                 = cgi.Cvar_Get("vm_offset_max", "8.0", 0);
     vm_offset_speed               = cgi.Cvar_Get("vm_offset_speed", "8.0", 0);
     vm_sway_front                 = cgi.Cvar_Get("vm_sway_front", "0.1", 0);

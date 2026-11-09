@@ -288,6 +288,77 @@ class Downloads(GameTestCase):
         self.assertNotIn("clientDownload", s.log())
 
 
+def green_pixels(path, x0, x1, y0, y1):
+    """Count saturated green pixels (the HUD health bar) in a region given as screen fractions."""
+    width, height, rows = read_tga(path)
+    return sum(1 for row in rows[int(y0 * height):int(y1 * height)]
+               for r, g, b in row[int(x0 * width):int(x1 * width)] if g > 120 and r < 80 and b < 80)
+
+
+@require_game
+class HudScale(GameTestCase):
+    def shot(self, scale):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        # sv_maxclients 2: a one-player local game waits on the loading screen's continue button
+        c = omoh.client(home, "+set", "developer", "1", "+set", "r_mode", "-1", "+set", "r_customwidth", "1920",
+                        "+set", "r_customheight", "1080", "+set", "ui_hudscale", str(scale), "+set", "g_gametype",
+                        "2", "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        self.games.append(c)
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("join_team allies")
+        time.sleep(1)
+        c.send("primarydmweapon rifle")
+        time.sleep(8)
+        c.send("screenshot hud")
+        time.sleep(3)
+        self.assertEqual(c.quit(), 0)
+        return green_pixels(os.path.join(home.path, "main", "screenshots", "hud.tga"), 0.0, 0.1, 0.75, 1.0)
+
+    def test_crosshair_scale_and_size(self):
+        # upstream #911: crosshair size independent of the texture (cg_crosshair_size) and a multiplier
+        c = self.client("+set", "developer", "1", "+set", "r_mode", "-1",
+                        "+set", "r_customwidth", "1280", "+set", "r_customheight", "720", "+set", "g_gametype", "2",
+                        "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        time.sleep(6)
+        c.send("popmenu 0")    # team and weapon menus cover the crosshair
+        c.send("popmenu 0")
+        time.sleep(2)
+        names = ("off", "normal", "scale3", "size64")
+        for cvars in ("ui_crosshair 0", "ui_crosshair 1", "cg_crosshair_scale 3",
+                      "cg_crosshair_scale 1; cg_crosshair_size 64"):
+            for cvar in cvars.split("; "):
+                c.send(cvar)
+            time.sleep(1)
+            c.send("screenshot silent")    # a named screenshot centerprints "Wrote ..." over the crosshair
+            time.sleep(1)
+        self.assertEqual(c.quit(), 0)
+        shots = dict(zip(names, sorted(glob.glob(self.home.file("screenshots/shot*.tga")))))
+        self.assertEqual(len(shots), 4)
+        def changed(name):    # pixels the crosshair changes in the screen center
+            w, h, rows = read_tga(shots[name])
+            _, _, off = read_tga(shots["off"])
+            y0, y1, x0, x1 = int(h * 0.39), int(h * 0.61), int(w * 0.4375), int(w * 0.5625)
+            return sum(1 for y in range(y0, y1) for x in range(x0, x1)
+                       if sum(abs(a - b) for a, b in zip(rows[y][x], off[y][x])) > 60)
+
+        count = {n: changed(n) for n in ("normal", "scale3", "size64")}
+        self.assertGreater(count["normal"], 5, count)
+        self.assertGreater(count["scale3"], count["normal"] * 2, count)
+        self.assertGreater(count["size64"], count["normal"] * 2, count)
+
+    def test_ui_hudscale_scales_the_hud(self):
+        # upstream #585: at 1920x1080 the HUD is drawn at its 640x480 pixel size; ui_hudscale enlarges it
+        normal, double = self.shot(1), self.shot(2)
+        self.assertGreater(normal, 300)
+        self.assertGreater(double / normal, 3.0, (normal, double))   # twice the size on both axes
+
+
 @require_game
 class Admin(GameTestCase):
     CONFIG = """// test policy

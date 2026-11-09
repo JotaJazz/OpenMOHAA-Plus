@@ -47,6 +47,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Server commands | `compilescript` reports parse errors instead of aborting | (phase 2) |
 | Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time | (phase 3) |
 | Server scripts | `sv_scripts` runs listed scripts on every level | (phase 3) |
+| HUD | `ui_hudscale` multiplier; `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |
 | Downloads | HTTP download redirection (`sv_dlURL`): `USE_CURL` defined, `cl_curl.c` fixed, server info parsed | (phase 4) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |

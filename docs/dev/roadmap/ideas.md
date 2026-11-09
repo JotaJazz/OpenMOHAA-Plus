@@ -92,6 +92,12 @@ A hung or crashed server leaves little to go on (the #287 backtrace had no symbo
 Popular upstream requests: #583 (widescreen), #585 (HUD scale cvar), #911 (crosshair scale
 independent of texture size).
 
+Status: `ui_hudscale` (#585) and `cg_crosshair_size`/`cg_crosshair_scale` (#911) on branch
+`feat/hud-scale` (`docs/markdown/03-configuration/05-plus-hud.md`). The FOV is already Hor+
+(`CG_CalcFov`). Open: menus stretch on wide screens because their virtual scale differs per axis
+(`UIWidget::SetVirtualScale`); a 4:3 pillarbox needs a horizontal offset for every top-level menu
+and a decision for full-screen backgrounds.
+
 - **Shape:** client-side (`cgame`, `uilib`, renderer 2D); keep original layout as default.
 - **Test:** headless screenshots at several resolutions and aspect ratios.
 
@@ -362,6 +368,10 @@ decide whether to enable it by default. Not verified at run time.
 - **Fact:** the `USE_FREETYPE` build option exists and is off; MOHAA fonts are bitmaps.
 - **Shape:** vector fonts for HUD, menus and console keeping the original style.
 - **First step:** check whether FreeType is wired to the game's font code at all.
+- **Checked:** it is not: `USE_FREETYPE` only builds the Quake 3 font code
+  (`code/renderercommon/tr_font.c`); MOHAA text uses its own bitmap fonts (`fontheader_t`,
+  `code/uilib/uifont.h`). Sharp text means rasterizing a TTF into that structure at the screen
+  resolution, with a typeface close to the original and a compatible license.
 
 ## Linux packaging: Flatpak and AppImage
 

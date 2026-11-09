@@ -62,6 +62,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
     [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
   - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
     roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
+  - [tamaño del HUD y de la mira](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),

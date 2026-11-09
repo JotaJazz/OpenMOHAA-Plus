@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — HUD scale and crosshair size (#585, #911)
+- Up to 1920x1080 the HUD was never scaled (drawn at 640x480 pixel size); `ui_hudscale` multiplies the automatic scale, `getScreenWidth` uses the real scale instead of a fixed 1920.
+- Headless screenshot tests: `sv_maxclients 2` avoids the loading screen's continue button, `screenshot silent` avoids the "Wrote" centerprint, `popmenu 0` closes team/weapon menus.
+- Not done: menus stretch on wide screens (per-axis virtual scale), sharp text (MOHAA bitmap fonts, FreeType only wired to Quake 3 fonts). FOV is already Hor+.
+
 ## 2026-11-09 — server administration (#905)
 - In the server module (`sv_admin.cpp`), not the game: `ad_*` wrap existing console commands with their output redirected to the admin, accounts survive map changes. Without libsodium/yaml-cpp: PBKDF2-SHA256 in-tree (checked against Python's `hashlib`), plain-text config (maintainer choice).
 - A password check costs ~50 ms of server frame: checked only for existing enabled accounts, at most one per second, per-address throttle; `ad_login` hidden from the `developer 2` command log.
