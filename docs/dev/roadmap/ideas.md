@@ -3,6 +3,28 @@
 Backlog of features beyond upstream, from design discussions. Not started unless marked. Move an
 idea to an ADR when it is decided, and to `docs/ai/SYSTEM_SUMMARY.md` when it lands.
 
+## Gametype scripting API (CoD2-style callbacks)
+
+The MOHAA community works mostly in scripts. CoD2 lets scripts own the whole gametype through
+engine callbacks; OpenMoHAA scripts can only observe: `player_damaged` and `player_killed` fire
+after the fact, and only `player_textMessage` can block something (its return value). No new
+language is needed: the existing `.scr` VM is enough; what is missing is the engine handing
+decisions to scripts.
+
+- **Level 1, deciding events (low-medium):** events that fire before the action and accept a
+  return value, like `player_textMessage`: `player_damaged` returns the final damage (0 = none),
+  team-change and spawn-point events that can refuse or choose; new `round_start`, `round_end`,
+  `match_start`. One small C++ change per event, each testable headless with bots.
+- **Level 2, control primitives (medium):** script commands to end a round and declare a winner,
+  set player/team scores, move a player to a team, force a respawn, pause. With levels 1 and 2 a
+  script can drive most of a match while the C++ modes stay the default.
+- **Level 3, fully scripted gametype (high):** a mode where `code/fgame/dm_manager.cpp` delegates
+  everything to a script; FFA and TDM rewritten in script as reference. Risks: client scoreboard and
+  HUD expect specific server data, and diverging from upstream `dm_manager`.
+- **Recommendation:** levels 1 and 2 first; they are the base for the competition mode and libmoh.
+- **First step:** map how coupled `dm_manager.cpp` is (round flow, scoring, spawning) and list the
+  decision points to expose.
+
 ## Competition mode (zPAM-like)
 
 Match control for leagues and clan wars, like the maintainer's zPAM Plus for CoD2.
@@ -15,7 +37,8 @@ Match control for leagues and clan wars, like the maintainer's zPAM Plus for CoD
   (pause exists only with a single local client), halftime side swap, overtime, enforcing client
   cvars (rate, fov), streamer/spectator view (`cgame`).
 - **Shape:** a generic match state layer in `fgame` (warmup, ready-up, live, paused, halftime,
-  overtime) exposed as script commands/events; league rules as a script `.pk3` on top.
+  overtime) exposed as script commands/events; league rules as a script `.pk3` on top. Builds on the
+  gametype scripting API (levels 1-2) above.
 - **MVP:** ready-up + countdown + halftime swap for TDM and round-based; test on the dedicated
   server with bots.
 - **First step:** survey existing MOHAA competition mods/rules to reuse.
