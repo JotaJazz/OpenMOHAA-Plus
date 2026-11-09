@@ -554,6 +554,14 @@ static bool S_OPENAL_InitChannel(int idx, openal_channel *chan)
     qalSourcei(chan->source, AL_SOURCE_RELATIVE, true);
     alDieIfError();
 
+#ifdef AL_GAIN_LIMIT_SOFT
+    // AL_MAX_GAIN defaults to 1.0, which would cap gains like s_dialogscale > 1
+    if (qalIsExtensionPresent("AL_SOFT_gain_clamp_ex")) {
+        qalSourcef(chan->source, AL_MAX_GAIN, qalGetFloat(AL_GAIN_LIMIT_SOFT));
+        alDieIfError();
+    }
+#endif
+
 #ifdef AL_SOFT_source_resampler
     qalSourcei(chan->source, AL_SOURCE_RESAMPLER_SOFT, al_resampler_index);
     alDieIfError();
