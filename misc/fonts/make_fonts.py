@@ -22,6 +22,10 @@ import zipfile
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+# Pillow < 9.1 has no Image.Transpose / Image.Resampling
+FLIP_TOP_BOTTOM = getattr(getattr(Image, "Transpose", Image), "FLIP_TOP_BOTTOM")
+LANCZOS = getattr(getattr(Image, "Resampling", Image), "LANCZOS")
+
 DEJAVU = "/usr/share/fonts/truetype/dejavu"
 # Width of SAMPLE in nominal pixels in the original game fonts, used when --game-dir is not given
 # (texts must fit the boxes the menus and HUD were laid out for)
@@ -124,7 +128,7 @@ def build(name, height, ttf, scale, reference_width=None, fill=255, outline=Fals
         natural = max(1, round(font.getlength(ch)))
         glyph = Image.new("RGBA", (natural + 2 * cell, cell), (255, 255, 255, 0))
         ImageDraw.Draw(glyph).text((cell, top), ch, font=font, fill=(255, 255, 255, 255))
-        glyph = glyph.resize((max(1, round(glyph.width * stretch)), cell), Image.Resampling.LANCZOS)
+        glyph = glyph.resize((max(1, round(glyph.width * stretch)), cell), LANCZOS)
         offset = round(cell * stretch)
         image.alpha_composite(glyph.crop((offset, 0, offset + advance, cell)), (gx, gy))
 
@@ -183,7 +187,7 @@ def tga_bytes(image):
     """Uncompressed 32-bit TGA, bottom row first (the game ignores the top-down flag)."""
     w, h = image.size
     header = struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, w, h, 32, 0x08)
-    r, g, b, a = image.transpose(Image.Transpose.FLIP_TOP_BOTTOM).split()
+    r, g, b, a = image.transpose(FLIP_TOP_BOTTOM).split()
     return header + Image.merge("RGBA", (b, g, r, a)).tobytes()
 
 
