@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — server administration (#905)
+- In the server module (`sv_admin.cpp`), not the game: `ad_*` wrap existing console commands with their output redirected to the admin, accounts survive map changes. Without libsodium/yaml-cpp: PBKDF2-SHA256 in-tree (checked against Python's `hashlib`), plain-text config (maintainer choice).
+- A password check costs ~50 ms of server frame: checked only for existing enabled accounts, at most one per second, per-address throttle; `ad_login` hidden from the `developer 2` command log.
+- Pitfalls found: `rconPassword` is only `CVAR_TEMP` (so `ad_set` refuses password cvars without `admin.rcon`), a `"` in a `print` server command cuts the text, level changes must go through `Cbuf`.
+
 ## 2026-11-09 — gametype API level 2
 - `team_swap` swaps the player lists and scores of both teams in one step (moving players one by one through `JoinTeam` fails on "team is full" with uneven teams) and respawns living players.
 - Upstream bug: `team_getscore` was declared `EV_NORMAL`, so scripts could never read its value; now `EV_RETURN`. Most of level 2 already existed (`teamwin`, `team_setscore`, `join_team`, `respawn`).

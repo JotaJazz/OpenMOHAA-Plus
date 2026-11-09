@@ -60,6 +60,8 @@ para Call of Duty 2 con su servidor a 40 Hz.
     compatibles con NightFall ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)),
     scripts de servidor sin sobrescribir archivos del juego (`sv_scripts`), y un
     [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
+  - [cuentas de administrador en el juego](docs/markdown/03-configuration/04-plus-admin.md) con
+    roles y permisos por comando, sin la contraseña de RCON (`ad_login`)
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),
@@ -78,7 +80,7 @@ hecho:
 
 - **Modo competición** (estilo zPAM) con más eventos de gametype: puntaje por equipo, cambio de
   lado en el entretiempo.
-- **Administración del servidor** con permisos por comando, mejores bots, compensación de lag.
+- **Mejores bots** y compensación de lag.
 - **Más bugs del proyecto original**, elegidos según lo que se pueda reproducir y verificar.
 - **La misma corrección para el módulo del cliente en musl** que recibió el servidor en #918.
 

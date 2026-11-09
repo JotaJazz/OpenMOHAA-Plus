@@ -54,6 +54,7 @@ set(SERVER_SOURCES
     ${SOURCE_DIR}/server/sv_ccmds.c
     ${SOURCE_DIR}/server/sv_game.c
     ${SOURCE_DIR}/server/sv_http.cpp
+    ${SOURCE_DIR}/server/sv_admin.cpp
     ${SOURCE_DIR}/server/sv_init.c
     ${SOURCE_DIR}/server/sv_main.c
     ${SOURCE_DIR}/server/sv_net_chan.c

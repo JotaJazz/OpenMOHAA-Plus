@@ -541,6 +541,11 @@ qboolean SV_HTTP_PollResponse( int *id, int *code, char *buffer, int bufferSize 
 void SV_HTTP_Clear( void );
 void SV_HTTP_Shutdown( void );
 
+// sv_admin.cpp, Added in OpenMOHAA Plus
+void SV_Admin_Init( void );
+qboolean SV_Admin_ClientCommand( client_t *cl );
+void SV_Admin_ClientReset( client_t *cl );
+
 //
 // sv_snapshot.c
 //

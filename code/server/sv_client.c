@@ -612,6 +612,7 @@ gotnewcl:
 	// accept the new client
 	// this is the only place a client_t is ever initialized
 	*newcl = temp;
+	SV_Admin_ClientReset(newcl); // Added in OpenMOHAA Plus
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
@@ -776,6 +777,7 @@ void SV_DropClient( client_t *drop, const char *reason ) {
 	// call the prog function for removing a client
 	// this will remove the body, among other things
 	ge->ClientDisconnect( ( gentity_t * )SV_GentityNum( drop - svs.clients ) );
+	SV_Admin_ClientReset(drop); // Added in OpenMOHAA Plus: admin sessions end on disconnect
 
 	// add the disconnect command
 	SV_SendServerCommand( drop, "disconnect \"%s\"", reason);
@@ -1722,6 +1724,11 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
 	
 	Cmd_TokenizeString( s );
 
+	// Added in OpenMOHAA Plus: in-game administration (ad_* commands)
+	if (SV_Admin_ClientCommand(cl)) {
+		return;
+	}
+
 	// see if it is a server level command
 	for (u=ucmds ; u->name ; u++) {
 		if (!strcmp (Cmd_Argv(0), u->name) ) {
@@ -1777,7 +1784,8 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg ) {
 
 	if( developer->integer == 2 ) {
         // don't spam the console with client commands in production
-		Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, s );
+		// Added in OpenMOHAA Plus: never print admin passwords
+		Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, Q_stricmpn(s, "ad_login", 8) ? s : "ad_login <hidden>" );
 	}
 
 	// drop the connection if we have somehow lost commands
