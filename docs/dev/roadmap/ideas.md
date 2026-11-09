@@ -462,9 +462,10 @@ checked with a working and a broken synthetic mod. Real community mods still hav
 - **Faster server tick:** status on branch `feat/sv-fps-40`: audited; `sv_fps 40` is supported
   (frames are whole milliseconds, so only 20 and 40 run on rate and keep 20 snapshots/s for
   default clients; other values warn). Fixed for any rate: `sv_netoptimize` look-ahead and
-  per-frame damping (jeep turning, damage view kick). Open decision: weapon fire delays are checked
-  once per frame, so at 40 Hz weapons fire closer to their tik values (BAR 400 -> 480 rpm,
-  semi-autos about +17%); keep that, or round fire times to 50 ms steps to keep the 20 Hz feel.
+  per-frame damping (jeep turning, damage view kick). Decided: weapon fire delays are checked
+  once per frame, so at 40 Hz weapons fired closer to their tik values (BAR 400 -> 480 rpm); the
+  maintainer chose the 20 Hz feel, so above 20 Hz fire times round to 50 ms steps
+  (`G_FireDelayElapsed`, branch `fix/fire-rate-40hz`).
   Map scripts that move things per `waitframe` run twice as fast.
 - **Faster server tick (original note):** `sv_fps` above 20 (40 Hz and up) without breaking original clients, as
   OpenCoD2-Plus does.

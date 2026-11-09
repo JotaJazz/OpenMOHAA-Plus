@@ -45,7 +45,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Script commands | `team_swap` (halftime side swap, `DM_Manager::SwapTeams`); `team_getscore` is a return event | (phase 2) |
 | Script functions | libmoh: `create_api_request`, `json_parse`, `json_stringify` (`code/fgame/libmoh.cpp`, `code/server/sv_http.cpp`) | (phase 2) |
 | Server commands | `compilescript` reports parse errors instead of aborting | (phase 2) |
-| Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time | (phase 3) |
+| Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time; weapons keep the 20 Hz fire rate (`G_FireDelayElapsed`), `g_showweaponfire` | (phase 3) |
 | Server scripts | `sv_scripts` runs listed scripts on every level | (phase 3) |
 | Filesystem | GOG lookup uses MOHAA's ID (was Quake 3), Steam/Microsoft Store lookups off, `fs_eapath` (EA folder, also in Wine), clear error when the game data is missing | (phase 4) |
 | Server browser | Master lookups in the background (`code/gamespy/gs_resolve.cpp`), next master on DNS failure, unused master sockets start as `INVALID_SOCKET` | #376 |

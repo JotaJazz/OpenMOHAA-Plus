@@ -1799,6 +1799,29 @@ qboolean Weapon::HasAmmoInClip(firemode_t mode)
 //======================
 //Weapon::ReadyToFire
 //======================
+/*
+==================
+G_FireDelayElapsed
+
+Added in OpenMOHAA Plus
+ The fire delay is checked once per server frame, so at 20 Hz a weapon fires on the first 50 ms
+ frame after its delay: the BAR (0.12 s) fires every 0.15 s, 400 rpm. At 40 Hz the same check rounds
+ to 25 ms frames and the BAR fires at 480 rpm. Above 20 Hz, wait for the delay a 20 Hz server
+ would give, so weapons keep the original game's fire rate.
+==================
+*/
+bool G_FireDelayElapsed(float lastFireTime, float delay)
+{
+    static const float tick20 = 0.05f;
+
+    if (level.frametime >= tick20 - 0.001f) {
+        return level.time > lastFireTime + delay; // the original check
+    }
+
+    const float required = (floorf(delay / tick20 + 0.001f) + 1.0f) * tick20;
+    return level.time - lastFireTime >= required - 0.001f;
+}
+
 qboolean Weapon::ReadyToFire(firemode_t mode, qboolean playsound)
 {
     if (owner && owner->IsSubclassOfSentient()) {
@@ -1811,7 +1834,8 @@ qboolean Weapon::ReadyToFire(firemode_t mode, qboolean playsound)
     }
 
     // Make sure the weapon is in the ready state and the weapon has ammo
-    if (m_eLastFireMode != mode || level.time > (m_fLastFireTime + FireDelay(mode))) {
+    // Changed in OpenMOHAA Plus: same fire rate at any server rate (G_FireDelayElapsed)
+    if (m_eLastFireMode != mode || G_FireDelayElapsed(m_fLastFireTime, FireDelay(mode))) {
         if (HasAmmoInClip(mode)) {
             if (m_fMaxFireMovement >= 1.f) {
                 return qtrue;
@@ -2152,6 +2176,10 @@ const char *Weapon::GetFireAnim() const
 //======================
 void Weapon::Fire(firemode_t mode)
 {
+    // Added in OpenMOHAA Plus: log every shot with the level time (fire rate checks)
+    if (g_showweaponfire->integer) {
+        gi.Printf("weapon fire: %s at %d ms\n", getName().c_str(), level.inttime);
+    }
     Event *done_event = NULL;
     Vector pos;
 
