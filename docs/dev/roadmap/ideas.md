@@ -126,6 +126,51 @@ script events added to `fgame`, portable to every platform.
 - **Not planned:** Direct3D 12 (the original game was OpenGL; Vulkan covers Windows, Linux and
   macOS via MoltenVK).
 
+## Campaign co-op
+
+Play the single-player missions together. Interest exists (the HaZardModding Coop mod, upstream
+#932).
+
+- **Constraint:** SP level scripts assume a single `$player`; loading an SP map in a multiplayer
+  gametype floods the log with script errors (see upstream #422 in [debt.md](debt.md)).
+- **Shape:** engine support for several players in SP levels (spawning, `$player` resolution,
+  checkpoints, save/load policy) plus script adaptations; study the existing coop mod first.
+- **Cost:** large, high community impact.
+
+## Competitive netcode: lag compensation and hit validation
+
+- **Shape:** server-side lag compensation when resolving shots (like Quake III "unlagged"), with
+  validation against impossible hits; pairs with the faster server tick and the competition mode.
+- **First step:** measure current hit registration with bots and simulated latency
+  (`cl_packetdelay`, `sv_packetdelay` exist).
+
+## Match demos
+
+- **Shape:** server-side recording of matches for clan wars review, streaming and cheat reports.
+- **First step:** check what OpenMoHAA supports today for demo recording and playback (the stock
+  game folder has a `main/demos` directory).
+
+## Automatic mod download over HTTP
+
+Joining a modded server usually means finding its pk3 files by hand.
+
+- **Shape:** the client downloads the pk3 files a server requires from an HTTP URL, as
+  OpenCoD2-Plus does with `sv_wwwBaseURL`; the engine already has curl (`USE_HTTP`) and
+  `cl_allowDownload`.
+- **First step:** verify the current download flow end to end with a local HTTP server; the server
+  must only offer paks it really has.
+
+## Game install detection
+
+- **Shape:** use the existing store paths (`fs_steampath`, `fs_gogpath`, `fs_microsoftstorepath`)
+  and a first-run prompt for the game folder, so players do not need `+set fs_basepath`.
+- **Why:** lowers the barrier for new players.
+
+## Performance profiling
+
+- **Shape:** integrate a profiler (upstream PR #865 proposes Tracy) to measure server frame cost
+  before raising the tick rate or adding a renderer.
+
 ## Also discussed
 
 - **Faster server tick:** `sv_fps` above 20 (40 Hz and up) without breaking original clients, as
