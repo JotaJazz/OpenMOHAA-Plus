@@ -126,6 +126,9 @@ class ServerScripts(GameTestCase):
         self.assertIn("TSCR a dm/mohdm2", log)
         self.assertIn("sv_scripts: couldn't load 'plus/missing.scr'", log)
         self.assertRegex(log, r"sv_scripts: (couldn't load 'plus/broken.scr'|'plus/broken.scr' failed)")
+
+
+@require_game
 class GametypeEvents(GameTestCase):
     def test_player_damage_can_cancel_or_replace_damage(self):
         self.home.write("maps/dm/mohdm1.scr", """main:
