@@ -279,6 +279,11 @@ differ; `path` already prints the search path and loaded pk3 files.
 
 ## Server flood protection
 
+Status: checked on 2026-11-09, already present (ioquake3 `SVC_RateLimit` per address and global).
+A flood of ~960 queries in 2 s from one address gets 4-11 replies, with fewer bytes out than in;
+covered by `QueryFlood` in `tests/test_server.py` (branch `test/network-fuzz`). Spoofed-source
+floods are capped by the global bucket. No change made.
+
 - **Shape:** per-IP rate limits for `getstatus`, `getinfo` and connection attempts; audit that
   ioquake3's amplification defenses are present.
 - **First step:** check what the code already has.
