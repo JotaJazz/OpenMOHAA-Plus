@@ -6,6 +6,8 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 import os
 import re
 import socket
+import subprocess
+import sys
 import time
 import shutil
 import subprocess
@@ -188,3 +190,18 @@ end
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@require_game
+@unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 1 minute); set OMOH_SLOW=1")
+class NetworkFuzz(GameTestCase):
+    def test_server_survives_malformed_packets(self):
+        s = self.server("+set", "g_gametype", "1", "+set", "sv_maxclients", "8", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        fuzzer = os.path.join(os.path.dirname(os.path.abspath(__file__)), "netfuzz.py")
+        subprocess.run([sys.executable, "-I", fuzzer, str(s.port), "45", "1"], check=True,
+                       stdout=subprocess.DEVNULL)
+        self.assertIsNone(s.proc.poll(), "server died under malformed packets")
+        s.send("status")
+        s.wait_for(r"^map: dm/mohdm1", timeout=20)
+        self.assertEqual(s.quit(), 0)
