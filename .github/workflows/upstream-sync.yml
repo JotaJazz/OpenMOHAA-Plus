@@ -1,0 +1,57 @@
+name: Upstream sync
+
+# Weekly attempt to merge openmoh/openmohaa main into this fork, as a pull request inside the
+# fork so the usual CI (Builds, Unit Tests, Docs check) runs on it. Nothing is ever pushed to
+# upstream. On conflicts the job fails and lists the conflicting files; merge by hand then
+# (docs/dev/development/fork-workflow.md).
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    if: github.repository == 'JotaJazz/OpenMOHAA-Plus'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream main
+        id: merge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/openmoh/openmohaa.git
+          git fetch --no-tags upstream main
+          count=$(git rev-list --count HEAD..upstream/main)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$count" = "0" ]; then
+            echo "Already up to date with upstream."
+            exit 0
+          fi
+          branch="upstream-sync/$(date -u +%Y-%m-%d)"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          git switch -c "$branch"
+          if ! git merge --no-ff --no-edit upstream/main; then
+            echo "::error::Merge conflicts with upstream main:"
+            git diff --name-only --diff-filter=U
+            exit 1
+          fi
+          git push origin "$branch"
+
+      - name: Open pull request
+        if: steps.merge.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "${{ steps.merge.outputs.branch }}" \
+            --title "Merge upstream main ($(date -u +%Y-%m-%d))" \
+            --body "Automated merge of ${{ steps.merge.outputs.count }} commit(s) from openmoh/openmohaa main. Review CI, run the headless test suite locally (tests/README.md), and update docs/ai/SYSTEM_SUMMARY.md (upstream base) after merging."

@@ -303,6 +303,9 @@ The community works in `.scr`; today a script error shows only when the map load
 
 ## Automated upstream sync
 
+Status: implemented on branch `feat/upstream-sync` (workflow; the schedule must be enabled in the
+fork's Actions tab).
+
 - **Shape:** a scheduled workflow merges `upstream/main` into a branch, builds, runs the test
   suite and opens a PR in the fork, so conflicts surface early.
 
