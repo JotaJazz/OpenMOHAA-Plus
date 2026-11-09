@@ -16,6 +16,8 @@ endif()
 list(APPEND CURL_DEFINITIONS HAS_LIBCURL=1)
 
 list(APPEND CLIENT_DEFINITIONS ${CURL_DEFINITIONS})
+# Added in OpenMOHAA Plus: HTTP downloads of server pk3s (sv_dlURL); libcurl is loaded at run time
+list(APPEND CLIENT_DEFINITIONS USE_CURL USE_CURL_DLOPEN)
 list(APPEND CLIENT_INCLUDE_DIRS ${CURL_INCLUDE_DIRS})
 
 # For some functions like update checker
