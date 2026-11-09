@@ -218,6 +218,41 @@ The community works in `.scr`; today a script error shows only when the map load
   ioquake3's amplification defenses are present.
 - **First step:** check what the code already has.
 
+## Server-side anti-wallhack
+
+- **Shape:** do not send each client the positions of enemies it cannot see, using map visibility
+  (PVS) and line-of-sight traces, so a modified client lacks the data; precedent in Quake III and
+  CoD mods.
+- **Risk:** CPU cost per snapshot and popping at corners; needs margins and measurement.
+
+## Better bots
+
+- **Fact:** the game module links Recast Navigation for bots (`cmake/basegame.cmake`).
+- **Shape:** difficulty levels, team play, objective play (upstream #602), plus reported bugs:
+  ladders (#814), grenades (#833), skills and weapons (#684).
+- **Why:** keeps low-population servers alive, and bots are the test players for automated tests.
+
+## Sharp text at high resolutions
+
+- **Fact:** the `USE_FREETYPE` build option exists and is off; MOHAA fonts are bitmaps.
+- **Shape:** vector fonts for HUD, menus and console keeping the original style.
+- **First step:** check whether FreeType is wired to the game's font code at all.
+
+## Linux packaging: Flatpak and AppImage
+
+- **Shape:** one-click install on any distro and Steam Deck (upstream #890).
+
+## Translations
+
+- **Fact:** the engine already loads localization files (`global/localization.txt`).
+- **Shape:** make community translations of menus and texts easy (upstream #936 asks for
+  Simplified Chinese; Spanish too).
+
+## Reliable server browser
+
+- **Shape:** fix the hang when a server does not answer (upstream #376); add favorites, history
+  and filters (mods, players, ping).
+
 ## Also discussed
 
 - **Faster server tick:** `sv_fps` above 20 (40 Hz and up) without breaking original clients, as
