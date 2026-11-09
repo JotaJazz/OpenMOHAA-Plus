@@ -36,6 +36,17 @@ New features follow the same branch flow; check [ideas.md](../roadmap/ideas.md) 
 6. On `main`, update `docs/ai/SYSTEM_SUMMARY.md`, add one `docs/ai/PROJECT_MEMORY.md` stage for the
    batch, and record rejected or open items in `docs/dev/roadmap/debt.md`.
 
+## Versions and releases
+
+- Version: upstream `PROJECT_VERSION` plus a fork revision, shown as `X.Y.Z-plus.N`
+  (`PRODUCT_VERSION_PLUS` in `cmake/identity.cmake`). Reset `N` to 1 when an upstream merge bumps
+  `PROJECT_VERSION`.
+- Release: bump `PRODUCT_VERSION_PLUS`, merge to `main`, push a tag `vX.Y.Z-plus.N`; the
+  `.github/workflows/tags-publish-release.yml` workflow builds and publishes it. Only the
+  maintainer publishes releases.
+- The in-game update checker (`code/sys/sys_update_checker.cpp`) reads the fork's latest release
+  and understands `vX.Y.Z` and `vX.Y.Z-plus.N` tags.
+
 ## Commit message
 
 ```

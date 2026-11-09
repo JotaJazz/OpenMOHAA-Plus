@@ -2654,18 +2654,19 @@ void CL_VerifyUpdate() {
         return;
     }
 
-    int lastMajor, lastMinor, lastPatch;
-    if (updateChecker.CheckNewVersion(lastMajor, lastMinor, lastPatch)) {
+    int lastMajor, lastMinor, lastPatch, lastPlus;
+    if (updateChecker.CheckNewVersion(lastMajor, lastMinor, lastPatch, lastPlus)) {
         cl_updateNotified = true;
 
         const char *updateText =
             va("A new update is available!\n"
-               "The latest version is v%d.%d.%d (you are running v%s).\n"
-               "Check https://github.com/openmoh/openmohaa for more.",
+               "The latest version is v%d.%d.%d-plus.%d (you are running v%s).\n"
+               "Check " FORK_URL " for more.",
                lastMajor,
                lastMinor,
                lastPatch,
-               PRODUCT_VERSION_NUMBER_STRING);
+               lastPlus,
+               PRODUCT_VERSION);
 
         UIMessageDialog::ShowMessageBox("Update available", updateText);
     }

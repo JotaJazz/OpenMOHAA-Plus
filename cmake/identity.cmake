@@ -1,5 +1,8 @@
 set(PROJECT_NAME openmohaa)
 set(PROJECT_VERSION 0.83.0)
+# OpenMOHAA Plus revision on top of the upstream PROJECT_VERSION (version shows as X.Y.Z-plus.N,
+# release tags are vX.Y.Z-plus.N). Reset to 1 when an upstream merge bumps PROJECT_VERSION.
+set(PRODUCT_VERSION_PLUS 1)
 
 set(SERVER_NAME omohaaded)
 set(CLIENT_NAME openmohaa)

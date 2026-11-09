@@ -59,7 +59,7 @@ private:
     void InitClient();
     void ShutdownClient();
 
-    bool ParseVersionNumber(const char *value, int& major, int& minor, int& patch) const;
+    bool ParseVersionNumber(const char *value, int& major, int& minor, int& patch, int& plus) const;
     void RequestThread();
     void DoRequest();
 
@@ -83,8 +83,8 @@ public:
     void Shutdown();
 
     bool CheckNewVersion() const;
-    bool CheckNewVersion(int& major, int& minor, int& patch) const;
-    void SetLatestVersion(int major, int minor, int patch);
+    bool CheckNewVersion(int& major, int& minor, int& patch, int& plus) const;
+    void SetLatestVersion(int major, int minor, int patch, int plus);
 
 private:
     void CheckInitClientThread();
@@ -97,6 +97,7 @@ private:
     int  lastMajor;
     int  lastMinor;
     int  lastPatch;
+    int  lastPlus;
     bool versionChecked;
 
     std::chrono::time_point<std::chrono::steady_clock> nextMessageTime;
