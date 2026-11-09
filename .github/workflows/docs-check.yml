@@ -1,0 +1,32 @@
+name: Docs check
+
+on:
+  push:
+    paths:
+      - 'AGENTS.md'
+      - 'LAYOUT.md'
+      - 'docs/dev/**'
+      - 'docs/ai/**'
+      - 'misc/docs-check/**'
+      - '.github/workflows/docs-check.yml'
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'LAYOUT.md'
+      - 'docs/dev/**'
+      - 'docs/ai/**'
+      - 'misc/docs-check/**'
+      - '.github/workflows/docs-check.yml'
+  workflow_dispatch:
+
+jobs:
+  docs-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checker unit tests
+        run: python3 -I -m unittest discover -s misc/docs-check -v
+
+      - name: Check docs
+        run: python3 -I misc/docs-check/check_docs.py
