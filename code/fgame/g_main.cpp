@@ -485,6 +485,9 @@ void G_RunFrame(int levelTime, int frameTime)
     try {
         g_iInThinks = 0;
 
+        // Added in OpenMOHAA Plus: deliver finished create_api_request responses
+        LibMoh_RunFrame();
+
         if (g_showmem->integer) {
             DisplayMemoryUsage();
         }
@@ -1342,10 +1345,10 @@ qboolean LevelArchiveValid(Archiver& arc)
     arc.ArchiveInteger(&version);
     arc.ArchiveInteger(&savegame_version);
 
-    if (version < GAME_API_VERSION) {
+    if (version < GAME_ARCHIVE_VERSION) {
         gi.Printf("Savegame from an older version (%d) of MOHAA.\n", version);
         return qfalse;
-    } else if (version > GAME_API_VERSION) {
+    } else if (version > GAME_ARCHIVE_VERSION) {
         gi.Printf("Savegame from version %d of MOHAA.\n", version);
         return qfalse;
     }
@@ -1402,7 +1405,7 @@ qboolean G_ArchiveLevel(
             arc.Create(filename);
 
             // write out the version number
-            temp = GAME_API_VERSION;
+            temp = GAME_ARCHIVE_VERSION;
             arc.ArchiveInteger(&temp);
             temp = SAVEGAME_VERSION;
             arc.ArchiveInteger(&temp);

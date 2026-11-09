@@ -525,3 +525,7 @@ extern gentity_t *g_entities;
 #define FOFS(x) ((size_t) & (((gentity_t *)0)->x))
 
 #include "g_utils.h"
+
+// libmoh.cpp, Added in OpenMOHAA Plus
+void LibMoh_RunFrame(void);
+void LibMoh_Reset(void);

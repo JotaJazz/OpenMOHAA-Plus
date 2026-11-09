@@ -534,6 +534,12 @@ unsigned int SV_Client_GetMaxPendingCommands(client_t *cl);
 //
 void SV_Heartbeat_f( void );
 
+// sv_http.cpp, Added in OpenMOHAA Plus
+int SV_HTTP_Request( const char *url, const char *method, const char *body );
+qboolean SV_HTTP_PollResponse( int *id, int *code, char *buffer, int bufferSize );
+void SV_HTTP_Clear( void );
+void SV_HTTP_Shutdown( void );
+
 //
 // sv_snapshot.c
 //

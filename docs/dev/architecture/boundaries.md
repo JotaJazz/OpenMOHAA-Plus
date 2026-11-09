@@ -27,6 +27,9 @@ Derived from `#include "../<dir>/..."` usage and the CMake targets in [overview.
 | renderer | Y | - | Y | - | - | Y |
 | corepp / tiki | Y | per target | Y | per target (`GAME_DLL`) | per target (`CGAME_DLL`) | - |
 
+`GAME_API_VERSION` is 1016 in this fork (import table extended with `HTTP_*`); savegames use
+`GAME_ARCHIVE_VERSION` (15) so they stay loadable.
+
 Public interface headers:
 - Game: `code/fgame/g_public.h`, `code/fgame/bg_public.h` (shared player movement and constants).
 - Client game: `code/cgame/cg_public.h`, `code/cgame/tr_types.h`.

@@ -138,6 +138,11 @@ Match control for leagues and clan wars, like the maintainer's zPAM Plus for CoD
 
 ## libmoh (extended script functions)
 
+Status: MVP on branch `feat/libmoh-http`: `create_api_request` (get/post), `json_parse`,
+`json_stringify`, NightFall-compatible (`docs/markdown/04-coding/02-scripting/04-plus-libmoh.md`);
+engine side `code/server/sv_http.cpp` behind new `gi.HTTP_*` entries. Still open:
+`register_api_route` (HTTP server), SQLite, bot control, player info.
+
 The role libcod plays for CoD2, without injection: the source is available, so new functions are
 script events added to `fgame`, portable to every platform.
 

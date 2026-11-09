@@ -30,7 +30,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Version 11 is >= 0.05 and <= 1.00
 // Version 12 is >= 1.10
 // Version 15 is >= 2.0
-#define GAME_API_VERSION 15
+// Changed in OpenMOHAA Plus: the import table gained HTTP functions (1000 + upstream number, so a
+// module with upstream's layout is rejected). Savegames keep the upstream number, their format did
+// not change.
+#define GAME_API_VERSION     1016
+#define GAME_ARCHIVE_VERSION 15
 
 // entity->svFlags
 // the server does not know how to interpret most of the values
@@ -502,6 +506,11 @@ typedef struct gameImport_s {
     unsigned int (*Client_MaxPendingCommands)(int clientNum);
 
     cvar_t *fsDebug;
+
+    // Added in OpenMOHAA Plus: asynchronous HTTP for scripts (code/server/sv_http.cpp)
+    int (*HTTP_Request)(const char *url, const char *method, const char *body);
+    qboolean (*HTTP_PollResponse)(int *id, int *code, char *buffer, int bufferSize);
+    void (*HTTP_Clear)(void);
 
 } game_import_t;
 
