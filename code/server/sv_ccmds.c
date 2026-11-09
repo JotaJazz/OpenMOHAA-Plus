@@ -620,8 +620,15 @@ static void SV_RehashBans_f(void)
 		
 		endpos = textbuf + filelen;
 		
-		for(index = 0; index < SERVER_MAXBANS && curpos + 2 < endpos; index++)
+		for(index = 0; index < SERVER_MAXBANS; )
 		{
+			// skip blank lines
+			while(curpos < endpos && (*curpos == '\n' || *curpos == '\r'))
+				curpos++;
+
+			if(curpos + 2 >= endpos)
+				break;
+
 			// find the end of the address string
 			for(maskpos = curpos + 2; maskpos < endpos && *maskpos != ' '; maskpos++);
 			
@@ -671,6 +678,9 @@ static void SV_RehashBans_f(void)
 				{
 					serverBans[index].subnet = 128;
 				}
+
+				// only keep entries that parsed, so no stale ban is left in this slot
+				index++;
 			}
 			
 			curpos = newlinepos + 1;
