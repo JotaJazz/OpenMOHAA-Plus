@@ -107,6 +107,48 @@ end
 
 
 @require_game
+class ServerTickRate(GameTestCase):
+    SCRIPT = """main:
+	level waittill spawn
+	wait 2
+	local.t = level.time
+	local.n = 0
+	while (level.time - local.t < 5)
+	{
+		waitframe
+		local.n++
+	}
+	println ("TFPS frames " + local.n)
+	local.t = level.time
+	wait 1
+	println ("TFPS wait1 " + (level.time - local.t))
+end
+"""
+
+    def run_rate(self, fps):
+        self.home.write("maps/dm/mohdm1.scr", self.SCRIPT)
+        s = self.server("+set", "developer", "1", "+set", "sv_fps", str(fps), "+set", "g_gametype", "1",
+                        "+map", "dm/mohdm1")
+        log = s.wait_for(r"TFPS wait1", timeout=90)
+        self.assertEqual(s.quit(), 0)
+        frames = int(re.search(r"TFPS frames (\d+)", log).group(1))
+        wait1 = float(re.search(r"TFPS wait1 ([\d.]+)", log).group(1))
+        return frames, wait1, log
+
+    def test_40hz_runs_40_frames_per_second(self):
+        frames, wait1, log = self.run_rate(40)
+        self.assertAlmostEqual(frames, 200, delta=2)
+        self.assertAlmostEqual(wait1, 1.0, delta=0.03)
+        self.assertNotIn("is not supported", log)
+
+    def test_unsupported_rate_warns(self):
+        self.home.write("maps/dm/mohdm1.scr", self.SCRIPT)
+        s = self.server("+set", "sv_fps", "30", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"sv_fps 30 is not supported", timeout=60)
+        self.assertEqual(s.quit(), 0)
+
+
+@require_game
 class Bans(GameTestCase):
     def test_rehashbans_ignores_blank_lines(self):
         # upstream #926: removing a line's text leaves a blank line; the removed ban must not stay

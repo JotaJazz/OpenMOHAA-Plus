@@ -6363,9 +6363,11 @@ void Player::DamageFeedback(void)
 
     if (damage_count) {
         // decay damage_count over time
-        damage_count *= 0.8f;
-        damage_from *= 0.8f;
-        damage_angles *= 0.8f;
+        // Changed in OpenMOHAA Plus: same decay per second as 0.8 per 20 Hz frame, at any sv_fps
+        const float decay = powf(0.8f, level.frametime / 0.05f);
+        damage_count *= decay;
+        damage_from *= decay;
+        damage_angles *= decay;
         if (damage_count < 0.1f) {
             damage_count = 0;
             damage_from  = Vector(0, 0, 0);

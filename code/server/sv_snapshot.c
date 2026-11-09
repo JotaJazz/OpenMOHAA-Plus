@@ -500,8 +500,10 @@ qboolean SV_ClientIsVisible(int toNum, int fromNum, int distCheck, const vec3_t 
 	//
 	// check with velocity prediction
 	//
-	VectorMA(fromOrigin, sv.frameTime * 3, fromPs->velocity, fromOrigin);
-	VectorMA(toOrigin, sv.frameTime * 3, toPs->velocity, toOrigin);
+	// Changed in OpenMOHAA Plus: a fixed 150 ms look-ahead (3 frames at the original 20 Hz),
+	// so a faster sv_fps doesn't shorten it
+	VectorMA(fromOrigin, 0.15f, fromPs->velocity, fromOrigin);
+	VectorMA(toOrigin, 0.15f, toPs->velocity, toOrigin);
 
 	if (SV_ClientIsVisibleTrace(fromOrigin, toOrigin, toPs->viewheight / 2, dot)) {
         fromClient->lastVisCheckTime[toNum] = svs.time + sv_netoptimize_vistime->integer;

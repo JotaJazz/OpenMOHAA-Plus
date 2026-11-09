@@ -1070,6 +1070,18 @@ void SV_Frame( int msec ) {
 	if ( sv_fps->integer < 1 ) {
 		Cvar_Set( "sv_fps", "20" );
 	}
+
+	// Added in OpenMOHAA Plus: frames are whole milliseconds, other rates run off-rate and
+	// space snapshots unevenly (e.g. 30 runs at 30.3 Hz and sends ~15 snapshots/s at snaps 20)
+	{
+		static int warnedFps = 20;
+		if ( sv_fps->integer != warnedFps ) {
+			warnedFps = sv_fps->integer;
+			if ( 1000 % sv_fps->integer || sv_fps->integer % 20 ) {
+				Com_Printf( S_COLOR_YELLOW "WARNING: sv_fps %d is not supported, use 20 or 40\n", sv_fps->integer );
+			}
+		}
+	}
     
 	frameMsec = 1000 / sv_fps->integer;
 	// don't let it scale below 1ms

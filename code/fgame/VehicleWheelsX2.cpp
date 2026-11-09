@@ -321,7 +321,8 @@ void VehicleWheelsX2::UpdateVariables(
 
     m_vAngularAcceleration[1] = angledist(RAD2DEG(m_fTorque));
     m_vAngularVelocity += m_vAngularAcceleration * level.frametime;
-    m_vAngularVelocity *= 0.825f;
+    // Changed in OpenMOHAA Plus: per-second damping equal to 0.825 per 20 Hz frame, at any sv_fps
+    m_vAngularVelocity *= powf(0.825f, level.frametime / 0.05f);
     avelocity = m_vAngularVelocity;
 
     if (m_bAutomatic) {
