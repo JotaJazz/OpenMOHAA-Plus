@@ -764,6 +764,9 @@ void ScriptMaster::Reset(qboolean samemap)
         //  Registered command labels reference the scripts freed below
         m_scriptCmds.clear();
 
+        // Added in OpenMOHAA Plus: pending create_api_request handlers reference these scripts too
+        LibMoh_Reset();
+
         CloseGameScript();
         StringDict.clear();
         InitConstStrings();

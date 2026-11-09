@@ -11,6 +11,8 @@ import sys
 import time
 import shutil
 import tempfile
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import unittest
 
 import omoh
@@ -465,3 +467,89 @@ class ModCompatibility(GameTestCase):
                 self.assertEqual(s.quit(), 0)
                 errors = [l for l in s.log().splitlines() if "Script Error" in l]
                 self.assertFalse(errors, "\n".join(errors[:10]))
+
+
+class _ApiHandler(BaseHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+    def _reply(self, body):
+        data = body.encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):
+        self._reply('{"id": 3, "title": "hello", "done": true, "list": [10, 20]}')
+
+    def do_POST(self):
+        self._reply(self.rfile.read(int(self.headers.get("Content-Length", 0))).decode())
+
+
+@require_game
+class LibMoh(GameTestCase):
+    def setUp(self):
+        super().setUp()
+        self.http = HTTPServer(("127.0.0.1", 0), _ApiHandler)
+        threading.Thread(target=self.http.serve_forever, daemon=True).start()
+        self.addCleanup(self.http.shutdown)
+        self.url = f"http://127.0.0.1:{self.http.server_address[1]}"
+
+    def test_create_api_request_and_json(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	local.r = create_api_request "URL/todo" "get" get_handler "ud1"
+	println ("TAPI ret_get " + local.r)
+	local.r = create_api_request "URL/echo" "post" post_handler "hello"
+	println ("TAPI ret_post " + local.r)
+	local.r = create_api_request "file:///etc/passwd" "get" file_handler
+	println ("TAPI ret_file " + local.r)
+	local.r = create_api_request "URL/todo" "delete" get_handler
+	println ("TAPI ret_bad " + local.r)
+	local.a[x] = 5
+	println ("TAPI stringify " + (json_stringify local.a))
+end
+
+get_handler local.code local.resp local.ud:
+	local.j = json_parse local.resp
+	println ("TAPI get " + local.code + " " + local.j[title] + " " + local.j[done] + " " + local.j[list][1] + " " + local.ud)
+end
+
+post_handler local.code local.resp local.ud:
+	local.j = json_parse local.resp
+	println ("TAPI post " + local.code + " " + local.j[type] + " " + local.j[content])
+end
+
+file_handler local.code local.resp local.ud:
+	println ("TAPI file " + local.code)
+end
+""".replace("URL", self.url))
+        s = self.server("+set", "developer", "1", "+set", "sv_api_client", "1", "+set", "g_gametype", "1",
+                        "+map", "dm/mohdm1")
+        s.wait_for(r"TAPI get", timeout=60)
+        s.wait_for(r"TAPI post", timeout=30)
+        log = s.wait_for(r"TAPI file", timeout=30)
+        self.assertEqual(s.quit(), 0)
+        for line in ("TAPI ret_get 0", "TAPI ret_post 0", "TAPI ret_file 0", "TAPI ret_bad 1",
+                     "TAPI get 200 hello 1 20 ud1", "TAPI post 200 string hello", "TAPI file -1"):
+            self.assertIn(line, log)
+        self.assertRegex(log, r'TAPI stringify \{"content":\{"x":\{"content":5,"type":"integer"\}\},"type":"array_object"\}')
+
+    def test_api_client_is_off_by_default(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	println ("TAPI ret " + (create_api_request "URL/todo" "get" h))
+end
+
+h local.code local.resp local.ud:
+	println "TAPI called"
+end
+""".replace("URL", self.url))
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        log = s.wait_for(r"TAPI ret", timeout=60)
+        time.sleep(2)
+        self.assertEqual(s.quit(), 0)
+        self.assertIn("TAPI ret 2", log)
+        self.assertNotIn("TAPI called", s.log())
