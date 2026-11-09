@@ -1205,6 +1205,7 @@ void SV_Shutdown( const char *finalmsg ) {
 	}
 
 	SV_RemoveOperatorCommands();
+	SV_HTTP_Shutdown(); // Added in OpenMOHAA Plus
 	SV_ShutdownGamespy();
 	SV_MasterShutdown();
 	SV_ShutdownGameProgs();

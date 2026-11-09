@@ -1591,6 +1591,7 @@ void SV_ShutdownGameProgs( void ) {
 		return;
 	}
 
+	SV_HTTP_Clear(); // Added in OpenMOHAA Plus: drop requests made by the departing scripts
 	ge->Shutdown();
 	// Free all memory allocated by the game module,
 	// unless the module stayed resident and still owns it
@@ -1953,6 +1954,11 @@ void SV_InitGameProgs( void ) {
     
     import.Client_NumPendingCommands	= PF_SV_Client_NumPendingCommands;
     import.Client_MaxPendingCommands	= PF_SV_Client_MaxPendingCommands;
+
+	// Added in OpenMOHAA Plus
+	import.HTTP_Request					= SV_HTTP_Request;
+	import.HTTP_PollResponse			= SV_HTTP_PollResponse;
+	import.HTTP_Clear					= SV_HTTP_Clear;
 
 	ge = Sys_GetGameAPI( &import );
 

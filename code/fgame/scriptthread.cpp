@@ -2003,6 +2003,37 @@ Event EV_ScriptThread_TypeOf
     "Returns the type of variable",
     EV_RETURN
 );
+// Added in OpenMOHAA Plus (libmoh.cpp), compatible with NightFall's functions
+Event EV_ScriptThread_CreateAPIRequest
+(
+    "create_api_request",
+    EV_DEFAULT,
+    "sssS",
+    "url method scriptname userdata",
+    "Queues an HTTP get/post request (needs sv_api_client 1); the handler is called with\n"
+    "http_code (-1 on error), response and userdata. Returns 0 queued, 1 invalid arguments,\n"
+    "2 API client not running, 3 error.",
+    EV_RETURN
+);
+Event EV_ScriptThread_JsonParse
+(
+    "json_parse",
+    EV_DEFAULT,
+    "s",
+    "json_string",
+    "Parses a JSON string into a variable (objects and arrays become arrays, true/false 1/0).",
+    EV_RETURN
+);
+Event EV_ScriptThread_JsonStringify
+(
+    "json_stringify",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Converts a variable to typed JSON ({\"type\": ..., \"content\": ...}).",
+    EV_RETURN
+);
+
 Event EV_ScriptThread_Md5String
 (
     "md5string",
@@ -2275,6 +2306,9 @@ CLASS_DECLARATION(Listener, ScriptThread, NULL) {
     {&EV_ScriptThread_GetTanH,                 &ScriptThread::EventTanH               },
     {&EV_ScriptThread_strncpy,                 &ScriptThread::StringBytesCopy         },
     {&EV_ScriptThread_Md5String,               &ScriptThread::Md5String               },
+    {&EV_ScriptThread_CreateAPIRequest,        &ScriptThread::CreateAPIRequest        },
+    {&EV_ScriptThread_JsonParse,               &ScriptThread::JsonParse               },
+    {&EV_ScriptThread_JsonStringify,           &ScriptThread::JsonStringify           },
     {&EV_ScriptThread_GetEntity,               &ScriptThread::GetEntByEntnum          },
     {&EV_ScriptThread_TypeOf,                  &ScriptThread::TypeOfVariable          },
     {&EV_ScriptThread_RegisterEv,              &ScriptThread::RegisterEvent           },

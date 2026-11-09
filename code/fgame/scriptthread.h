@@ -334,6 +334,10 @@ public:
     void StringBytesCopy(Event *ev);
     void Md5File(Event *ev);
     void Md5String(Event *ev);
+    // Added in OpenMOHAA Plus (libmoh.cpp)
+    void CreateAPIRequest(Event *ev);
+    void JsonParse(Event *ev);
+    void JsonStringify(Event *ev);
     void RegisterEvent(Event *ev);
     void RestoreSound(Event *ev);
     void RemoveArchivedClass(Event *ev);

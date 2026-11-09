@@ -20,7 +20,7 @@ OMOH_GAME_DIR=<GAME_DIR> OMOH_SLOW=1 python3 -I -m unittest discover -s tests -v
 | File | Covers |
 |---|---|
 | `tests/omoh.py` | helpers: temporary home, start server/client headless, send console commands through stdin, wait for log lines |
-| `tests/test_server.py` | map changes with bots, `registercmd` (#672), item properties (#920), `waitForState` (#702), `rehashbans` (#926), resident game module (#918), same-map restart burst (#287, slow) |
+| `tests/test_server.py` | libmoh HTTP/JSON (`create_api_request` against a local HTTP server), map changes with bots, `registercmd` (#672), item properties (#920), `waitForState` (#702), `rehashbans` (#926), resident game module (#918), same-map restart burst (#287, slow) |
 | `tests/test_client.py` | map load + `vid_restart`, stopwatch after loading a save (#916, screenshot analysis), sound alias without extension (#589), `com_maxfps` (#530), pure server with an extra menu pak (#659) |
 
 Every regression test was checked to fail on the code before its fix (upstream `a2f34019`) and to
