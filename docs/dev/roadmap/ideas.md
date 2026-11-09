@@ -369,6 +369,8 @@ decide whether to enable it by default. Not verified at run time.
 - **Shape:** difficulty levels, team play, objective play (upstream #602), plus reported bugs:
   ladders (#814), grenades (#833), skills and weapons (#684).
 - **Why:** keeps low-population servers alive, and bots are the test players for automated tests.
+- **Status:** #684 on branch `feat/bot-skill-weapons`: `g_bot_skill` (5 levels scaling the existing
+  aim cvars, shown in the browser instead of a fixed "Average"), `g_bot_weapons`.
 
 ## Sharp text at high resolutions
 

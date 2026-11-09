@@ -292,6 +292,8 @@ cvar_t *g_bot_attack_continuousfire_random_firetime;
 cvar_t *g_bot_attack_react_min_delay;
 cvar_t *g_bot_attack_react_random_delay;
 cvar_t *g_bot_attack_spreadmult;
+cvar_t *g_bot_skill;   // Added in OpenMOHAA Plus
+cvar_t *g_bot_weapons; // Added in OpenMOHAA Plus
 cvar_t *g_bot_turn_speed;
 cvar_t *g_bot_instamsg_chance;
 cvar_t *g_bot_instamsg_delay;
@@ -702,6 +704,10 @@ void CVAR_Init(void)
     g_bot_attack_react_random_delay            = gi.Cvar_Get("g_bot_attack_react_random_delay", "1.2", 0);
     g_bot_attack_spreadmult                    = gi.Cvar_Get("g_bot_attack_spreadmult", "1.0", 0);
     g_bot_turn_speed                           = gi.Cvar_Get("g_bot_turn_speed", "15", 0);
+    // Added in OpenMOHAA Plus (upstream #684): 1 (novice) to 5 (expert), 3 = the values above
+    g_bot_skill   = gi.Cvar_Get("g_bot_skill", "3", CVAR_ARCHIVE);
+    // Added in OpenMOHAA Plus (upstream #684): primary weapons bots pick from, e.g. "rifle smg shotgun"
+    g_bot_weapons = gi.Cvar_Get("g_bot_weapons", "", CVAR_ARCHIVE);
     g_bot_instamsg_chance                      = gi.Cvar_Get("g_bot_instamsg_chance", "5", 0);
     g_bot_instamsg_delay                        = gi.Cvar_Get("g_bot_instamsg_delay", "5.0", 0);
 

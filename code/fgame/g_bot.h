@@ -44,6 +44,11 @@ void         G_RemoveBot(gentity_t *ent);
 void         G_RemoveBots(unsigned int num);
 unsigned int G_GetNumBots();
 const char  *G_GetBotSkill();
+// Added in OpenMOHAA Plus (upstream #684)
+float        G_BotReactionScale();
+float        G_BotSpreadScale();
+float        G_BotTurnScale();
+const char  *G_BotPrimaryWeapon();
 bool         G_IsBot(gentity_t *ent);
 bool         G_IsPlayer(gentity_t *ent);
 void         G_ResetBots();

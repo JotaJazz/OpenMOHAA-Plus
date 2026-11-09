@@ -861,5 +861,34 @@ class InstallDetection(GameTestCase):
         self.assertIn("main/Pak0.pk3", log)
 
 
+@require_game
+class BotSettings(GameTestCase):
+    def test_bot_weapons_and_skill(self):
+        # upstream #684
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	while ($player.size < 4) {
+		wait 1
+	}
+	wait 5
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		println ("TBOT " + $player[local.i].netname + " " + $player[local.i].getcurrentdmweapontype)
+	}
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+set", "g_bot_weapons", "shotgun", "+set", "g_bot_skill", "5",
+                        "+map", "dm/mohdm1")
+        log = s.wait_for(r"TBOT .*", count=4, timeout=120)
+        s.send("g_bot_skill 1")
+        time.sleep(3)
+        log = s.log()
+        self.assertEqual(s.quit(), 0)
+        weapons = re.findall(r"TBOT \S+ (\S+)", log)
+        self.assertEqual(weapons, ["shotgun"] * 4)
+        self.assertIn("Bot skill: Expert (reaction x0.3, aim spread x0.3, turn speed x1.8)", log)
+        self.assertIn("Bot skill: Novice (reaction x2.0, aim spread x2.0, turn speed x0.6)", log)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -620,9 +620,79 @@ unsigned int G_GetNumBots()
 G_GetBotSkill
 ============
 */
+//
+// Added in OpenMOHAA Plus (upstream #684): bot skill levels
+//  The g_bot_attack_* and g_bot_turn_speed cvars are the "average" bot; g_bot_skill scales them.
+//
+static const struct {
+    const char *name;
+    float       reaction; // multiplies g_bot_attack_react_min_delay / _random_delay
+    float       spread;   // multiplies g_bot_attack_spreadmult
+    float       turn;     // multiplies g_bot_turn_speed
+} botSkills[] = {
+    {"Novice",  2.0f, 2.0f, 0.6f},
+    {"Easy",    1.5f, 1.5f, 0.8f},
+    {"Average", 1.0f, 1.0f, 1.0f},
+    {"Hard",    0.6f, 0.6f, 1.3f},
+    {"Expert",  0.3f, 0.3f, 1.8f},
+};
+
+static int G_BotSkillIndex()
+{
+    static int lastLogged = -1;
+    const int  index      = Q_clamp_int(g_bot_skill->integer, 1, 5) - 1;
+
+    if (index != lastLogged) {
+        lastLogged = index;
+        gi.Printf(
+            "Bot skill: %s (reaction x%.1f, aim spread x%.1f, turn speed x%.1f)\n",
+            botSkills[index].name,
+            botSkills[index].reaction,
+            botSkills[index].spread,
+            botSkills[index].turn
+        );
+    }
+    return index;
+}
+
+float G_BotReactionScale()
+{
+    return botSkills[G_BotSkillIndex()].reaction;
+}
+
+float G_BotSpreadScale()
+{
+    return botSkills[G_BotSkillIndex()].spread;
+}
+
+float G_BotTurnScale()
+{
+    return botSkills[G_BotSkillIndex()].turn;
+}
+
 const char *G_GetBotSkill()
 {
-    return "Average";
+    // Changed in OpenMOHAA Plus: was always "Average"
+    return botSkills[G_BotSkillIndex()].name;
+}
+
+// Added in OpenMOHAA Plus (upstream #684): a random entry of g_bot_weapons, or "auto"
+const char *G_BotPrimaryWeapon()
+{
+    static const char *known[] = {"rifle", "sniper", "smg", "mg", "heavy", "shotgun"};
+    const char        *choices[16];
+    char               list[256];
+    int                count = 0;
+
+    Q_strncpyz(list, g_bot_weapons->string, sizeof(list));
+    for (char *token = strtok(list, " ,;"); token && count < 16; token = strtok(NULL, " ,;")) {
+        for (int i = 0; i < (int)ARRAY_LEN(known); i++) {
+            if (!Q_stricmp(token, known[i])) {
+                choices[count++] = known[i];
+            }
+        }
+    }
+    return count ? choices[rand() % count] : "auto";
 }
 
 /*

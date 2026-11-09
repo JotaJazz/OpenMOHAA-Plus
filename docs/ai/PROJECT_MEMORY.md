@@ -3,6 +3,9 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — bot skill levels and weapons (#684)
+- Bots already had aim cvars (`g_bot_attack_*`, `g_bot_turn_speed`) and reported a fixed "Average" skill; `g_bot_skill` 1-5 multiplies them (3 = unchanged) and `g_bot_weapons` replaces the automatic weapon choice. The level's real effect on fights is not measured.
+
 ## 2026-11-09 — HUD round timer already existed
 - `hud_timelimit` shows "Time Left" from `CS_MATCHEND` (round time in round-based modes); it was invisible in tests only because they run without a time limit. Screenshots show it standing still during a match pause.
 

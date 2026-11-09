@@ -135,7 +135,7 @@ void BotController::UpdateBotStates(void)
         // Primary weapon
         //
         event = new Event(EV_Player_PrimaryDMWeapon);
-        event->AddString("auto");
+        event->AddString(G_BotPrimaryWeapon()); // Changed in OpenMOHAA Plus: g_bot_weapons (was "auto")
 
         controlledEnt->ProcessEvent(event);
     }
@@ -836,8 +836,9 @@ void BotController::State_Attack(void)
         bCanAttack = true;
         if (m_iLastUnseenTime) {
             const float reactionTime = Q_min(1000 * Q_min(1, fDistanceSquared / Square(2048)), 1000);
-            const unsigned int minDelay = g_bot_attack_react_min_delay->value * 1000;
-            const unsigned int randomDelay = g_bot_attack_react_random_delay->value * 1000;
+            // Changed in OpenMOHAA Plus: scaled by g_bot_skill
+            const unsigned int minDelay    = g_bot_attack_react_min_delay->value * 1000 * G_BotReactionScale();
+            const unsigned int randomDelay = g_bot_attack_react_random_delay->value * 1000 * G_BotReactionScale();
             if (level.inttime <= m_iLastUnseenTime + minDelay + G_Random(randomDelay)) {
                 bCanAttack = false;
             } else {
@@ -1010,7 +1011,7 @@ void BotController::State_Attack(void)
             m_iLastAimTime = level.inttime;
         }
 
-        rotation.AimAt(vTarget + m_vAimOffset * g_bot_attack_spreadmult->value);
+        rotation.AimAt(vTarget + m_vAimOffset * g_bot_attack_spreadmult->value * G_BotSpreadScale()); // g_bot_skill
     } else {
         AimAtAimNode();
     }
