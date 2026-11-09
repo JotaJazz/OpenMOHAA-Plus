@@ -85,6 +85,10 @@ independent of texture size).
 
 ## Server administration
 
+Finding: player information is already readable from scripts (`getip`, `getping`, `getclientnum`,
+`netname`, `kills`, `deaths`, `userinfo`); the missing parts are accounts, permissions (upstream
+#905) and per-command authorization.
+
 Upstream #905 asks for an ACL-based admin system with named permissions.
 
 - **Shape:** accounts and permissions, per-command authorization for rcon and chat commands,
@@ -114,6 +118,13 @@ decisions to scripts.
   decision points to expose.
 
 ## Competition mode (zPAM-like)
+
+Finding (2026-11-09, from code, `code/fgame/dm_manager.h` and `code/fgame/player.cpp`): the original
+game already has a ready-up. With `g_forceready 0` (default 1) a round-based match waits until every
+player on both teams has typed `ready` (`notready` undoes it); `DM_Team::IsReady` gates
+`WaitingForPlayers`. A competition MVP can therefore be mostly a script mod: `g_forceready 0`, the
+round events of the gametype scripting API for halftime and overtime, and `setteam` for side swaps.
+Not verified at run time yet (bots never type `ready`).
 
 Match control for leagues and clan wars, like the maintainer's zPAM Plus for CoD2.
 
@@ -241,6 +252,11 @@ The community works in `.scr`; today a script error shows only when the map load
 
 ## Map voting and dynamic rotation
 
+Finding (from code): player votes exist: `callvote map|nextmap|restart|g_gametype|kick` and `vote`
+(`code/fgame/player.cpp`, `code/fgame/clientvote.cpp`), on by default (`g_allowvote 1`), with
+the vote menu options read from `callvote.cfg`. Missing: an automatic vote among a few maps at the
+end of a match, and rotations by player count.
+
 - **Shape:** vote for the next map at the end of a match; rotations that adapt to the player count.
   Script on top of the gametype scripting API, or C++.
 
@@ -258,6 +274,13 @@ The community works in `.scr`; today a script error shows only when the map load
 - **First step:** check what the code already has.
 
 ## Server-side anti-wallhack
+
+Finding (from code): this exists. `sv_netoptimize` (default 0; `g_netoptimize` must stay 1) stops
+sending a client the players it cannot see, using line-of-sight traces from the eye position with
+lean and a 150 ms velocity look-ahead (`SV_ClientIsVisible` in `code/server/sv_snapshot.c`):
+1 checks only players outside the culling distance, 2 checks all of them; results are cached for
+`sv_netoptimize_vistime` ms. Remaining work: measure its effect and cost with real clients, and
+decide whether to enable it by default. Not verified at run time.
 
 - **Shape:** do not send each client the positions of enemies it cannot see, using map visibility
   (PVS) and line-of-sight traces, so a modified client lacks the data; precedent in Quake III and
