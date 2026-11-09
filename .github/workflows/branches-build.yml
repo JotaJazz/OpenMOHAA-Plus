@@ -41,6 +41,8 @@ jobs:
       matrix:
         target_os: [
           'linux-amd64',
+          'linux-amd64-appimage',
+          'linux-arm64-appimage',
           'linux-i686',
           'linux-arm64',
           'linux-armhf',
@@ -67,11 +69,21 @@ jobs:
         path: ${{github.workspace}}/${{matrix.target_os}}
 
     - name: Zip
+      if: ${{ !endsWith(matrix.target_os, '-appimage') }}
       working-directory: '${{github.workspace}}/${{matrix.target_os}}'
       run: zip -9 -r "../${{env.RELEASE_NAME}}.zip" ./
 
     - name: Release
+      if: ${{ !endsWith(matrix.target_os, '-appimage') }}
       uses: softprops/action-gh-release@v2.3.2
       with:
         tag_name: 'dev'
         files: ${{github.workspace}}/${{env.RELEASE_NAME}}.zip
+
+    # Added in OpenMOHAA Plus: AppImages are published as they are
+    - name: Release AppImage
+      if: ${{ endsWith(matrix.target_os, '-appimage') }}
+      uses: softprops/action-gh-release@v2.3.2
+      with:
+        tag_name: 'dev'
+        files: ${{github.workspace}}/${{matrix.target_os}}/*.AppImage

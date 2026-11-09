@@ -383,6 +383,11 @@ decide whether to enable it by default. Not verified at run time.
 ## Linux packaging: Flatpak and AppImage
 
 - **Shape:** one-click install on any distro and Steam Deck (upstream #890).
+- **Status:** AppImage for x86_64 and aarch64 on branch `feat/appimage` (`misc/linux/AppRun`,
+  `misc/linux/make-appimage.sh`, built by the Linux CI and published in the `dev` pre-release).
+  The AppImage uses the folder it sits in as `fs_basepath` when that folder has `main/`; options
+  `--dedicated`, `--spearhead`, `--breakthrough`. Open: Flatpak on Flathub (needs a maintainer
+  submission and review), pinning `appimagetool` (CI downloads the `continuous` build).
 
 ## Translations
 

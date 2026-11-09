@@ -96,7 +96,10 @@ New features beyond the original game, in the spirit of OpenCoD2-Plus. Planned, 
 
 Development builds are published automatically on the
 [`dev` pre-release](https://github.com/JotaJazz/OpenMOHAA-Plus/releases/tag/dev). Otherwise build
-it (see [Building](#building)). Installation works as in OpenMoHAA:
+it (see [Building](#building)). On Linux and the Steam Deck the simplest is the AppImage: put
+`OpenMOHAA-Plus-x86_64.AppImage` in your game folder (the one with `main/`), `chmod +x` it and run it
+(`--dedicated`, `--spearhead` or `--breakthrough` for the server and the expansions). Installation
+works as in OpenMoHAA:
 
 - [Installing](docs/markdown/01-intro/01-installation.md), [running the game and expansions](docs/markdown/02-running/01-running.md), [FAQ](docs/markdown/02-running/03-faq.md)
 - [Setting up a server](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuration](docs/markdown/03-configuration/01-configuration.md)

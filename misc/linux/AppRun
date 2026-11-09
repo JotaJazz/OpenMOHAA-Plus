@@ -1,0 +1,30 @@
+#!/bin/sh
+# AppImage entry point (OpenMOHAA Plus).
+#   OpenMOHAA-Plus.AppImage [--dedicated | --spearhead | --breakthrough] [game arguments]
+# Without +set fs_basepath, the folder holding the .AppImage is used when it contains main/: put the
+# AppImage in your Medal of Honor: Allied Assault folder and run it.
+HERE=$(dirname "$(readlink -f "$0")")
+BIN="$HERE/usr/lib/openmohaa"
+EXE=openmohaa
+
+case "$1" in
+    --dedicated) EXE=omohaaded; shift ;;
+    --spearhead) EXE=launch_openmohaa_spearhead; shift ;;
+    --breakthrough) EXE=launch_openmohaa_breakthrough; shift ;;
+esac
+
+# the bundled SDL2, OpenAL and cURL sit next to the executables
+export LD_LIBRARY_PATH="$BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+case " $* " in
+    *" fs_basepath "*) ;;
+    *)
+        GAME_DIR=$(dirname "${APPIMAGE:-$HERE}")
+        if [ -d "$GAME_DIR/main" ]; then
+            set -- +set fs_basepath "$GAME_DIR" "$@"
+        fi
+        ;;
+esac
+
+cd "$BIN" || exit 1
+exec "./$EXE" "$@"

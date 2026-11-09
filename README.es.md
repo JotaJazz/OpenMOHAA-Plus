@@ -101,7 +101,10 @@ hecho:
 
 Las builds de desarrollo se publican automáticamente en la
 [pre-release `dev`](https://github.com/JotaJazz/OpenMOHAA-Plus/releases/tag/dev). Si no, compílalo
-(ver [Compilar](#compilar)). La instalación funciona igual que en OpenMoHAA (guías en inglés):
+(ver [Compilar](#compilar)). En Linux y Steam Deck lo más simple es el AppImage: pon
+`OpenMOHAA-Plus-x86_64.AppImage` en la carpeta del juego (la que tiene `main/`), dale `chmod +x` y
+ejecútalo (`--dedicated`, `--spearhead` o `--breakthrough` para el servidor y las expansiones). La
+instalación funciona igual que en OpenMoHAA (guías en inglés):
 
 - [Instalación](docs/markdown/01-intro/01-installation.md), [ejecutar el juego y las expansiones](docs/markdown/02-running/01-running.md), [preguntas frecuentes](docs/markdown/02-running/03-faq.md)
 - [Montar un servidor](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuración](docs/markdown/03-configuration/01-configuration.md)
