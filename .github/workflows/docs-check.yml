@@ -8,6 +8,7 @@ on:
       - 'docs/dev/**'
       - 'docs/ai/**'
       - 'misc/docs-check/**'
+      - 'tests/**'
       - '.github/workflows/docs-check.yml'
       - 'code/**'
       - 'cmake/**'
@@ -18,6 +19,7 @@ on:
       - 'docs/dev/**'
       - 'docs/ai/**'
       - 'misc/docs-check/**'
+      - 'tests/**'
       - '.github/workflows/docs-check.yml'
       - 'code/**'
       - 'cmake/**'
@@ -34,6 +36,9 @@ jobs:
 
       - name: Checker unit tests
         run: python3 -I -m unittest discover -s misc/docs-check -v
+
+      - name: Game test suite imports (tests skip without game data)
+        run: python3 -I -m unittest discover -s tests -v
 
       - name: Check docs
         run: python3 -I misc/docs-check/check_docs.py
