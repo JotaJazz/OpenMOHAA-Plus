@@ -760,6 +760,10 @@ void ScriptMaster::Reset(qboolean samemap)
             scriptedEvents[i] = ScriptEvent();
         }
 
+        // Added in OPM
+        //  Registered command labels reference the scripts freed below
+        m_scriptCmds.clear();
+
         CloseGameScript();
         StringDict.clear();
         InitConstStrings();

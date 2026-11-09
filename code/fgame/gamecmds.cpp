@@ -120,6 +120,28 @@ void G_InitConsoleCommands(void)
     }
 }
 
+//
+// Added in OPM
+//  Execute the label registered with the "registercmd" script command
+//
+static qboolean G_ProcessScriptCommand(const char *cmd, Listener *self)
+{
+    ScriptThreadLabel *label = m_scriptCmds.findKeyValue(cmd);
+    Event              ev;
+    int                i;
+
+    if (!label) {
+        return qfalse;
+    }
+
+    for (i = 1; i < gi.Argc(); i++) {
+        ev.AddString(gi.Argv(i));
+    }
+
+    label->Execute(self, ev);
+    return qtrue;
+}
+
 qboolean G_ConsoleCommand(void)
 {
     qboolean      result;
@@ -139,6 +161,8 @@ qboolean G_ConsoleCommand(void)
         // Fixed in OPM
         //  Client commands are already executed in G_ClientCommand()
         //result = G_ProcessClientCommand(ent);
+
+        result = G_ProcessScriptCommand(cmd, NULL);
     } catch (const char *error) {
         G_ExitWithError(error);
     }
@@ -229,7 +253,7 @@ qboolean G_ProcessClientCommand(gentity_t *ent)
         }
     }
 
-    return qfalse;
+    return G_ProcessScriptCommand(cmd, player);
 }
 
 /*
