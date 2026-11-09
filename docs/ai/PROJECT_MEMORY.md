@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — fonts with accents (zzz-plus-fonts.pk3)
+- Glyph positions are divided by a nominal 256 and screen sizes come from those nominal pixels, so a 2x texture is sharper without changing layout; fonts load without mipmaps, so 4x looks grainy. The TGA must be bottom-up (the top-down flag is ignored).
+- DejaVu only (URW fonts are AGPL); glyphs are stretched to the original widths (facfont was 1.3x wider and got clipped in the HUD) and facfont keeps its grey fill with a dark outline.
+- A pixel-count test of `n` vs `ñ` was too noisy in a 3D scene (random spawn, brush entities even with `r_drawworld 0`); visual checks were done by screenshots, the test checks loading.
+
 ## 2026-11-09 — plus-match competition mod
 - Reference mod in scripts only: score per round, halftime `team_swap`, win at rounds/2+1 via `fraglimit`, draw, team timeouts with auto-resume (`registercmd` commands reach scripts from players' consoles with `self` = the player).
 - Pitfalls: round-based modes restart the map every round, so `main` reruns (state in cvars; `fraglimit` set in `match_start`, not `main`); `level_intermission` also fires between rounds.

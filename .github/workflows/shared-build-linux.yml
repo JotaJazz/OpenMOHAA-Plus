@@ -258,6 +258,24 @@ jobs:
         mkdir appimage
         APPIMAGE_EXTRACT_AND_RUN=1 sh source/misc/linux/make-appimage.sh package "$target" "appimage/OpenMOHAA-Plus-$target.AppImage" ./appimagetool
 
+    # Added in OpenMOHAA Plus: bitmap fonts with accented letters (misc/fonts), data for every platform
+    - name: Fonts pk3
+      if: matrix.architecture.name == 'amd64'
+      working-directory: ${{github.workspace}}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip fonts-dejavu-core
+        python3 -m pip install --user pillow
+        mkdir fonts
+        python3 source/misc/fonts/make_fonts.py --out fonts/zzz-plus-fonts.pk3
+
+    - uses: actions/upload-artifact@v4
+      if: matrix.architecture.name == 'amd64'
+      with:
+        name: out-fonts
+        if-no-files-found: error
+        path: ${{github.workspace}}/fonts
+
     ###
     # Artifacts
     ###

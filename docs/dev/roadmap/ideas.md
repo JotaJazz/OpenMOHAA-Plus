@@ -375,6 +375,10 @@ decide whether to enable it by default. Not verified at run time.
 - **Fact:** the `USE_FREETYPE` build option exists and is off; MOHAA fonts are bitmaps.
 - **Shape:** vector fonts for HUD, menus and console keeping the original style.
 - **First step:** check whether FreeType is wired to the game's font code at all.
+- **Status:** branch `feat/fonts`: `misc/fonts/make_fonts.py` builds replacement RitualFont + TGA
+  pairs from TrueType (DejaVu by default) with the Latin-1 letters, at 2x texture resolution and the
+  original widths; CI publishes `zzz-plus-fonts.pk3`. Not replaced: `handle-*` (ornamental),
+  `marlett` (symbols). Rendering at the real screen resolution (FreeType at run time) stays open.
 - **Checked:** it is not: `USE_FREETYPE` only builds the Quake 3 font code
   (`code/renderercommon/tr_font.c`); MOHAA text uses its own bitmap fonts (`fontheader_t`,
   `code/uilib/uifont.h`). Sharp text means rasterizing a TTF into that structure at the screen

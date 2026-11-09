@@ -43,6 +43,7 @@ jobs:
           'linux-amd64',
           'linux-amd64-appimage',
           'linux-arm64-appimage',
+          'fonts',
           'linux-i686',
           'linux-arm64',
           'linux-armhf',
@@ -69,12 +70,12 @@ jobs:
         path: ${{github.workspace}}/${{matrix.target_os}}
 
     - name: Zip
-      if: ${{ !endsWith(matrix.target_os, '-appimage') }}
+      if: ${{ !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
       working-directory: '${{github.workspace}}/${{matrix.target_os}}'
       run: zip -9 -r "../${{env.RELEASE_NAME}}.zip" ./
 
     - name: Release
-      if: ${{ !endsWith(matrix.target_os, '-appimage') }}
+      if: ${{ !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
       uses: softprops/action-gh-release@v2.3.2
       with:
         tag_name: 'dev'
@@ -87,3 +88,10 @@ jobs:
       with:
         tag_name: 'dev'
         files: ${{github.workspace}}/${{matrix.target_os}}/*.AppImage
+
+    - name: Release fonts
+      if: ${{ matrix.target_os == 'fonts' }}
+      uses: softprops/action-gh-release@v2.3.2
+      with:
+        tag_name: 'dev'
+        files: ${{github.workspace}}/${{matrix.target_os}}/*.pk3

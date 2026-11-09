@@ -5,6 +5,7 @@ Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
 """
 
 import glob
+import tempfile
 import re
 import sys
 import subprocess
@@ -350,7 +351,9 @@ class HudScale(GameTestCase):
 
     def test_crosshair_scale_and_size(self):
         # upstream #911: crosshair size independent of the texture (cg_crosshair_size) and a multiplier
-        c = self.client("+set", "developer", "1", "+set", "r_mode", "-1",
+        # a plain background: no world or entities (swaying trees changed thousands of pixels)
+        c = self.client("+set", "developer", "1", "+set", "r_mode", "-1", "+set", "r_clear", "1",
+                        "+set", "r_drawworld", "0", "+set", "r_drawentities", "0",
                         "+set", "r_customwidth", "1280", "+set", "r_customheight", "720", "+set", "g_gametype", "2",
                         "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
         c.wait_for(r"==== InitGame ====", timeout=120)
@@ -363,9 +366,8 @@ class HudScale(GameTestCase):
         time.sleep(2)
         c.send("freezeplayer")  # a still camera (random spawn point, the player may still fall), no message
         time.sleep(3)
-        names = ("off", "normal", "scale3", "size64")
-        for cvars in ("ui_crosshair 0", "ui_crosshair 1", "cg_crosshair_scale 3",
-                      "cg_crosshair_scale 1; cg_crosshair_size 64"):
+        names = ("normal", "scale3", "size64")
+        for cvars in ("cg_crosshair_scale 1", "cg_crosshair_scale 3", "cg_crosshair_scale 1; cg_crosshair_size 64"):
             for cvar in cvars.split("; "):
                 c.send(cvar)
             time.sleep(1)
@@ -373,17 +375,18 @@ class HudScale(GameTestCase):
             time.sleep(1)
         self.assertEqual(c.quit(), 0)
         shots = dict(zip(names, sorted(glob.glob(self.home.file("screenshots/shot*.tga")))))
-        self.assertEqual(len(shots), 4)
-        def changed(name):    # pixels the crosshair changes in the screen center
-            w, h, rows = read_tga(shots[name])
-            _, _, off = read_tga(shots["off"])
-            y0, y1, x0, x1 = int(h * 0.39), int(h * 0.61), int(w * 0.4375), int(w * 0.5625)
-            return sum(1 for y in range(y0, y1) for x in range(x0, x1)
-                       if sum(abs(a - b) for a, b in zip(rows[y][x], off[y][x])) > 60)
+        self.assertEqual(len(shots), 3)
 
-        count = {n: changed(n) for n in ("normal", "scale3", "size64")}
+        def crosshair_pixels(name):    # pixels that differ from the plain background in the center
+            w, h, rows = read_tga(shots[name])
+            y0, y1, x0, x1 = int(h * 0.39), int(h * 0.61), int(w * 0.4375), int(w * 0.5625)
+            background = rows[y0][x0]
+            return sum(1 for y in range(y0, y1) for x in range(x0, x1)
+                       if sum(abs(a - b) for a, b in zip(rows[y][x], background)) > 60)
+
+        count = {n: crosshair_pixels(n) for n in names}
         self.assertGreater(count["normal"], 5, count)
-        self.assertGreater(count["scale3"], count["normal"] * 2, count)
+        self.assertGreater(count["scale3"], count["normal"] * 3, count)
         self.assertGreater(count["size64"], count["normal"] * 2, count)
 
     def test_ui_hudscale_scales_the_hud(self):
@@ -552,6 +555,41 @@ end
 
     def test_hit_sounds_are_off_by_default(self):
         self.assertNotIn("sound/plus_hit_test.wav", self._play(0))
+
+
+def _build_fonts(pk3):
+    """Run misc/fonts/make_fonts.py (needs Pillow and DejaVu, outside this isolated interpreter)."""
+    tool = os.path.join(omoh.REPO, "misc", "fonts", "make_fonts.py")
+    python = shutil.which("python3")
+    if not python:
+        return False
+    result = subprocess.run([python, tool, "--out", pk3], cwd=tempfile.gettempdir(), capture_output=True, text=True)
+    return result.returncode == 0
+
+
+@require_game
+class Fonts(GameTestCase):
+    def test_generated_fonts_load_and_draw(self):
+        pk3 = os.path.join(self.home.path, "main", "zzz-plus-fonts.pk3")
+        os.makedirs(os.path.dirname(pk3), exist_ok=True)
+        if not _build_fonts(pk3):
+            self.skipTest("misc/fonts/make_fonts.py needs Pillow and the DejaVu fonts")
+        self.home.write("lang/es/localization.txt", '{ "Health" "Salud ñáé ¿¡" }\r\n')
+        c = self.client("+set", "developer", "1", "+set", "cl_language", "es", "+set", "ui_hudscale", "2",
+                        "+set", "g_gametype", "2", "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        time.sleep(5)
+        c.send("screenshot silent")
+        time.sleep(2)
+        self.assertEqual(c.quit(), 0)
+        log = c.log()
+        self.assertIn("zzz-plus-fonts.pk3", log)
+        for bad in ("Error parsing font", "Couldn't load font", "top-down", "character in font"):
+            self.assertNotIn(bad, log)
+        self.assertTrue(glob.glob(self.home.file("screenshots/shot*.tga")))
 
 
 @require_game

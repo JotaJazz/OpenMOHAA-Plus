@@ -65,6 +65,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
   - [tamaño del HUD y de la mira](docs/markdown/03-configuration/05-plus-hud.md) (`ui_hudscale`, `cg_crosshair_size`)
   - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
     y el juego ya no se congela cuando el DNS de los masters no responde (#376)
+  - [fuentes con tildes y ñ](docs/markdown/03-configuration/09-plus-fonts.md), más nítidas en alta resolución
   - [traducciones de la comunidad](docs/markdown/03-configuration/07-plus-translations.md) para los textos del juego (`cl_language`)
   - un [mod de partidas competitivas](misc/mods/plus-match/README.md) (cambio de lado en el entretiempo, tiempos muertos)
   - [pausa de partida y sonidos de impacto](docs/markdown/03-configuration/08-plus-match-control.md) controlados por el servidor
