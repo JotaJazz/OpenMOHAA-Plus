@@ -1,0 +1,53 @@
+// OpenMOHAA Plus reference mod: per-round statistics posted to a web service.
+//
+// Install: put this folder (or a pk3 of it) in main/, then
+//   set sv_scripts "global/plus/stats.scr"
+//   set sv_api_client 1
+//   set plus_stats_url "http://example.com/mohaa/round"   (keep the quotes: // starts a comment)
+//
+// Uses sv_scripts (runs this on every level), the player_killed and round_end events and
+// create_api_request (libmoh). At the end of every round it POSTs:
+//   { "map", "winner", "axis_wins", "allies_wins", "kills": { "<player>": <kills>, ... } }
+// as typed JSON (see docs/markdown/04-coding/02-scripting/04-plus-libmoh.md).
+
+main:
+	level.plus_stats_kills = NIL
+	event_subscribe "player_killed" on_killed
+	event_subscribe "round_end" on_round_end
+end
+
+on_killed local.attacker local.damage local.inflictor local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location:
+	if (local.attacker == NULL || local.attacker == self)
+		end
+	if (local.attacker.classname != "Player")
+		end
+	local.name = local.attacker.netname
+	if (level.plus_stats_kills[local.name] == NIL)
+		level.plus_stats_kills[local.name] = 0
+	level.plus_stats_kills[local.name]++
+end
+
+on_round_end local.winner local.axis_wins local.allies_wins:
+	local.url = getcvar "plus_stats_url"
+	if (local.url == "")
+		end
+
+	local.data[map] = getcvar "mapname"
+	local.data[winner] = local.winner
+	local.data[axis_wins] = local.axis_wins
+	local.data[allies_wins] = local.allies_wins
+	local.data[kills] = level.plus_stats_kills
+
+	local.result = create_api_request local.url "post" global/plus/stats.scr::on_posted local.data
+	if (local.result != 0)
+		println ("plus-stats: request not sent (" + local.result + ")")
+
+	level.plus_stats_kills = NIL
+end
+
+on_posted local.http_code local.response local.data:
+	if (local.http_code == -1)
+		println ("plus-stats: post failed: " + local.response)
+	else
+		println ("plus-stats: round posted, HTTP " + local.http_code)
+end
