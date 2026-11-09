@@ -27,6 +27,10 @@ Exec=AppRun
 Terminal=false
 DESKTOP
 
+# mktemp -d creates a 0700 folder; the AppImage must be readable by every user
+chmod -R a+rX "$APPDIR"
+chmod a+rx "$APPDIR/AppRun"
+
 if [ -z "$TOOL" ]; then
     echo "$APPDIR"
     exit 0
