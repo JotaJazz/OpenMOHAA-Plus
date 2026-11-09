@@ -226,6 +226,42 @@ Event EV_Item_SetDMMaxAmount
     "Sets the max amount of the item fmr DM.",
     EV_NORMAL
 );
+Event EV_Item_GetAmount
+(
+    "amount",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Gets the amount of the item.",
+    EV_GETTER
+);
+Event EV_Item_GetMaxAmount
+(
+    "maxamount",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Gets the max amount of the item.",
+    EV_GETTER
+);
+Event EV_Item_GetDMAmount
+(
+    "dmamount",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Gets the amount of the item for DM.",
+    EV_GETTER
+);
+Event EV_Item_GetDMMaxAmount
+(
+    "dmmaxamount",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Gets the max amount of the item for DM.",
+    EV_GETTER
+);
 Event EV_Item_SetItemName
 (
     "name",
@@ -334,6 +370,11 @@ CLASS_DECLARATION(Trigger, Item, NULL) {
     {&EV_Item_SetDMAmount,     &Item::SetDMAmountEvent     },
     {&EV_Item_SetDMMaxAmount,  &Item::SetDMMaxAmount       },
     {&EV_Item_SetPickupSound,  &Item::SetPickupSound       },
+    {&EV_Item_GetAmount,       &Item::GetAmountEvent       },
+    {&EV_Item_GetMaxAmount,    &Item::GetMaxAmountEvent    },
+    // Same storage as amount/maxamount: the DM setters write the same fields
+    {&EV_Item_GetDMAmount,     &Item::GetAmountEvent       },
+    {&EV_Item_GetDMMaxAmount,  &Item::GetMaxAmountEvent    },
 #ifdef OPM_FEATURES
     {&EV_Item_ViewModelPrefix, &Item::EventViewModelPrefix },
     {&EV_Item_UpdatePrefix,    &Item::updatePrefix         },
@@ -808,6 +849,16 @@ void Item::SetDMMaxAmount(Event *ev)
         return;
     }
     setAmount(ev->GetInteger(1));
+}
+
+void Item::GetAmountEvent(Event *ev)
+{
+    ev->AddInteger(getAmount());
+}
+
+void Item::GetMaxAmountEvent(Event *ev)
+{
+    ev->AddInteger(MaxAmount());
 }
 
 void Item::SetPickupSound(Event *ev)

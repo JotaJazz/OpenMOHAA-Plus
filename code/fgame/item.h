@@ -104,6 +104,8 @@ public:
     virtual void SetMaxAmount(Event *ev);
     virtual void SetDMAmountEvent(Event *ev);
     virtual void SetDMMaxAmount(Event *ev);
+    void         GetAmountEvent(Event *ev);
+    void         GetMaxAmountEvent(Event *ev);
     virtual void SetItemName(Event *ev);
     void         SetPickupSound(Event *ev);
 
