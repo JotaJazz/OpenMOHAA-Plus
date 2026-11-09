@@ -36,11 +36,20 @@ large bets last. Upstream bug fixing continues in parallel through every phase.
 | 4. Player experience and reach | Automatic mod download · Reliable server browser · Game install detection · Widescreen + Sharp text · Linux packaging · Translations + Translated README · Match demos · Saves from the original game (#601) | Broadens the audience once the online core is solid; README translations can be pulled earlier when the README stabilizes |
 | 5. Big bets | Campaign co-op · WebAssembly build · Vulkan renderer · Single binary · Master server and community portal · Gametype API level 3 | High cost or dependent on everything above |
 
-### Next three tasks
+### Progress (2026-11-09)
 
-1. Fork identity: point the update checker at the fork and define the version scheme.
-2. Test suite: first headless scripts (server smoke with bots and map rotation, save/load).
-3. HRTF opt-in cvar, measured with the OpenAL wave backend.
+Every branch named in a "Status" line below was merged into `main` on 2026-11-09.
+
+| Phase | Done | Open |
+|---|---|---|
+| 0 | all | - |
+| 1 | all (flood protection already existed) | - |
+| 2 | gametype API level 1, libmoh MVP, script toolkit | gametype API level 2 (team scores, halftime swap) |
+| 3 | `sv_fps 40`, `sv_scripts`, plus-stats reference mod; ready-up, player info, anti-wallhack and votes already existed | competition mode, server QoL (hitsounds), server administration (#905), better bots, competitive netcode |
+| 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
+| 5 | - | all |
+
+Next: gametype API level 2 (unblocks competition mode), then server administration.
 
 ## Automated test suite
 

@@ -231,10 +231,6 @@ class PureServer(GameTestCase):
         self.assertNotIn("Unpure", log)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 def _quiet_handler(directory):
     class Handler(http.server.SimpleHTTPRequestHandler):
         requests = []
@@ -290,3 +286,7 @@ class Downloads(GameTestCase):
         self.assertTrue(os.path.exists(pak))
         self.assertTrue(any("zzz_dltest.pk3" in r and " 200 " in r for r in record.requests), record.requests)
         self.assertNotIn("clientDownload", s.log())
+
+
+if __name__ == "__main__":
+    unittest.main()

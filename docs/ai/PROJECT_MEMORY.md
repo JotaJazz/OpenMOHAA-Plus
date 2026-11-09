@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — phases 0-3 and part of 4 merged
+- 23 branches merged into `main`: test suite, watchdog, HRTF, disconnect reasons, sanitizer fixes, fuzzing, `sv_perf`, upstream sync, gametype events, libmoh, script toolkit, `sv_fps 40`, `sv_scripts`, plus-stats mod, HTTP downloads, Spanish README.
+- Upstream bugs found on the way: libcurl never loaded since the CMake rewrite, `compilescript` aborted the server, HTTP download redirection was dead code; a `RB_Color4f` fix was rejected because the HUD relies on it.
+- Open: fire rate rises at 40 Hz (BAR 400 -> 480 rpm; maintainer decision), GitHub Pages and the upstream-sync schedule need enabling, base paks `Pak5`/`pak6` not treated as base paks (debt.md).
+
 ## 2026-11-09 — phase 0 started
 - `feat/fork-identity`: version `0.83.0-plus.1`, update checker reads the fork's releases and parses `-plus.N` tags; an unparsable tag no longer stores uninitialized values.
 - Corrected an earlier note: the `dev` pre-release's Windows `-pdb` zips include the executables; the docs workflow fails only because GitHub Pages is not enabled on the fork.

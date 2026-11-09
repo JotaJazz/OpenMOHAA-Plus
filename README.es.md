@@ -53,6 +53,18 @@ para Call of Duty 2 con su servidor a 40 Hz.
     pueden leer (#920), `waitForState` espera (#702)
   - cargan los sonidos cuyo alias omite `.wav` (#589), una doble liberación del cursor, y archivos de
     release ejecutables en Linux y macOS (#923)
+- **Nuevo en Plus:**
+  - servidores a 40 Hz (`sv_fps 40`) y tiempos por frame con `sv_perf`
+  - eventos de script para cambiar el daño y rechazar cambios de equipo, eventos de ronda
+    ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md)), funciones HTTP y JSON
+    compatibles con NightFall ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)),
+    scripts de servidor sin sobrescribir archivos del juego (`sv_scripts`), y un
+    [mod de estadísticas](misc/mods/plus-stats/README.md) hecho con ellos
+  - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
+    audio HRTF para audífonos (`s_hrtf 1`)
+  - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),
+    [misc/vscode-mohaa](misc/vscode-mohaa)), reportes de congelamientos y crashes, y una suite de
+    tests sin ventanas
 
   Los números son [issues del proyecto original](https://github.com/openmoh/openmohaa/issues). La
   lista completa, con los riesgos de cada cambio, está en
@@ -64,8 +76,9 @@ para Call of Duty 2 con su servidor a 40 Hz.
 Funciones nuevas más allá del juego original, en el espíritu de OpenCoD2-Plus. Planeado, todavía no
 hecho:
 
-- **Servidores más rápidos:** hoy el servidor simula a `sv_fps 20`, como el original; queremos
-  explorar tasas mayores (40 Hz y más) sin romper los clientes originales.
+- **Modo competición** (estilo zPAM) con más eventos de gametype: puntaje por equipo, cambio de
+  lado en el entretiempo.
+- **Administración del servidor** con permisos por comando, mejores bots, compensación de lag.
 - **Más bugs del proyecto original**, elegidos según lo que se pueda reproducir y verificar.
 - **La misma corrección para el módulo del cliente en musl** que recibió el servidor en #918.
 
@@ -119,6 +132,7 @@ Más detalles en [docs/dev/development/compiling.md](docs/dev/development/compil
 ```sh
 python3 -I -m unittest discover -s misc/docs-check     # tests del checker de documentación
 python3 -I misc/docs-check/check_docs.py               # checker de documentación
+OMOH_GAME_DIR=/ruta/a/MOHAA python3 -I -m unittest discover -s tests   # tests del juego, sin ventanas
 ```
 
 Los bugs se verifican con los binarios reales sin abrir ventanas ni reproducir sonido: cliente

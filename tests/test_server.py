@@ -411,10 +411,6 @@ end
         self.assertLessEqual(worst, 2, "script waits fired in a burst after the restart")
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 @require_game
 @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 1 minute); set OMOH_SLOW=1")
 class NetworkFuzz(GameTestCase):
@@ -617,3 +613,7 @@ end
         self.assertEqual(content["map"]["content"], "obj/obj_team2")
         self.assertEqual(content["winner"]["content"], "axis")
         self.assertEqual(content["axis_wins"]["content"], 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

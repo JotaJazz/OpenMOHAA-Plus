@@ -52,6 +52,17 @@ is doing for Call of Duty 2 with its 40 Hz server.
     `waitForState` waits (#702)
   - sounds whose alias omits `.wav` load (#589), a cursor double free, and executable release
     archives on Linux and macOS (#923)
+- **New in Plus:**
+  - 40 Hz servers (`sv_fps 40`) and `sv_perf` frame timings
+  - script events to change damage and refuse team changes, round events
+    ([docs](docs/markdown/04-coding/02-scripting/03-plus-events.md)), HTTP and JSON functions
+    compatible with NightFall ([docs](docs/markdown/04-coding/02-scripting/04-plus-libmoh.md)),
+    server scripts without overwriting game files (`sv_scripts`), and a
+    [stats mod](misc/mods/plus-stats/README.md) built on them
+  - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
+    HRTF audio for headphones (`s_hrtf 1`)
+  - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),
+    [misc/vscode-mohaa](misc/vscode-mohaa)), freeze and crash reports, a headless test suite
 
   Numbers are [upstream issues](https://github.com/openmoh/openmohaa/issues). The full list, with
   the risks each one brings, is in [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) and
@@ -61,8 +72,8 @@ is doing for Call of Duty 2 with its 40 Hz server.
 
 New features beyond the original game, in the spirit of OpenCoD2-Plus. Planned, not done yet:
 
-- **Faster servers:** today the server simulates at `sv_fps 20`, as the original does; we want to
-  explore higher tick rates (40 Hz and up) without breaking original clients.
+- **Competition mode** (zPAM-like) on more gametype events: team scores, halftime side swaps.
+- **Server administration** with per-command permissions, better bots, lag compensation.
 - **More upstream bugs**, picked by what can be reproduced and verified.
 - **Same fix for the client module on musl** that the server got in #918.
 
@@ -116,6 +127,7 @@ More in [docs/dev/development/compiling.md](docs/dev/development/compiling.md).
 ```sh
 python3 -I -m unittest discover -s misc/docs-check     # docs checker tests
 python3 -I misc/docs-check/check_docs.py               # docs checker
+OMOH_GAME_DIR=/path/to/MOHAA python3 -I -m unittest discover -s tests   # game tests, headless
 ```
 
 Bugs are verified on the real binaries without opening windows or playing sound: offscreen
