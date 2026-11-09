@@ -3,6 +3,10 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — idea backlog prioritized
+- `docs/dev/roadmap/ideas.md` now holds 36 ideas plus a plan: 11 clusters (overlaps and dependencies) and 6 phases, foundations first, then the script platform the community favors.
+- Found while brainstorming: the update checker queries upstream's releases (`code/sys/sys_update_checker.cpp`), so fork players would be sent to upstream; first task of phase 0.
+
 ## 2026-11-09 — feature ideas recorded
 - Design discussion recorded in `docs/dev/roadmap/ideas.md`: zPAM-like competition mode (C++ match layer + script rules, since MOHAA game modes are C++), libmoh (script functions added natively, NightFall-compatible HTTP first), Vulkan renderer as a new renderer module.
 - Checked along the way: `openmohaa +set dedicated 1` already runs as a dedicated server; the fs_homepath fixes made in OpenCoD2-Plus are not needed here (ioquake3 filesystem already handles them).

@@ -45,5 +45,5 @@ Details: [overview.md](../dev/architecture/overview.md).
 ## Open work
 
 See [debt.md](../dev/roadmap/debt.md) and the feature backlog [ideas.md](../dev/roadmap/ideas.md)
-(gametype scripting API, competition mode, libmoh, Vulkan renderer, faster server tick). Next candidates: musl-safe
-`cgame` unload, remaining testable upstream issues.
+(prioritized plan at its top). Next tasks: fork identity (update checker points to upstream),
+first automated test scripts, HRTF opt-in; upstream bug fixing continues in parallel.

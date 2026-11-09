@@ -3,6 +3,45 @@
 Backlog of features beyond upstream, from design discussions. Not started unless marked. Move an
 idea to an ADR when it is decided, and to `docs/ai/SYSTEM_SUMMARY.md` when it lands.
 
+## Prioritized plan
+
+Ordering rules: foundations that make every later change safer come first; then cheap wins; then
+the script platform, because the community works in scripts and several features build on it;
+large bets last. Upstream bug fixing continues in parallel through every phase.
+
+### Clusters (overlaps and dependencies)
+
+| Cluster | Ideas (sections below) | Relationship |
+|---|---|---|
+| Quality loop | Automated test suite, Mod compatibility tests, Robustness, Automated upstream sync | Mod compatibility tests are part of the suite; upstream sync is only safe once the suite exists |
+| Observability | Freeze watchdog, Performance profiling | Same goal (see what the server does); profiling must precede the faster tick and any renderer work |
+| Security / anti-cheat | Server flood protection, Robustness, Server-side anti-wallhack, Competitive netcode (hit validation) | Fuzzing and flood limits harden inputs; anti-wallhack and hit validation are server-authoritative anti-cheat |
+| Script platform | Gametype scripting API, libmoh, Script modding toolkit | The API and libmoh are the engine side; the toolkit documents both (completion and docs generated from the event dump) |
+| Competitive | Faster server tick, Competitive netcode, Competition mode, Server-controlled QoL, Map voting, Better bots | Competition mode, QoL and map voting are scripts on the gametype API; netcode pairs with the tick rate; bots give practice and test players |
+| Online services | libmoh HTTP/JSON, Match statistics, Server administration, Master server portal | Stats and admin consume libmoh; the portal needs stats; admin shares player-info primitives with competition mode |
+| Joining a server | Helpful connection errors, Automatic mod download, Reliable server browser, Game install detection | Mod download removes most "Unpure" drops; errors explain the rest |
+| HUD and text | Widescreen and HUD scaling, Sharp text | Same 2D drawing code (cgame, uilib, renderer 2D); do together |
+| Distribution | Fork identity, Linux packaging, WebAssembly build, Single binary, Translated README | Packages and stores need the fork's own versions and update checker first |
+| Languages | Translations, Translated README | README translations are cheap docs work; in-game translations reuse the localization files |
+| Standalone | HRTF spatial audio, Match demos, Campaign co-op, Vulkan renderer, saves from the original game (#601) | Co-op benefits from the gametype API; Vulkan needs profiling |
+
+### Phases
+
+| Phase | Work, in order | Why here |
+|---|---|---|
+| 0. Foundations and quick wins | Fork identity (update checker, versions, stable releases; also the CI items in [debt.md](debt.md)) · Automated test suite (first scripts + `test_lz77`) · Freeze watchdog and crash reports · HRTF spatial audio · Helpful connection errors | Small or foundational; the update checker currently sends players to upstream; tests protect everything after |
+| 1. Quality loop | Robustness (sanitizers, fuzzing) · Server flood protection · Performance profiling · Automated upstream sync · Mod compatibility tests | Needs the test suite; makes public servers safer; profiling is a prerequisite of phase 3 |
+| 2. Script platform | Gametype scripting API (levels 1-2) · libmoh MVP (NightFall-compatible HTTP + JSON) · Script modding toolkit | The fork's main differentiator for a script-centric community; base of phases 3 and 4 |
+| 3. Competitive and online | Faster server tick · Competition mode · Server-controlled QoL · Map voting · Server administration · Match statistics and integrations · Better bots · Competitive netcode · Server-side anti-wallhack | Built on phases 1-2; ordered from most reused to most costly |
+| 4. Player experience and reach | Automatic mod download · Reliable server browser · Game install detection · Widescreen + Sharp text · Linux packaging · Translations + Translated README · Match demos · Saves from the original game (#601) | Broadens the audience once the online core is solid; README translations can be pulled earlier when the README stabilizes |
+| 5. Big bets | Campaign co-op · WebAssembly build · Vulkan renderer · Single binary · Master server and community portal · Gametype API level 3 | High cost or dependent on everything above |
+
+### Next three tasks
+
+1. Fork identity: point the update checker at the fork and define the version scheme.
+2. Test suite: first headless scripts (server smoke with bots and map rotation, save/load).
+3. HRTF opt-in cvar, measured with the OpenAL wave backend.
+
 ## Automated test suite
 
 No project test runs in CI today (`test_lz77` exists but is not wired in; see
@@ -252,6 +291,43 @@ The community works in `.scr`; today a script error shows only when the map load
 
 - **Shape:** fix the hang when a server does not answer (upstream #376); add favorites, history
   and filters (mods, players, ping).
+
+## Fork identity: versions and updates
+
+- **Fact:** the update checker queries `api.github.com/repos/openmoh/openmohaa/releases/latest`
+  (`code/sys/sys_update_checker.cpp`), so fork players are told to "update" to upstream and lose
+  the fork's fixes.
+- **Shape:** point it at `JotaJazz/OpenMOHAA-Plus`; own version scheme (e.g. `0.83.0-plus.1`);
+  tagged stable releases with a changelog besides the `dev` pre-release; "Plus" visible in console
+  and menu.
+
+## Automated upstream sync
+
+- **Shape:** a scheduled workflow merges `upstream/main` into a branch, builds, runs the test
+  suite and opens a PR in the fork, so conflicts surface early.
+
+## Mod compatibility tests
+
+Part of the automated test suite.
+
+
+- **Shape:** load popular mods (Freeze-Tag and others) headless with bots as part of the test
+  suite, so fork changes never break what the community runs.
+
+## Server-controlled competitive QoL
+
+- **Shape:** hitsounds, hit markers, round timer on the HUD; off by default and enabled by the
+  server, so the Plus client gives no unfair advantage.
+
+## Master server and community portal (long term)
+
+- **Shape:** a server list that shows each server's Plus features (tick rate, competition mode)
+  and leaderboards from match statistics. Only after stats and HTTP exist.
+
+## Translated README and install guides
+
+- **Shape:** README and install instructions in Spanish, Portuguese, German..., as OpenCoD2-Plus
+  has in six languages.
 
 ## Also discussed
 
