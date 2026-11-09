@@ -9,5 +9,6 @@ The documentation is currently incomplete.
 ## Scripting
 
 - [Event subscription](02-scripting/01-script-events.md)
+- [OpenMOHAA Plus events](02-scripting/03-plus-events.md) (deciding events, round events)
 - [Reading and writing files](02-scripting/02-files.md)
 - [Scripting commands](https://htmlpreview.github.io/?https://github.com/openmoh/openmohaa/blob/main/docs/markdown/04-coding/02-scripting/g_allclasses.html) (all classes documentation)
