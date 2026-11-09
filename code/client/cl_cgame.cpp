@@ -362,6 +362,17 @@ qboolean CL_ProcessServerCommand(const char* origString, const char* cmd, qboole
 		// because this function might be called from a module that would be unloaded
 		// inside Com_Error
         UI_ForceMenuOff(1);
+
+        // Added in OpenMOHAA Plus
+        //  Show the reason the server gave (kick, ban, unpure client, ...) instead of
+        //  a generic "Server Disconnected", like the connectionless droperror packet does
+        if (Cmd_Argc() > 1 && *Cmd_Argv(1)) {
+            Com_Printf("Server disconnected: %s\n", Cmd_Argv(1));
+            Cvar_Set("com_errorMessage", Cmd_Argv(1));
+            Cbuf_AddText("disconnect;pushmenu errormessage\n");
+            return qtrue;
+        }
+
 		// Fixed in OPM
 		//  Added a newline for next commands
         Cbuf_AddText("disconnect;pushmenu disconnected\n");

@@ -268,6 +268,10 @@ end of a match, and rotations by player count.
 
 ## Helpful connection errors
 
+Status: first part implemented on branch `feat/disconnect-reason` (reason shown for reliable
+`disconnect` commands). Still open: wrapping long reasons in the menu, listing the paks that
+differ; `path` already prints the search path and loaded pk3 files.
+
 - **Fact:** a client dropped as "Unpure Client" only sees "Server disconnected for unknown reason"
   (found while investigating upstream #659).
 - **Shape:** show the real reason (missing or extra pk3, version mismatch, banned) and a command

@@ -24,6 +24,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Client audio (OpenAL) | Source gain above 1.0 allowed (`AL_MAX_GAIN`) | #885 |
 | Client audio | Extensionless sound names default to `.wav` | #589 |
 | Client audio | `s_hrtf 1` forces HRTF; HRTF status logged | (phase 0) |
+| Client connection | Reason of a mid-connection drop shown in console and error menu | (phase 0) |
 | Frame loop (`qcommon`) | `com_maxfps` remainder carried across frames | #530 |
 | Server / savegames | svs time fixups add instead of overwrite (stopwatch after load) | #916 |
 | Server bans | `rehashbans` skips blank lines and stale slots | #926 |
