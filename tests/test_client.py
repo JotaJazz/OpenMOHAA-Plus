@@ -198,6 +198,34 @@ class FastServer(GameTestCase):
         for bad in ("ERROR:", "Server disconnected", "Server dropped connection"):
             self.assertNotIn(bad, c.log())
 
+    def _fire_intervals(self, sv_fps, weapon):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        c = omoh.client(home, "+set", "developer", "1", "+set", "sv_fps", str(sv_fps), "+set", "g_showweaponfire", "1",
+                        "+set", "g_gametype", "2", "+set", "sv_maxclients", "2", "+devmap", "dm/mohdm1")
+        self.games.append(c)
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send(f"primarydmweapon {weapon}")
+        c.send("join_team allies")
+        time.sleep(6)
+        c.send("popmenu 0")
+        c.send("popmenu 0")
+        time.sleep(2)
+        c.send("+attack")
+        time.sleep(2)
+        c.send("-attack")
+        time.sleep(1)
+        self.assertEqual(c.quit(), 0)
+        times = [int(t) for t in re.findall(r"weapon fire: .* at (\d+) ms", c.log())]
+        self.assertGreater(len(times), 5)
+        return sorted({b - a for a, b in zip(times, times[1:])})
+
+    def test_40hz_keeps_the_20hz_fire_rate(self):
+        # the fire delay is checked once per frame: a 20 Hz server rounds it up to 50 ms steps
+        self.assertEqual(self._fire_intervals(40, "mg"), [150])    # BAR: 400 rpm, not 480
+        self.assertEqual(self._fire_intervals(40, "smg"), [100])   # Thompson: 600 rpm
+
 
 @require_game
 class PureServer(GameTestCase):

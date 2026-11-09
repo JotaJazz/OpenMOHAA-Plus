@@ -45,13 +45,14 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Script commands | `team_swap` (halftime side swap, `DM_Manager::SwapTeams`); `team_getscore` is a return event | (phase 2) |
 | Script functions | libmoh: `create_api_request`, `json_parse`, `json_stringify` (`code/fgame/libmoh.cpp`, `code/server/sv_http.cpp`) | (phase 2) |
 | Server commands | `compilescript` reports parse errors instead of aborting | (phase 2) |
-| Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time | (phase 3) |
+| Server tick | `sv_fps 40` supported, warning for unsupported rates; netoptimize look-ahead and damping per frame time; weapons keep the 20 Hz fire rate (`G_FireDelayElapsed`), `g_showweaponfire` | (phase 3) |
 | Server scripts | `sv_scripts` runs listed scripts on every level | (phase 3) |
 | Filesystem | GOG lookup uses MOHAA's ID (was Quake 3), Steam/Microsoft Store lookups off, `fs_eapath` (EA folder, also in Wine), clear error when the game data is missing | (phase 4) |
 | Server browser | Master lookups in the background (`code/gamespy/gs_resolve.cpp`), next master on DNS failure, unused master sockets start as `INVALID_SOCKET` | #376 |
 | Server browser | Favorites and history (`code/client/cl_serverbook.cpp`), queried directly on refresh; `dm_browser_show`, `dm_browser_search`, `dm_max_ping`; servers publish `net_gamespy_port` | (phase 4) |
 | Localization | `cl_language` overlay (`lang/<code>/`), UTF-8 to Latin-1, `localize` command, labels localized, missing Latin-1 glyphs drawn as base letters (`code/renderercommon/tr_fontfold.h`), sorted localization files | (phase 4) |
 | Packaging | Linux AppImage (x86_64, aarch64) built in CI, `misc/linux/AppRun` picks the game folder | #890 |
+| Competition mod | `misc/mods/plus-match` (scripts only): rounds, halftime side swap, draw, team timeouts | (phase 3) |
 | Match control | Match pause (`DM_Manager::SetPaused`, `matchpause`, `match_pause`, `ad_pause`), hit sounds (`g_hitsounds`) | (phase 3) |
 | HUD | `ui_hudscale` multiplier; `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |

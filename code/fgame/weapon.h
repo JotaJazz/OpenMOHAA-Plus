@@ -95,6 +95,8 @@ static const unsigned int MAX_WEAPON_ANIM_SLOTS = 4;
 
 class Player;
 
+bool G_FireDelayElapsed(float lastFireTime, float delay); // Added in OpenMOHAA Plus
+
 class Weapon : public Item
 {
 protected:

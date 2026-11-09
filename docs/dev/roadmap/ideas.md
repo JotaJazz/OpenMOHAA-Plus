@@ -45,7 +45,7 @@ Every branch named in a "Status" line below was merged into `main` on 2026-11-09
 | 0 | all | - |
 | 1 | all (flood protection already existed) | - |
 | 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
-| 3 | `sv_fps 40`, `sv_scripts`, plus-stats reference mod, server administration (#905); ready-up, player info, anti-wallhack and votes already existed | competition mode, server QoL (hitsounds), better bots, competitive netcode |
+| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds; ready-up, player info, anti-wallhack and votes already existed | hit markers and round timer on the HUD, better bots, competitive netcode |
 | 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
 | 5 | - | all |
 
@@ -462,9 +462,10 @@ checked with a working and a broken synthetic mod. Real community mods still hav
 - **Faster server tick:** status on branch `feat/sv-fps-40`: audited; `sv_fps 40` is supported
   (frames are whole milliseconds, so only 20 and 40 run on rate and keep 20 snapshots/s for
   default clients; other values warn). Fixed for any rate: `sv_netoptimize` look-ahead and
-  per-frame damping (jeep turning, damage view kick). Open decision: weapon fire delays are checked
-  once per frame, so at 40 Hz weapons fire closer to their tik values (BAR 400 -> 480 rpm,
-  semi-autos about +17%); keep that, or round fire times to 50 ms steps to keep the 20 Hz feel.
+  per-frame damping (jeep turning, damage view kick). Decided: weapon fire delays are checked
+  once per frame, so at 40 Hz weapons fired closer to their tik values (BAR 400 -> 480 rpm); the
+  maintainer chose the 20 Hz feel, so above 20 Hz fire times round to 50 ms steps
+  (`G_FireDelayElapsed`, branch `fix/fire-rate-40hz`).
   Map scripts that move things per `waitframe` run twice as fast.
 - **Faster server tick (original note):** `sv_fps` above 20 (40 Hz and up) without breaking original clients, as
   OpenCoD2-Plus does.

@@ -1,0 +1,116 @@
+// OpenMOHAA Plus reference mod: competition match rules (zPAM-like), scripts only.
+//
+// Install: put this folder (or a pk3 of it) in main/, then `exec plus-match.cfg` (example settings)
+// or at least:
+//   set sv_scripts "global/plus/match.scr"
+//   set plus_match_rounds 12        // rounds in the match; sides switch at halftime
+//   set g_forceready 0              // players type "ready" before the first round
+//
+// Players:  timeout   (their team pauses the match; plus_match_timeouts per team per half,
+//                      plus_match_timeout_length seconds, default 60)
+//           timein    (the team that called the timeout resumes early)
+// Server console: timeout axis|allies, timein
+//
+// Built on round_start/round_end, team_swap, match_pause/match_resume and registercmd. Round-based
+// modes restart the map every round, so the match state lives in cvars (plus_match_*).
+
+main:
+	event_subscribe "match_start" on_match_start
+	event_subscribe "round_end" on_round_end
+	registercmd "timeout" cmd_timeout
+	registercmd "timein" cmd_timein
+	println "PLUS_MATCH loaded"
+end
+
+on_match_start:
+	local.rounds = int (getcvar "plus_match_rounds")
+	if (local.rounds > 0) {
+		// the engine ends the match when a team reaches fraglimit round wins (set here, not in main:
+		// main runs again every round)
+		setcvar "fraglimit" (local.rounds / 2 + 1)
+	}
+	waitthread reset_timeouts
+	setcvar "plus_match_timeout_team" ""
+	iprintlnbold_noloc ("Match start: " + (getcvar "plus_match_rounds") + " rounds, sides switch at halftime")
+end
+
+reset_timeouts:
+	local.count = getcvar "plus_match_timeouts"
+	if (local.count == "")
+		local.count = 1
+	setcvar "plus_match_timeouts_axis" local.count
+	setcvar "plus_match_timeouts_allies" local.count
+end
+
+on_round_end local.winner local.axis local.allies:
+	local.rounds = int (getcvar "plus_match_rounds")
+	local.played = local.axis + local.allies
+	iprintlnbold_noloc ("Axis " + local.axis + " - " + local.allies + " Allies")
+	println ("PLUS_MATCH round " + local.played + " winner " + local.winner + " score " + local.axis + "-" + local.allies)
+
+	if (local.rounds <= 0)
+		end
+
+	if (local.played == local.rounds / 2) {
+		team_swap
+		waitthread reset_timeouts
+		iprintlnbold_noloc "Halftime: teams switch sides"
+		println "PLUS_MATCH halftime"
+	} else if (local.played >= local.rounds && local.axis == local.allies) {
+		iprintlnbold_noloc "The match ends in a draw"
+		println "PLUS_MATCH draw"
+		// reached by both teams: the engine ends the match
+		setcvar "fraglimit" local.axis
+	}
+end
+
+// self is the player who typed the command (NULL from the server console)
+cmd_timeout local.team:
+	if (self != NULL) {
+		local.team = self.dmteam
+	}
+	if (local.team != "axis" && local.team != "allies") {
+		println "timeout: axis or allies"
+		end
+	}
+	if (level.match_paused) {
+		iprintln_noloc "The match is already paused"
+		end
+	}
+	local.left = int (getcvar ("plus_match_timeouts_" + local.team))
+	if (local.left <= 0) {
+		iprintln_noloc ("No timeouts left for " + local.team)
+		end
+	}
+	setcvar ("plus_match_timeouts_" + local.team) (local.left - 1)
+
+	local.length = float (getcvar "plus_match_timeout_length")
+	if (local.length <= 0)
+		local.length = 60
+	setcvar "plus_match_timeout_team" local.team
+	match_pause
+	iprintlnbold_noloc ("Timeout " + local.team + ": " + local.length + " seconds")
+	println ("PLUS_MATCH timeout " + local.team)
+
+	wait local.length
+	if (level.match_paused && getcvar "plus_match_timeout_team" == local.team) {
+		waitthread resume
+	}
+end
+
+cmd_timein:
+	local.team = getcvar "plus_match_timeout_team"
+	if (local.team == "" || !level.match_paused)
+		end
+	if (self != NULL && self.dmteam != local.team) {
+		iprintln_noloc ("Only " + local.team + " can end its timeout")
+		end
+	}
+	waitthread resume
+end
+
+resume:
+	setcvar "plus_match_timeout_team" ""
+	match_resume
+	println "PLUS_MATCH resumed"
+end

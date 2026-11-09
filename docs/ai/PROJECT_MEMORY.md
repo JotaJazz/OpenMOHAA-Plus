@@ -3,6 +3,15 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — plus-match competition mod
+- Reference mod in scripts only: score per round, halftime `team_swap`, win at rounds/2+1 via `fraglimit`, draw, team timeouts with auto-resume (`registercmd` commands reach scripts from players' consoles with `self` = the player).
+- Pitfalls: round-based modes restart the map every round, so `main` reruns (state in cvars; `fraglimit` set in `match_start`, not `main`); `level_intermission` also fires between rounds.
+- Not covered by a test: `timeout` typed by a real player (the test uses the server console form).
+
+## 2026-11-09 — 40 Hz keeps the 20 Hz fire rate
+- Measured with a temporary trace (now `g_showweaponfire`): BAR 150 ms at 20 Hz, 125 ms at 40 Hz; the maintainer chose the original feel. Above 20 Hz `ReadyToFire` waits for the delay a 20 Hz frame would give; 20 Hz keeps the original expression.
+- Semi-automatics are limited by clicks and animations: with 20 ms click spam the shortest interval at 40 Hz (rifle 225 ms, shotgun 825 ms) is not below 20 Hz (200, 800 ms).
+
 ## 2026-11-09 — match pause and hit sounds
 - Pause reuses `PMF_FROZEN` (as `freezeplayer`) plus no damage; clocks stand still by moving `m_fRoundTime` forward every paused frame and by subtracting the paused time from the time limit (HUD end time included), so resuming needs no catch-up.
 - Hit sounds go through `stufftext "play <file>"` (whitelisted in the cgame filter), so original clients hear them; the default file is the stock `sound/items/hit_notify.wav`.
