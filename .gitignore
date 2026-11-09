@@ -54,3 +54,6 @@ out
 /.cmake/
 docs/**/plans/
 *.local.md
+
+# Python bytecode (tests and misc tools)
+__pycache__/

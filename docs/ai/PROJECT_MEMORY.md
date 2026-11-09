@@ -3,6 +3,9 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — browser game type filters
+- The original filter cvars (`dm_free_for_all` ... `dm_liberation_match`, `dm_filter_pure`, `dm_run_fast`/`dm_run_normal`) were declared and never applied; now applied client-side from `gametype_i`, `pure` and `sprinton` (masters may not understand filters), favorites exempt.
+
 ## 2026-11-09 — fonts with accents (zzz-plus-fonts.pk3)
 - Glyph positions are divided by a nominal 256 and screen sizes come from those nominal pixels, so a 2x texture is sharper without changing layout; fonts load without mipmaps, so 4x looks grainy. The TGA must be bottom-up (the top-down flag is ignored).
 - DejaVu only (URW fonts are AGPL); glyphs are stretched to the original widths (facfont was 1.3x wider and got clipped in the HUD) and facfont keeps its grey fill with a dark outline.

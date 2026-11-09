@@ -24,6 +24,9 @@ even when the master servers are down or do not list them.
 | `dm_max_ping` | hide servers with a higher ping (`0` = no limit) |
 | `dm_filter_empty`, `dm_filter_full` | hide empty / full servers (existing) |
 | `dm_min_players`, `dm_max_players` | player count range (existing) |
+| `dm_free_for_all`, `dm_team_match`, `dm_round_based_match`, `dm_objective_match`, `dm_tow_match`, `dm_liberation_match` | `0` hides that game type (existing cvars, now applied) |
+| `dm_filter_pure` | `1` shows only pure servers |
+| `dm_run_fast`, `dm_run_normal` | `0` hides servers with / without sprint (`sv_sprinton`) |
 
 Favorites are never hidden by the filters. Change a filter, then press Refresh.
 

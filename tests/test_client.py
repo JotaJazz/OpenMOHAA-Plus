@@ -433,6 +433,34 @@ class ServerBrowser(GameTestCase):
         c.send("widgetcommand netgamelist printlist")
         return c.wait_for(expect, start=mark, timeout=20)[mark:]
 
+    def test_game_type_filter(self):
+        servers = []
+        for name, gametype in (("Alpha", "1"), ("Bravo", "2")):
+            home = omoh.Home()
+            self.addCleanup(home.cleanup)
+            s = omoh.server(home, "+set", "sv_hostname", name, "+set", "g_gametype", gametype, "+map", "dm/mohdm1")
+            self.games.append(s)
+            s.wait_for(r"==== InitGame ====")
+            s.send("net_gamespy_port")
+            qport = int(re.findall(r'"net_gamespy_port" is:"(\d+)', s.wait_for(r'"net_gamespy_port" is:"\d+'))[-1])
+            servers.append(f"127.0.0.1:{s.port} {qport}")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        client_home.write("serverhistory.txt", "\n".join(servers) + "\n")
+        c = omoh.client(client_home, "+set", "developer", "1", *self.NO_MASTERS)
+        self.games.append(c)
+        c.wait_for(r"Opening IP socket", timeout=60)
+        time.sleep(8)
+        c.send("pushmenu joinnetgame")
+        time.sleep(2)
+        listed = self._list(c, r"Server list \(\d+\):(\n  .*)*\n.*Bravo")      # both recent servers
+        self.assertIn("Alpha", listed)
+        c.send("dm_team_match 0")                                                  # hide team deathmatch
+        listed = self._list(c, r"Server list \((\d+)\):")
+        self.assertIn("Alpha", listed)
+        self.assertNotIn("Bravo", listed)
+        self.assertEqual(c.quit(), 0)
+
     def test_favorites_history_and_search(self):
         alpha = self.server("+set", "sv_hostname", "Alpha", "+map", "dm/mohdm1")
         home_b = omoh.Home()
