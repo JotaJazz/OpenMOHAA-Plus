@@ -3,6 +3,55 @@
 Backlog of features beyond upstream, from design discussions. Not started unless marked. Move an
 idea to an ADR when it is decided, and to `docs/ai/SYSTEM_SUMMARY.md` when it lands.
 
+## Automated test suite
+
+No project test runs in CI today (`test_lz77` exists but is not wired in; see
+[debt.md](debt.md)). Every fix so far was verified with hand-written headless commands
+([testing.md](../development/testing.md)).
+
+- **Shape:** turn those recipes into reusable Python scripts (stdlib), like OpenCoD2-Plus's:
+  server smoke with bots and map rotation, save/load with screenshot check, `registercmd`, bans
+  (`rehashbans`), `sv_pure`, audio rendered through the OpenAL wave backend, client `vid_restart`.
+- **Data:** tests needing game data take a `<GAME_DIR>` argument and run locally; CI runs what
+  needs no data (unit tests, docs checker) and, if feasible, tests on generated minimal assets.
+- **Also:** wire `test_lz77` into CTest.
+- **Why first:** every later fix gets regression protection and an agent can verify its own work.
+
+## Robustness: fuzzing and sanitizers
+
+Two real memory bugs were found by chance (`TAG_GAME` freed under a resident module, cursor double
+free).
+
+- **Shape:** AddressSanitizer/UBSan builds plus fuzzing of inputs that come from outside: network
+  packets, the `.scr` compiler (`code/parser`, `code/script`), pk3/zip, `.tik`, `.urc`,
+  `serverbans.dat`, configstrings.
+- **Why:** these bugs crash public servers and are found almost automatically.
+
+## Freeze watchdog and crash reports
+
+A hung or crashed server leaves little to go on (the #287 backtrace had no symbols).
+
+- **Shape:** a watchdog that reports frames stuck longer than a threshold (like OpenCoD2-Plus's
+  `com_freezeWatch`) and a readable backtrace written to a file on fatal signals, with build
+  version and map.
+- **Why:** helps server admins report bugs and us reproduce them.
+
+## Widescreen and HUD scaling
+
+Popular upstream requests: #583 (widescreen), #585 (HUD scale cvar), #911 (crosshair scale
+independent of texture size).
+
+- **Shape:** client-side (`cgame`, `uilib`, renderer 2D); keep original layout as default.
+- **Test:** headless screenshots at several resolutions and aspect ratios.
+
+## Server administration
+
+Upstream #905 asks for an ACL-based admin system with named permissions.
+
+- **Shape:** accounts and permissions, per-command authorization for rcon and chat commands,
+  player info (IP, GUID, ping), better bans and logs. Shares primitives with libmoh and the
+  competition mode.
+
 ## Gametype scripting API (CoD2-style callbacks)
 
 The MOHAA community works mostly in scripts. CoD2 lets scripts own the whole gametype through
