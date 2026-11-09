@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — README and project direction
+- README rewritten after OpenCoD2-Plus: the fork exists to advance with AI agents (forbidden upstream) and will add new features, not only fixes; a faster server tick (40 Hz and up) is the first idea, still unstarted.
+- A fresh-context review of the docs found real errors (nonexistent `ttycon` cvar, unbuilt `test_lz77`, wrong function names, missing `corepp` coupling); fixed, and the checker now checks paths against what git would commit.
+- The `dev` pre-release ships only `-pdb` archives for Windows and the "Generate Documentation" workflow fails on the fork; both open.
+
 ## 2026-11-09 — technical documentation system
 - Added `AGENTS.md`, `docs/dev` (architecture, ADRs, development, debt, glossary) and `docs/ai`; `LAYOUT.md` (stale: named the old game and docker directories) now points to the overview.
 - Upstream user docs (`docs/markdown`, Doxygen main page `docs/README.md`) left untouched to keep upstream merges clean; docs written in English.

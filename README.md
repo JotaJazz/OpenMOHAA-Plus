@@ -1,109 +1,176 @@
-# OpenMoHAA
+# OpenMOHAA Plus
 
-[![Build](https://github.com/openmoh/openmohaa/actions/workflows/branches-build.yml/badge.svg?branch=main)](https://github.com/openmoh/openmohaa/actions/workflows/branches-build.yml) [![Release](https://img.shields.io/github/v/release/openmoh/openmohaa)](https://github.com/openmoh/openmohaa/releases) [![Downloads](https://img.shields.io/github/downloads/openmoh/openmohaa/total)](https://github.com/openmoh/openmohaa/releases)
+![Status: in development](https://img.shields.io/badge/status-in%20development-orange)
+![License: GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)
+![Platforms: Linux | Windows | macOS](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)
+![MOHAA | Spearhead | Breakthrough](https://img.shields.io/badge/MOHAA-AA%20%7C%20Spearhead%20%7C%20Breakthrough-6b7a3a)
+[![Fork of openmoh/openmohaa](https://img.shields.io/badge/fork%20of-openmoh%2Fopenmohaa-555)](https://github.com/openmoh/openmohaa)
+[![Builds](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml/badge.svg?branch=main)](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml)
+[![Last commit](https://img.shields.io/github/last-commit/JotaJazz/OpenMOHAA-Plus/main)](https://github.com/JotaJazz/OpenMOHAA-Plus/commits/main)
 
-![License](https://img.shields.io/github/license/openmoh/openmohaa) ![Commits](https://img.shields.io/github/commit-activity/t/openmoh/openmohaa)
+**Medal of Honor: Allied Assault is still alive.** OpenMOHAA Plus is a fork of
+[OpenMoHAA](https://github.com/openmoh/openmohaa), the open-source reimplementation of Medal of
+Honor: Allied Assault, Spearhead and Breakthrough: the client, the dedicated server and the game
+logic, for Windows, Linux and macOS.
 
-![Discord](https://img.shields.io/discord/596049712579215361?logo=discord&logoColor=white&color=5865F2)
+It exists for one reason: **to move forward with AI coding agents**, which the original project
+does not accept. Here every change is made with an assistant, reproduced on the real game before
+and after, and kept in this fork. On top of OpenMoHAA's work we fix reported bugs and add new
+features, the way the sibling project [OpenCoD2-Plus](https://github.com/JotaJazz/OpenCoD2-Plus)
+is doing for Call of Duty 2 with its 40 Hz server.
 
-![logo](misc/openmohaa-text-sm.png)
+<table>
+  <tr>
+    <td><img src="docs/assets/images/v0.60.0-x86_64/mohdm1_1.png" alt="Southern France (mohdm1)"></td>
+    <td><img src="docs/assets/images/v0.60.0-x86_64/training_1.png" alt="Single-player training"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/assets/images/v0.60.0-x86_64/flughafen_1.png" alt="Flughafen"></td>
+    <td><img src="docs/assets/images/v0.60.0-x86_64/mohdm2_1.png" alt="Freeze-Tag with bots"></td>
+  </tr>
+</table>
+<p align="center"><sub>Screenshots from OpenMoHAA; the engine and game code are the same.</sub></p>
 
-## What is OpenMoHAA?
+## What works today
 
-OpenMoHAA is an open-source project aimed at preserving and enhancing **Medal of Honor: Allied Assault** (including Spearhead and Breakthrough expansions) by providing more features and bugfixes, across modern platforms and architectures.
+- **Everything OpenMoHAA does:** the whole single-player campaign of the three games, all official
+  multiplayer modes (Free-For-All, Team Deathmatch, Round-based, Objective, Tug-of-War,
+  Liberation), mods such as Freeze-Tag, built-in bots, compatibility with the original assets,
+  scripts and servers ([differences from the original](docs/markdown/01-intro/04-differences.md)).
+- **Fixes for bugs reported upstream**, each one reproduced before and after on the real game:
+  - `s_dialogscale` above 1 now raises dialog volume (#885)
+  - `com_maxfps` caps at the requested rate: 144 gives 144 fps, not 166 (#530)
+  - the HUD stopwatch survives loading a save (#916)
+  - map scripts no longer burst all their waits after a same-map restart, which dropped every
+    player on single-map servers (#287)
+  - no crash on map change when the game module stays loaded, as on Alpine/musl (#918)
+  - `sv_pure 1` no longer rejects clients that read an extra pk3 in the menu (#659)
+  - `rehashbans` no longer keeps removed bans (#926)
+  - script fixes: `registercmd` commands run (#672), item `amount`/`dmamount` are readable (#920),
+    `waitForState` waits (#702)
+  - sounds whose alias omits `.wav` load (#589), a cursor double free, and executable release
+    archives on Linux and macOS (#923)
 
-Powered by [ioquake3](https://github.com/ioquake/ioq3) and the [F.A.K.K SDK](https://code.idtech.space/ritual/fakk2-sdk), OpenMoHAA provides:
-- Full compatibility with the original game: assets, scripts and multiplayer
-- Better support for modern systems
-- Cross-platform support (Linux, Windows, macOS)
-- Support for both single-player and multiplayer modes
-- Includes all fixes from Spearhead 2.15 and Breakthrough 2.40b
-- More fixes and features, such as bots and a ban system
+  Numbers are [upstream issues](https://github.com/openmoh/openmohaa/issues). The full list, with
+  the risks each one brings, is in [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) and
+  [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
 
-*OpenMoHAA is an independent project and is not affiliated with or endorsed by Electronic Arts.*
+## What comes next
 
-## Getting started
+New features beyond the original game, in the spirit of OpenCoD2-Plus. Planned, not done yet:
 
-- 📦 [Installing OpenMoHAA](docs/markdown/01-intro/01-installation.md)
-- ▶️ [How to play: Launching the game, expansions & file locations](docs/markdown/02-running/01-running.md)
-- ❓ [FAQ & Troubleshooting](docs/markdown/02-running/03-faq.md)
-- 🌐 [Setting up a game server](docs/markdown/02-running/02-running-server.md)
-
-## Reporting Issues
+- **Faster servers:** today the server simulates at `sv_fps 20`, as the original does; we want to
+  explore higher tick rates (40 Hz and up) without breaking original clients.
+- **More upstream bugs**, picked by what can be reproduced and verified.
+- **Same fix for the client module on musl** that the server got in #918.
 
 > [!NOTE]
-> OpenMoHAA hasn't hit version 1.0.0 yet. Think of it like a beta build from the golden age of LAN parties. Features are being added, bugs are getting squashed, and more things are being tweaked. Things might change, break, or get even better over time.
-> 
-> If that sounds like your kind of mission, gear up, frag some bots, and help level up OpenMoHAA!
+> **Still in development.** Expect bugs and missing pieces. Behaviour changes against the original
+> are listed in [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
 
-If you encounter a bug or a problem, you can do one of the following:
-- Submit an [issue](https://github.com/openmoh/openmohaa/issues) on GitHub (use the template).
-- Join the [OpenMoHAA Discord](https://discord.gg/NYtH58R) for a quick help.
+> [!IMPORTANT]
+> **No game content is included: bring your own data.** This repository is source code only. To
+> play you need the files of a copy of Medal of Honor: Allied Assault (and optionally Spearhead and
+> Breakthrough) that **you legally own**.
 
-## Additional documentation
+## How to play
 
-- 📖 [Documentation](https://openmoh.github.io/openmohaa)
-- ⚙️ [Game settings & configuration](docs/markdown/03-configuration/01-configuration.md)
-- 📝 [Code & Scripting reference](docs/markdown/04-coding/02-coding.md)
-- 📜 [Contributing guidelines](CONTRIBUTING.md)
+Development builds are published automatically on the
+[`dev` pre-release](https://github.com/JotaJazz/OpenMOHAA-Plus/releases/tag/dev). Otherwise build
+it (see [Building](#building)). Installation works as in OpenMoHAA:
 
-## Current state
+- [Installing](docs/markdown/01-intro/01-installation.md), [running the game and expansions](docs/markdown/02-running/01-running.md), [FAQ](docs/markdown/02-running/03-faq.md)
+- [Setting up a server](docs/markdown/02-running/02-running-server.md), [bots](docs/markdown/03-configuration/03-configuration-bots.md), [configuration](docs/markdown/03-configuration/01-configuration.md)
 
-- 🧰 [List of differences](docs/markdown/01-intro/04-differences.md)
+From a build, point it at your game folder, the one that contains `main/`:
 
-### Single-player
+```sh
+./openmohaa +set fs_basepath /path/to/MOHAA
+./omohaaded +set fs_basepath /path/to/MOHAA +map dm/mohdm1     # dedicated server
+```
 
-The entire single-player campaign should work (Allied Assault, Spearhead and Breakthrough). If you encounter any bug, please create a new [GitHub issue](https://github.com/openmoh/openmohaa/issues) describing them.
+## For contributors
 
-### Multiplayer
+Playing and reporting bugs, testing on other systems, or code: every kind of help counts. Do not
+send this fork's changes to the original repository: its rules forbid AI-generated contributions.
+The technical documentation, in English, starts at [docs/dev/README.md](docs/dev/README.md);
+[AGENTS.md](AGENTS.md) is the entry point for AI coding agents.
 
-- Almost fully stable
-- All official game modes are supported, including those from Spearhead and Breakthrough:
-  - Free-For-All
-  - Team-Deathmatch
-  - Round-based match
-  - Objective match
-  - Tug-of-War (Spearhead)
-  - Liberation (Breakthrough)
-- Popular mods like **Freeze-Tag** are supported
-- Built-in bots for offline practice and for testing
-  - 🔧 [Setting up bots](docs/markdown/02-running/01-running.md#Playing-with-bots)
+## Building
 
-You can host your own [OpenMoHAA server](docs/markdown/02-running/02-running-server.md#) or join others using OpenMoHAA.
+CMake and Ninja. Dependencies for every platform:
+[docs/markdown/04-coding/01-compiling.md](docs/markdown/04-coding/01-compiling.md). On Linux:
 
-## Screenshots
+```sh
+cmake -S . -B .cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=$HOME/omohaa
+cmake --build .cmake
+cmake --install .cmake        # -> $HOME/omohaa/lib/openmohaa: openmohaa, omohaaded, game.so, cgame.so...
+```
 
-|                                                                                   |                                                                            |
-|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| ![](docs/assets/images/v0.60.0-x86_64/mohdm1_1.png)                                      | ![](docs/assets/images/v0.60.0-x86_64/training_1.png)                               |
-| ![](docs/assets/images/v0.60.0-x86_64/flughafen_1.png)                                   | ![](docs/assets/images/v0.60.0-x86_64/flughafen_2.png)                            |
-| ![](docs/assets/images/v0.60.0-x86_64/mohdm2_1.png "Playing Freeze-Tag mode with bots")  | ![](docs/assets/images/v0.60.0-x86_64/training_3.png "Single-Player training")    |
+More in [docs/dev/development/compiling.md](docs/dev/development/compiling.md).
 
-*More screenshots [here](docs/assets/images)*
+## Testing
 
-## Development & Compiling
+```sh
+python3 -I -m unittest discover -s misc/docs-check     # docs checker tests
+python3 -I misc/docs-check/check_docs.py               # docs checker
+```
 
-- 💻 [Building from source](docs/markdown/04-coding/01-compiling.md)
+Bugs are verified on the real binaries without opening windows or playing sound: offscreen
+client, null audio, scripted console input, bots, screenshots and audio rendered to a file. The
+recipes are in [docs/dev/development/testing.md](docs/dev/development/testing.md).
 
-## Third party librairies
+## Repository layout
 
-The following third party tools and libraries are used by the project
+The source tree, the build outputs and how the engine, the game modules and the renderer fit
+together: [docs/dev/architecture/overview.md](docs/dev/architecture/overview.md).
 
-- [Flex](https://github.com/westes/flex)
-- [Bison](https://savannah.gnu.org/projects/bison/)
-- [SDL](http://www.libsdl.org/)
-- [OpenAL](https://www.openal.org/)
-- [LibMAD](http://www.underbit.com/products/mad/)
-- [cURL](https://curl.se/)
-- [Libogg](https://github.com/gcp/libogg)
-- [Libvorbis](https://xiph.org/vorbis/)
-- [Libopus](https://opus-codec.org/)
+## Transparency
+
+- **Who maintains this:** I'm JotaJazz. I like old games, and I want to keep playing them with my
+  friends and keep them alive for the community, with open projects. This one sits next to
+  [OpenCoD2-Plus](https://github.com/JotaJazz/OpenCoD2-Plus).
+- **How the work is done:** I work with [Claude Code](https://claude.com/claude-code), Anthropic's
+  coding assistant. The changes in this fork, including this README, are written with its help.
+  Commits made this way carry a `Co-Authored-By: Claude` line, so they can be found with `git log`.
+- **Relationship with the original:** the engine and game reimplementation are the work of the
+  OpenMoHAA contributors. This fork follows their `main` and merges it in; it never sends its own
+  changes back, because OpenMoHAA does not accept AI-generated contributions
+  ([ADR 0001](docs/dev/architecture/adr/0001-fork-keeps-ai-assisted-work.md)). Please report bugs
+  of this fork here, not to OpenMoHAA.
+- **What it is not:** it is not an official project and is not affiliated with Electronic Arts,
+  2015 Inc. or the OpenMoHAA team. It contains no game files.
+
+## Notice
+
+OpenMOHAA Plus is an independent project. It is not affiliated with, authorized by, sponsored by,
+or endorsed by Electronic Arts Inc. or any of its affiliates. "Medal of Honor" is a trademark of
+Electronic Arts Inc., used here only to identify the game the code is compatible with.
+
+This project does not provide or help obtain copyrighted game data. The screenshots show content
+of Medal of Honor: Allied Assault, property of Electronic Arts Inc., for identification only.
+
+## License
+
+GPL-2.0, as OpenMoHAA ([COPYING.txt](COPYING.txt)). Third-party libraries keep their own licenses:
+[Flex](https://github.com/westes/flex), [Bison](https://savannah.gnu.org/projects/bison/),
+[SDL](https://www.libsdl.org/), [OpenAL Soft](https://openal-soft.org/),
+[libmad](https://www.underbit.com/products/mad/), [cURL](https://curl.se/),
+[libogg and libvorbis](https://xiph.org/vorbis/), [Opus](https://opus-codec.org/),
+[Recast Navigation](https://github.com/recastnavigation/recastnavigation), zlib and libjpeg
+(sources in `code/thirdparty`).
+
+## Credits
+
+- [OpenMoHAA](https://github.com/openmoh/openmohaa) and its contributors, the reimplementation this fork is built on
+- [ioquake3](https://github.com/ioquake/ioq3) and id Software, the engine
+- Ritual Entertainment's [F.A.K.K. 2 SDK](https://code.idtech.space/ritual/fakk2-sdk)
+- 2015 Inc. and Electronic Arts, Medal of Honor: Allied Assault
 
 ## Resources
 
-- 🔗 [GitHub Repository](https://github.com/openmoh/openmohaa/)
-- 🌐 [MOH-DB](https://www.moh-db.com/)
-- 🕹️ [333networks](https://333networks.com/)
-- 📂 [ModDB](https://www.moddb.com/games/medal-of-honor-allied-assault)
-- 📂 [GameBanana](https://gamebanana.com/games/720)
-- 💬 [Join us on Discord](https://discord.gg/NYtH58R)
+[MOH-DB](https://www.moh-db.com/) · [333networks](https://333networks.com/) ·
+[ModDB](https://www.moddb.com/games/medal-of-honor-allied-assault) ·
+[GameBanana](https://gamebanana.com/games/720) ·
+[OpenMoHAA documentation](https://openmoh.github.io/openmohaa) ·
+[OpenMoHAA Discord](https://discord.gg/NYtH58R) (upstream community)

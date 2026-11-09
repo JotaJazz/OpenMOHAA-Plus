@@ -6,8 +6,10 @@ Medal of Honor: Allied Assault, Spearhead and Breakthrough (client, dedicated se
 on an ioquake3-based engine, sibling of the maintainer's OpenCoD2-Plus.
 
 ## Goal
-Fix bugs reported upstream (and others found along the way) in a fork that can keep merging
-upstream, with every fix reproduced and verified on real binaries.
+Move OpenMoHAA forward with AI coding agents, which upstream does not accept: fix bugs reported
+upstream (and others found along the way) and add new features beyond the original game (e.g.
+server tick rates above `sv_fps 20`, as OpenCoD2-Plus does with its 40 Hz server), in a fork that
+keeps merging upstream, with every change reproduced and verified on real binaries.
 
 ## Non-goals
 - Submitting AI-assisted work upstream (forbidden by upstream policy; ADR 0001).
