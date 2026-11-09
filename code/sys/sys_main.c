@@ -748,11 +748,17 @@ void Sys_SigHandler( int signum )
 	{
 		signalcaught = qtrue;
 
-        fprintf(stderr, "----\nBacktrace:\n");
-        Sys_PrintBackTrace();
-		fprintf(stderr, "----\n");
-
 		if (signum != SIGTERM && signum != SIGINT) {
+			// Changed in OpenMOHAA Plus: write a crash report (backtrace to stderr and
+			// <fs_homestatepath>/crash.log); a normal termination prints no backtrace
+#ifdef _WIN32
+			fprintf(stderr, "----\nBacktrace:\n");
+			Sys_PrintBackTrace();
+			fprintf(stderr, "----\n");
+#else
+			Sys_WriteCrashReport(signum);
+#endif
+
 			//
 			// Abort to generate a core dump and exit
 			//

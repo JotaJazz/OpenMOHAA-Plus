@@ -158,6 +158,43 @@ class ModuleLifecycle(GameTestCase):
 
 
 @require_game
+class Diagnostics(GameTestCase):
+    def test_freeze_watchdog_reports_and_recovers(self):
+        s = self.server("+set", "developer", "1", "+set", "com_freezeWatch", "2",
+                        "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        s.send("freeze 5")
+        s.wait_for(r"WATCHDOG: main loop frozen for 2\.\d seconds .*map dm/mohdm1", timeout=30)
+        s.wait_for(r"main thread backtrace", timeout=10)
+        s.wait_for(r"WATCHDOG: main loop recovered after [45]\.\d seconds", timeout=20)
+        self.assertEqual(s.quit(), 0)
+        with open(self.home.file("../freeze.log")) as f:
+            self.assertIn("main loop frozen", f.read())
+
+    def test_watchdog_is_off_by_default(self):
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        s.send("freeze 3")
+        time.sleep(5)
+        self.assertEqual(s.quit(), 0)
+        self.assertNotIn("WATCHDOG", s.log())
+
+    def test_crash_writes_a_report(self):
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        s.send("crash")
+        s.proc.wait(30)
+        self.assertNotEqual(s.proc.returncode, 0)
+        with open(self.home.file("../crash.log")) as f:
+            report = f.read()
+        self.assertIn("==== crash: signal 11 ====", report)
+        self.assertIn("map: dm/mohdm1", report)
+        # frames are module(+offset) [address]; resolve offsets with addr2line -e <binary>
+        self.assertGreaterEqual(len(re.findall(r"\(\+0x[0-9a-f]+\) \[0x[0-9a-f]+\]", report)), 3)
+        self.assertIn("Crash report written to", s.log())
+
+
+@require_game
 @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 3 minutes); set OMOH_SLOW=1")
 class SameMapRestart(GameTestCase):
     def test_script_waits_do_not_burst_after_restart(self):

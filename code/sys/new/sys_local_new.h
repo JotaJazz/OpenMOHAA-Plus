@@ -37,6 +37,12 @@ void Sys_ShutdownEx();
 
 void Sys_PrepareBackTrace();
 void Sys_PrintBackTrace();
+
+// Added in OpenMOHAA Plus: sys_watchdog.cpp
+void Sys_Watchdog_Init(void);
+void Sys_Watchdog_Frame(void);
+void Sys_Watchdog_Shutdown(void);
+void Sys_WriteCrashReport(int signum);
 void Sys_PlatformInit_New();
 
 void Sys_UpdateChecker_Init();

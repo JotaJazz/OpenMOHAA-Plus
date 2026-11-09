@@ -31,6 +31,10 @@ Verifying audio without speakers: OpenAL Soft's wave backend renders to a file; 
 
 ## Platform layer
 
+- `code/sys/sys_watchdog.cpp`: freeze watchdog thread (`com_freezeWatch`, heartbeat from
+  `Sys_ProcessBackgroundTasks` once per frame) and the POSIX crash report written from the signal
+  handler with async-signal-safe calls only.
+
 - Cursor images: `IN_SetCursorFromImage` (`code/sdl/sdl_mouse.c`) frees the image right after
   creating the SDL cursor; the free function belongs to the renderer, which `vid_restart` reloads.
 - `vid_restart` reloads the renderer module; any function pointer obtained from it is invalid

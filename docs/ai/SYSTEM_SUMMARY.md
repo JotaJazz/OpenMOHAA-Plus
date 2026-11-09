@@ -32,6 +32,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Script commands | `registercmd` dispatched; item `amount`/`dmamount`... readable; `waitForState` waits | #672, #920, #702 |
 | SDL input | Cursor pointers cleared, cursor image freed immediately | (found via #534) |
 | CI | Executable bits restored before release zips | #923 |
+| Diagnostics | `com_freezeWatch` freeze watchdog (`code/sys/sys_watchdog.cpp`), crash reports to `crash.log`, fixed Unix backtrace | (phase 0) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests
