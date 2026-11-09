@@ -252,6 +252,11 @@ The community works in `.scr`; today a script error shows only when the map load
 
 ## Map voting and dynamic rotation
 
+Finding (from code): player votes exist: `callvote map|nextmap|restart|g_gametype|kick` and `vote`
+(`code/fgame/player.cpp`, `code/fgame/clientvote.cpp`), on by default (`g_allowvote 1`), with
+the vote menu options read from `callvote.cfg`. Missing: an automatic vote among a few maps at the
+end of a match, and rotations by player count.
+
 - **Shape:** vote for the next map at the end of a match; rotations that adapt to the player count.
   Script on top of the gametype scripting API, or C++.
 
@@ -269,6 +274,13 @@ The community works in `.scr`; today a script error shows only when the map load
 - **First step:** check what the code already has.
 
 ## Server-side anti-wallhack
+
+Finding (from code): this exists. `sv_netoptimize` (default 0; `g_netoptimize` must stay 1) stops
+sending a client the players it cannot see, using line-of-sight traces from the eye position with
+lean and a 150 ms velocity look-ahead (`SV_ClientIsVisible` in `code/server/sv_snapshot.c`):
+1 checks only players outside the culling distance, 2 checks all of them; results are cached for
+`sv_netoptimize_vistime` ms. Remaining work: measure its effect and cost with real clients, and
+decide whether to enable it by default. Not verified at run time.
 
 - **Shape:** do not send each client the positions of enemies it cannot see, using map visibility
   (PVS) and line-of-sight traces, so a modified client lacks the data; precedent in Quake III and
