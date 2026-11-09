@@ -68,6 +68,10 @@ BotController::BotController()
 
     m_iCuriousTime        = 0;
     m_iAttackTime         = 0;
+    m_iGrenadeStage       = 0; // Added in OpenMOHAA Plus
+    m_iGrenadeStageTime   = 0;
+    m_iNextGrenadeTime    = 0;
+    m_iGrenadeChargeTime  = 0;
     m_iEnemyEyesTag       = -1;
     m_iContinuousFireTime = 0;
     m_iLastSeenTime       = 0;
@@ -264,6 +268,12 @@ bool BotController::CheckWindows(void)
 void BotController::CheckValidWeapon()
 {
     Weapon *weapon = controlledEnt->GetActiveWeapon(WEAPON_MAIN);
+
+    // Added in OpenMOHAA Plus: during a grenade throw the bot is briefly without a weapon on purpose
+    if (m_iGrenadeStage) {
+        return;
+    }
+
     if (!weapon) {
         // If holstered, use the best weapon available
         UseWeaponWithAmmo();
@@ -828,6 +838,11 @@ void BotController::State_Attack(void)
     bCanSee =
         controlledEnt->CanSee(m_pEnemy, 20, Q_min(world->m_fAIVisionDistance, world->farplane_distance * 0.828), false);
 
+    // Added in OpenMOHAA Plus: a grenade throw takes over the attack while it lasts
+    if (ThinkGrenade(bCanSee, fDistanceSquared)) {
+        return;
+    }
+
     if (bCanSee) {
         if (!pWeap) {
             return;
@@ -1184,9 +1199,110 @@ Weapon *BotController::FindMeleeWeapon()
     return bestweapon;
 }
 
+/*
+====================
+Grenades
+
+Added in OpenMOHAA Plus (upstream #833)
+ Bots never threw grenades, and with grenades as their only weapon (gun game mods) they took out an
+ empty pistol to melee. Now, now and then, a bot that sees an enemy at a medium distance switches to
+ a grenade, aims above the enemy, charges (0.7 to 2 s, far from the 4 s overcook) and throws, then
+ takes its weapon back. A bot holding a grenade as its only weapon throws it like any attack.
+====================
+*/
+Weapon *BotController::FindGrenade(void)
+{
+    const Container<int>& inventory = controlledEnt->getInventory();
+
+    for (int j = 1; j <= inventory.NumObjects(); j++) {
+        Weapon *weap = (Weapon *)G_GetEntity(inventory.ObjectAt(j));
+        // WEAPON_CLASS_THROWABLE also covers items such as the binoculars
+        if (weap && weap->IsSubclassOfWeapon() && (weap->GetWeaponClass() & WEAPON_CLASS_GRENADE)
+            && weap->HasAmmo(FIRE_PRIMARY)) {
+            return weap;
+        }
+    }
+    return NULL;
+}
+
+bool BotController::ThinkGrenade(bool bCanSee, float fDistanceSquared)
+{
+    static const float minDistance = 256, maxDistance = 1100;
+    Weapon            *active     = controlledEnt->GetActiveWeapon(WEAPON_MAIN);
+    const bool         onlyGrenade = active && (active->GetWeaponClass() & WEAPON_CLASS_GRENADE) && !FindWeaponWithAmmo();
+    const float        distance    = sqrtf(fDistanceSquared);
+    Weapon            *grenade;
+
+    if (m_iGrenadeStage == 0) {
+        if (!g_bot_grenades->integer || !bCanSee || level.inttime < m_iNextGrenadeTime) {
+            return false;
+        }
+        if (!onlyGrenade && (distance < minDistance || distance > maxDistance)) {
+            return false;
+        }
+        grenade = FindGrenade();
+        if (!grenade) {
+            return false;
+        }
+        // not every time: about one throw every 12 to 20 seconds of fighting
+        m_iNextGrenadeTime = level.inttime + (onlyGrenade ? 1500 : 12000 + G_Random(8000));
+        m_pGrenadeReturnWeapon = onlyGrenade ? NULL : active;
+        if (active != grenade) {
+            // the player's own command: useWeapon() alone does not switch a bot's weapon
+            SendCommand("useweaponclass grenade");
+        }
+        m_iGrenadeStage     = 1;
+        m_iGrenadeStageTime = level.inttime;
+    }
+
+    // aim above the enemy: the farther, the higher
+    rotation.AimAt(m_pEnemy->origin + Vector(0, 0, 32 + distance * 0.35f));
+    movement.ClearMove();
+
+    switch (m_iGrenadeStage) {
+    case 1: // wait for the grenade to be in hand
+        m_botCmd.buttons &= ~(BUTTON_ATTACKLEFT | BUTTON_ATTACKRIGHT);
+        active = controlledEnt->GetActiveWeapon(WEAPON_MAIN);
+        if (active && (active->GetWeaponClass() & WEAPON_CLASS_GRENADE) && !controlledEnt->GetNewActiveWeapon()
+            && level.inttime > m_iGrenadeStageTime + 600) {
+            m_iGrenadeStage       = 2;
+            m_iGrenadeStageTime   = level.inttime;
+            m_iGrenadeChargeTime  = 700 + (int)(1300 * Q_clamp_float((distance - minDistance) / (maxDistance - minDistance), 0, 1));
+        } else if (level.inttime > m_iGrenadeStageTime + 2500) {
+            m_iGrenadeStage = 0; // could not switch
+            return false;
+        }
+        return true;
+    case 2: // charge
+        m_botCmd.buttons |= BUTTON_ATTACKLEFT;
+        if (level.inttime > m_iGrenadeStageTime + m_iGrenadeChargeTime) {
+            m_botCmd.buttons &= ~BUTTON_ATTACKLEFT; // release: throw
+            m_iGrenadeStage     = 3;
+            m_iGrenadeStageTime = level.inttime;
+        }
+        return true;
+    case 3: // let the throw animation finish, then take the weapon back
+        m_botCmd.buttons &= ~(BUTTON_ATTACKLEFT | BUTTON_ATTACKRIGHT);
+        if (level.inttime > m_iGrenadeStageTime + 900) {
+            m_iGrenadeStage = 0;
+            if (m_pGrenadeReturnWeapon && m_pGrenadeReturnWeapon->HasAmmo(FIRE_PRIMARY)) {
+                SendCommand(va("use \"%s\"", m_pGrenadeReturnWeapon->model.c_str()));
+            } else {
+                UseWeaponWithAmmo();
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 void BotController::UseWeaponWithAmmo()
 {
     Weapon *bestWeapon = FindWeaponWithAmmo();
+    if (!bestWeapon) {
+        // Added in OpenMOHAA Plus (upstream #833): grenades before an empty gun's melee
+        bestWeapon = FindGrenade();
+    }
     if (!bestWeapon) {
         //
         // If there is no weapon with ammo, fallback to a weapon that can melee

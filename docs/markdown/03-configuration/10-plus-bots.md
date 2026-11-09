@@ -1,8 +1,9 @@
-# OpenMOHAA Plus: bot skill and weapons
+# OpenMOHAA Plus: bot skill, weapons and grenades
 
 | Cvar | Default | Effect |
 |---|---|---|
 | `g_bot_skill` | `3` | `1` Novice, `2` Easy, `3` Average, `4` Hard, `5` Expert. Scales the bots' reaction time, aim spread and turn speed; takes effect at once. The server browser shows the level. |
+| `g_bot_grenades` | `1` | Bots throw grenades now and then (about every 12 to 20 seconds of fighting) at enemies 256 to 1100 units away. With grenades as their only weapon (gun game mods) they throw them like any weapon. `0`: never. |
 | `g_bot_weapons` | empty | Primary weapons bots choose from, at random: any of `rifle sniper smg mg heavy shotgun` (e.g. `"rifle smg"`). Empty: automatic choice, as before. Applies to bots that join after the change. |
 
 The levels multiply the detailed cvars, which stay available for fine tuning: Average is exactly

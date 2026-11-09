@@ -370,7 +370,9 @@ decide whether to enable it by default. Not verified at run time.
   ladders (#814), grenades (#833), skills and weapons (#684).
 - **Why:** keeps low-population servers alive, and bots are the test players for automated tests.
 - **Status:** #684 on branch `feat/bot-skill-weapons`: `g_bot_skill` (5 levels scaling the existing
-  aim cvars, shown in the browser instead of a fixed "Average"), `g_bot_weapons`.
+  aim cvars, shown in the browser instead of a fixed "Average"), `g_bot_weapons`. #833 on branch
+  `feat/bot-grenades`: bots throw grenades (`g_bot_grenades`), also as their only weapon. Open:
+  ladders (#814, Spearhead map), objectives (#602), breaking obstacles with melee.
 
 ## Sharp text at high resolutions
 

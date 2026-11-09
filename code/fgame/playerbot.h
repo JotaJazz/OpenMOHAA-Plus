@@ -198,6 +198,13 @@ private:
     int m_iNextTauntTime;
     int m_iLastFireTime;
 
+    // Added in OpenMOHAA Plus: grenade throws (upstream #833)
+    int             m_iGrenadeStage; // 0 none, 1 switching, 2 charging, 3 throwing
+    int             m_iGrenadeStageTime;
+    int             m_iNextGrenadeTime;
+    int             m_iGrenadeChargeTime;
+    SafePtr<Weapon> m_pGrenadeReturnWeapon;
+
 private:
     DelegateHandle delegateHandle_gotKill;
     DelegateHandle delegateHandle_killed;
@@ -207,7 +214,9 @@ private:
 private:
     Weapon *FindWeaponWithAmmo(void);
     Weapon *FindMeleeWeapon(void);
+    Weapon *FindGrenade(void); // Added in OpenMOHAA Plus
     void    UseWeaponWithAmmo(void);
+    bool    ThinkGrenade(bool bCanSee, float fDistanceSquared); // Added in OpenMOHAA Plus
 
     void CheckUse(void);
     bool CheckWindows(void);

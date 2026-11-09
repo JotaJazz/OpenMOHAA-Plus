@@ -54,7 +54,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Localization | `cl_language` overlay (`lang/<code>/`), UTF-8 to Latin-1, `localize` command, labels localized, missing Latin-1 glyphs drawn as base letters (`code/renderercommon/tr_fontfold.h`), sorted localization files | (phase 4) |
 | Packaging | Linux AppImage (x86_64, aarch64) built in CI, `misc/linux/AppRun` picks the game folder | #890 |
 | Competition mod | `misc/mods/plus-match` (scripts only): rounds, halftime side swap, draw, team timeouts | (phase 3) |
-| Bots | `g_bot_skill` levels (scale reaction, spread, turn speed), `g_bot_weapons` | #684 |
+| Bots | `g_bot_skill` levels (scale reaction, spread, turn speed), `g_bot_weapons`, grenade throws (`g_bot_grenades`) | #684, #833 |
 | Match control | Match pause (`DM_Manager::SetPaused`, `matchpause`, `match_pause`, `ad_pause`), hit sounds (`g_hitsounds`), hit markers (`g_hitmarkers`, `cg_hitmarker`) | (phase 3) |
 | HUD | `ui_hudscale` multiplier; `ui_menuaspect` (4:3 menus with side bars); `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |

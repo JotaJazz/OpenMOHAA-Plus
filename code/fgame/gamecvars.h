@@ -311,6 +311,7 @@ extern cvar_t *g_bot_attack_spreadmult;
 extern cvar_t *g_bot_turn_speed;
 extern cvar_t *g_bot_skill;   // Added in OpenMOHAA Plus
 extern cvar_t *g_bot_weapons; // Added in OpenMOHAA Plus
+extern cvar_t *g_bot_grenades; // Added in OpenMOHAA Plus
 /**
  * @brief A value that determines the chance of the bot sending an instant message on kill.
  * 0 = disable
