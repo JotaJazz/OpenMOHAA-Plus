@@ -14,6 +14,7 @@ cgame / UI ── S_StartSound (code/client/snd_dma_new.cpp)
 | Fact | Where | Consequence |
 |---|---|---|
 | Each source gets `AL_MAX_GAIN` = `AL_GAIN_LIMIT_SOFT` when `AL_SOFT_gain_clamp_ex` exists | `S_OPENAL_InitChannel` | Volumes above 1.0 (`s_dialogscale > 1`, aliases with volume 1.5) are audible; default OpenAL clamps to 1.0 |
+| HRTF: `s_speaker_type 1` (headphones) allows it only if OpenAL detects headphones; `s_hrtf 1` forces it (stereo HRTF, OpenAL Soft's built-in data set); the log prints `OpenAL: HRTF enabled/disabled` | context attributes in `snd_openal_new.cpp` | Most systems do not report headphones, so `s_hrtf 1` is the reliable switch |
 | The OpenAL output limiter is disabled | `ALC_OUTPUT_LIMITER_SOFT` in `snd_openal_new.cpp` | Gains above full scale clip instead of being compressed |
 | Base volume = `s_volume` × fade (`S_GetBaseVolume`); callers multiply by the channel volume | `snd_openal_new.cpp` | Many stock aliases already request 1.5 |
 | Names without extension get `.wav` | `S_LoadSound` | Stock `ubersound` has extensionless aliases (e.g. `impact_playerleavewater`) |

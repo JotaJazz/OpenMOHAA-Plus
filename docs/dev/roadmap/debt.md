@@ -22,6 +22,8 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.
 - No `clang-format` run on fork commits so far.
+- The #885 gain fix has no automated test yet (needs time-aligned audio measurement with the OpenAL
+  wave backend; manual method in `docs/dev/development/testing.md`).
 - The fork's `dev` pre-release (`.github/workflows/branches-build.yml`) publishes only `-pdb` archives
   for Windows, and the "Generate Documentation" workflow fails on the fork.
 - `code/parser/lex.yy.cpp` and `code/parser/y.tab.cpp` are stale committed copies; the build
