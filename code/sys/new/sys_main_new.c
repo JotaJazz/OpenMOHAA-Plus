@@ -348,10 +348,12 @@ void Sys_InitEx()
     Sys_InitLocalization();
     Sys_InitCurl();
     Sys_UpdateChecker_Init();
+    Sys_Watchdog_Init();
 }
 
 void Sys_ShutdownEx()
 {
+    Sys_Watchdog_Shutdown();
     Sys_UpdateChecker_Shutdown();
     Sys_ShutdownCurl();
 }
@@ -359,4 +361,5 @@ void Sys_ShutdownEx()
 void Sys_ProcessBackgroundTasks()
 {
     Sys_UpdateChecker_Process();
+    Sys_Watchdog_Frame();
 }

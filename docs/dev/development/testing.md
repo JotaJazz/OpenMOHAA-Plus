@@ -39,6 +39,7 @@ SDL_VIDEODRIVER=offscreen ALSOFT_DRIVERS=null timeout -s KILL 150 ./openmohaa \
 | Measure audio | OpenAL Soft wave backend: `ALSOFT_CONF=<file>` with `[general]` `drivers=wave` and `[wave]` `file=<out.wav>`; compare RMS/peak of aligned windows |
 | Measure frame rate | `+set com_speeds 1 +set r_swapInterval 0`, count `frame:` lines over wall-clock time |
 | Emulate musl module behaviour | `LD_PRELOAD` a shared object defining `int dlclose(void *h) { return 0; }` |
+| Diagnose a freeze or crash | `+set com_freezeWatch <seconds>` reports frozen frames (with the main thread's backtrace on POSIX) to stderr and `<HOME_DIR>/freeze.log`; fatal signals append a report to `<HOME_DIR>/crash.log`; resolve `module(+0xOFFSET)` frames with `addr2line -f -C -e <binary> 0xOFFSET`; `developer 1` enables the `freeze <s>` and `crash` test commands |
 | Memory errors | Scratch build with `-fsanitize=address` in C/CXX/linker flags; run with `ASAN_OPTIONS=detect_leaks=0` |
 | Network probe (bans, pure checks) | Two processes on unique `net_port`s; server `developer 1` logs client state changes |
 

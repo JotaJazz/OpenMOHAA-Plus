@@ -68,6 +68,9 @@ free).
 
 ## Freeze watchdog and crash reports
 
+Status: implemented on branch `feat/freeze-watchdog` (POSIX backtraces; Windows logs the freeze
+without a stack).
+
 A hung or crashed server leaves little to go on (the #287 backtrace had no symbols).
 
 - **Shape:** a watchdog that reports frames stuck longer than a threshold (like OpenCoD2-Plus's

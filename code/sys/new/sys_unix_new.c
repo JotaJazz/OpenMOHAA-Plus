@@ -50,17 +50,13 @@ Sys_PrintBackTrace
 */
 void Sys_PrintBackTrace() {
     void* backtrace_arr[128];
-    char** backtrace_symbols_arr;
     size_t backtrace_size;
-    size_t i;
 
     // Fetch the backtrace starting from the current function
     backtrace_size = backtrace(backtrace_arr, ARRAY_LEN(backtrace_arr));
-    backtrace_symbols_arr = backtrace_symbols(backtrace_arr, ARRAY_LEN(backtrace_arr));
-
-    for (i = 0; i < backtrace_size; i++) {
-        fprintf(stderr, "=> %s\n", backtrace_symbols_arr[i]);
-    }
+    // Fixed in OpenMOHAA Plus: only the captured frames are valid (the whole array was passed),
+    // and backtrace_symbols_fd does not allocate, which matters inside a signal handler
+    backtrace_symbols_fd(backtrace_arr, backtrace_size, STDERR_FILENO);
 }
 
 /*
