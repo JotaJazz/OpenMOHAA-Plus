@@ -2079,6 +2079,24 @@ Event EV_ScriptThread_TeamSetScore
     "Change/Add score to a team.",
     EV_NORMAL
 );
+Event EV_ScriptThread_MatchPause // Added in OpenMOHAA Plus
+(
+    "match_pause",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Pauses the match: players are frozen and take no damage, the round clock and time limit stop.",
+    EV_NORMAL
+);
+Event EV_ScriptThread_MatchResume // Added in OpenMOHAA Plus
+(
+    "match_resume",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "Resumes a paused match.",
+    EV_NORMAL
+);
 Event EV_ScriptThread_TeamSwap // Added in OpenMOHAA Plus
 (
     "team_swap",
@@ -2393,6 +2411,8 @@ CLASS_DECLARATION(Listener, ScriptThread, NULL) {
     {&EV_ScriptThread_TeamGetScore,            &ScriptThread::TeamGetScore            },
     {&EV_ScriptThread_TeamSetScore,            &ScriptThread::TeamSetScore            },
     {&EV_ScriptThread_TeamSwap,                &ScriptThread::TeamSwap                },
+    {&EV_ScriptThread_MatchPause,              &ScriptThread::MatchPause              },
+    {&EV_ScriptThread_MatchResume,             &ScriptThread::MatchResume             },
     {&EV_ScriptThread_TraceDetails,            &ScriptThread::TraceDetails            },
     {&EV_ScriptThread_VisionGetNaked,          &ScriptThread::VisionGetNaked          },
     {&EV_ScriptThread_VisionSetNaked,          &ScriptThread::VisionSetNaked          },
@@ -5599,6 +5619,19 @@ void ScriptThread::TeamGetScore(Event *ev)
     if (team) {
         ev->AddInteger(team->m_teamwins);
     }
+}
+
+void ScriptThread::MatchPause(Event *ev)
+{
+    if (g_gametype->integer == GT_SINGLE_PLAYER) {
+        throw ScriptException("match_pause is for multiplayer games");
+    }
+    dmManager.SetPaused(true);
+}
+
+void ScriptThread::MatchResume(Event *ev)
+{
+    dmManager.SetPaused(false);
 }
 
 void ScriptThread::TeamSwap(Event *ev)

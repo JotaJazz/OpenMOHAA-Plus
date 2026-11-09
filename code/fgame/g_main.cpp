@@ -673,6 +673,7 @@ void G_RunFrame(int levelTime, int frameTime)
             G_ClientDrawTags();
         }
 
+        dmManager.UpdatePause(); // Added in OpenMOHAA Plus
         G_UpdateMatchEndTime();
         G_CheckExitRules();
         G_CheckStartRules();
@@ -1103,7 +1104,8 @@ void G_UpdateMatchEndTime(void)
     if (dmManager.GameHasRounds() && dmManager.GetRoundLimit()) {
         endtime = dmManager.GetMatchStartTime() * 1000.0f + (level.svsStartTime + 60000 * dmManager.GetRoundLimit());
     } else if (timelimit->integer) {
-        endtime = level.svsStartTime + 60000 * timelimit->integer;
+        // Changed in OpenMOHAA Plus: paused time does not count
+        endtime = level.svsStartTime + 60000 * timelimit->integer + dmManager.GetPausedTime();
     }
 
     if (level.svsEndTime != endtime) {

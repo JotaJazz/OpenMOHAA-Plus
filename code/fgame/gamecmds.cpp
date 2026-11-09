@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "navigate.h"
 #include "lodthing.h"
 #include "player.h"
+#include "dm_manager.h"
 #include <scriptcompiler.h>
 #include "playerbot.h"
 #include "consoleevent.h"
@@ -48,9 +49,14 @@ typedef struct {
     SafePtr<Listener> master;
 } commandmaster_t;
 
+qboolean G_MatchPauseCmd(gentity_t *ent);  // Added in OpenMOHAA Plus
+qboolean G_MatchResumeCmd(gentity_t *ent); // Added in OpenMOHAA Plus
+
 consolecmd_t G_ConsoleCmds[] = {
     //   command name       function             available in multiplayer?
     {"say",             G_SayCmd,             qtrue },
+    {"matchpause",      G_MatchPauseCmd,      qfalse}, // Added in OpenMOHAA Plus
+    {"matchresume",     G_MatchResumeCmd,     qfalse}, // Added in OpenMOHAA Plus
     {"eventlist",       G_EventListCmd,       qfalse},
     {"pendingevents",   G_PendingEventsCmd,   qfalse},
     {"eventhelp",       G_EventHelpCmd,       qfalse},
@@ -140,6 +146,23 @@ static qboolean G_ProcessScriptCommand(const char *cmd, Listener *self)
     }
 
     label->Execute(self, ev);
+    return qtrue;
+}
+
+// Added in OpenMOHAA Plus: server console (and ad_pause / ad_resume)
+qboolean G_MatchPauseCmd(gentity_t *ent)
+{
+    if (g_gametype->integer == GT_SINGLE_PLAYER) {
+        gi.Printf("matchpause is for multiplayer games\n");
+        return qtrue;
+    }
+    dmManager.SetPaused(true);
+    return qtrue;
+}
+
+qboolean G_MatchResumeCmd(gentity_t *ent)
+{
+    dmManager.SetPaused(false);
     return qtrue;
 }
 

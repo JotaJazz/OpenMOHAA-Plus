@@ -333,6 +333,8 @@ class HudScale(GameTestCase):
         c.send("popmenu 0")    # team and weapon menus cover the crosshair
         c.send("popmenu 0")
         time.sleep(2)
+        c.send("freezeplayer")  # a still camera (random spawn point, the player may still fall), no message
+        time.sleep(3)
         names = ("off", "normal", "scale3", "size64")
         for cvars in ("ui_crosshair 0", "ui_crosshair 1", "cg_crosshair_scale 3",
                       "cg_crosshair_scale 1; cg_crosshair_size 64"):
@@ -463,6 +465,65 @@ class Translations(GameTestCase):
             if language:
                 self.assertIn("2 entries translated by lang/es/localization.txt".encode(), log)
                 self.assertIn('-> "&&& se unió a los Aliados"'.encode("latin-1"), log)
+
+
+@require_game
+class HitSounds(GameTestCase):
+    SCRIPT = """main:
+	level waittill spawn
+	while (1) {
+		local.human = NIL
+		local.enemy = NIL
+		for (local.i = 1; local.i <= $player.size; local.i++) {
+			local.p = $player[local.i]
+			if (!(isBot local.p) && local.p.dmteam != "spectator") {
+				local.human = local.p
+			}
+		}
+		if (local.human) {
+			for (local.i = 1; local.i <= $player.size; local.i++) {
+				local.p = $player[local.i]
+				if ((isBot local.p) && local.p.dmteam != local.human.dmteam && local.p.health > 0) {
+					local.enemy = local.p
+				}
+			}
+		}
+		if (local.enemy) {
+			local.enemy damage local.human 5 local.human (0 0 0) (0 0 0) (0 0 0) 0 0 0 -1
+			println "THIT hit"
+		}
+		wait 1
+	}
+end
+"""
+
+    def _play(self, enabled):
+        server_home = omoh.Home()
+        self.addCleanup(server_home.cleanup)
+        server_home.write("maps/dm/mohdm1.scr", self.SCRIPT)
+        s = omoh.server(server_home, "+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxbots", "2",
+                        "+set", "sv_minPlayers", "2", "+set", "g_hitsounds", str(enabled),
+                        "+set", "g_hitsound", "sound/plus_hit_test.wav", "+map", "dm/mohdm1")
+        self.games.append(s)
+        s.wait_for(r"==== InitGame ====")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+set", "developer", "1", "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"UnnamedSoldier.* has entered the battle", timeout=120)
+        time.sleep(3)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        s.wait_for(r"THIT hit", count=3, timeout=60)
+        c.quit()
+        self.assertEqual(s.quit(), 0)
+        return c.log()
+
+    def test_server_enabled_hit_sound_reaches_the_attacker(self):
+        self.assertIn("sound/plus_hit_test.wav", self._play(1))
+
+    def test_hit_sounds_are_off_by_default(self):
+        self.assertNotIn("sound/plus_hit_test.wav", self._play(0))
 
 
 @require_game

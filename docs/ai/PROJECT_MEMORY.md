@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — match pause and hit sounds
+- Pause reuses `PMF_FROZEN` (as `freezeplayer`) plus no damage; clocks stand still by moving `m_fRoundTime` forward every paused frame and by subtracting the paused time from the time limit (HUD end time included), so resuming needs no catch-up.
+- Hit sounds go through `stufftext "play <file>"` (whitelisted in the cgame filter), so original clients hear them; the default file is the stock `sound/items/hit_notify.wav`.
+- Script gotcha: a return command without arguments is read as a string in expressions; state is exposed as a level getter (`level.match_paused`). The round-mode clock shift has no test of its own.
+
 ## 2026-11-09 — Linux AppImage
 - AppImage rather than Flatpak first: no store review, runs on any distro and the Steam Deck; the binaries have no rpath, so `AppRun` sets `LD_LIBRARY_PATH` to the bundled SDL2/OpenAL/cURL.
 - Tested here: the unpacked AppDir (server, client, Spearhead launcher) with the game folder taken from the AppImage's location. Not tested here: `appimagetool` itself (downloading and running it locally was refused); CI builds and publishes it.

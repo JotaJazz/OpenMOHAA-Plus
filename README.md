@@ -65,6 +65,7 @@ is doing for Call of Duty 2 with its 40 Hz server.
   - [server browser favorites, history and search](docs/markdown/03-configuration/06-plus-server-browser.md),
     and no freeze when the master servers' DNS hangs (#376)
   - [community translations](docs/markdown/03-configuration/07-plus-translations.md) of the game's texts (`cl_language`)
+  - [match pause and hit sounds](docs/markdown/03-configuration/08-plus-match-control.md) controlled by the server
   - automatic mod downloads over HTTP (`sv_dlURL`), the reason shown when a server drops you,
     HRTF audio for headphones (`s_hrtf 1`)
   - a script checker and a VS Code extension ([misc/scr-tools](misc/scr-tools),

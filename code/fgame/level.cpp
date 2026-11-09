@@ -144,6 +144,16 @@ Event EV_Level_GetRoundStarted
     EV_GETTER
 );
 
+Event EV_Level_GetMatchPaused // Added in OpenMOHAA Plus
+(
+    "match_paused",
+    EV_DEFAULT,
+    NULL,
+    NULL,
+    "1 while the match is paused (match_pause)",
+    EV_GETTER
+);
+
 Event EV_Level_GetLoopProtection
 (
     "loop_protection",
@@ -668,6 +678,7 @@ CLASS_DECLARATION(Listener, Level, NULL) {
     // Added in 2.30
     {&EV_Level_SetNoDropWeapons,              &Level::SetNoDropWeapons             },
     {&EV_Level_GetRoundStarted,               &Level::EventGetRoundStarted         },
+    {&EV_Level_GetMatchPaused,                &Level::EventGetMatchPaused          },
     {&EV_Level_GetLoopProtection,             &Level::GetLoopProtection            },
     {&EV_Level_SetLoopProtection,             &Level::SetLoopProtection            },
     {&EV_Level_GetPapersLevel,                &Level::GetPapersLevel               },
@@ -2166,6 +2177,11 @@ void Level::GetPapersLevel(Event *ev)
 void Level::SetPapersLevel(Event *ev)
 {
     m_iPapersLevel = ev->GetInteger(1);
+}
+
+void Level::EventGetMatchPaused(Event *ev)
+{
+    ev->AddInteger(dmManager.IsPaused()); // Added in OpenMOHAA Plus
 }
 
 void Level::EventGetRoundStarted(Event *ev)

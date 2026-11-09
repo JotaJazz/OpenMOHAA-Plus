@@ -257,6 +257,77 @@ end
         self.assertIn("TROUND round_start 1", log)
         self.assertRegex(log, r"TROUND round_end axis 1 0")
 
+    def test_match_pause_freezes_players_and_damage(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	level waittill spawn
+	while ($player.size < 4) {
+		wait 1
+	}
+	wait 5
+	match_pause
+	wait 0.5
+	local.before = waitthread positions
+	local.p = $player[1]
+	local.health = local.p.health
+	local.p damage $world 30 $world (0 0 0) (0 0 0) (0 0 0) 0 0 0 -1
+	wait 3
+	local.after = waitthread positions
+	println ("TPAUSE paused=" + level.match_paused + " moved=" + (waitthread moved local.before local.after) + " damage=" + (local.health - local.p.health))
+	match_resume
+	wait 4
+	local.later = waitthread positions
+	println ("TPAUSE resumed=" + level.match_paused + " moved=" + (waitthread moved local.after local.later))
+end
+
+positions:
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		local.list[local.i] = $player[local.i].origin
+	}
+end local.list
+
+moved local.a local.b:
+	local.n = 0
+	for (local.i = 1; local.i <= $player.size; local.i++) {
+		if (vector_length (local.a[local.i] - local.b[local.i]) > 1) {
+			local.n++
+		}
+	}
+end local.n
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", "+set", "sv_maxbots", "4",
+                        "+set", "sv_minPlayers", "4", "+map", "dm/mohdm1")
+        log = s.wait_for(r"TPAUSE resumed", timeout=180)
+        self.assertEqual(s.quit(), 0)
+        self.assertRegex(log, r"TPAUSE paused=1 moved=0 damage=0")
+        resumed = re.search(r"TPAUSE resumed=0 moved=(\d+)", log)
+        self.assertGreater(int(resumed.group(1)), 0, log[-2000:])   # bots walk again
+        self.assertIn("Match paused", log)
+        self.assertIn("Match resumed", log)
+
+    @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 2.5 minutes); set OMOH_SLOW=1")
+    def test_match_pause_stops_the_time_limit(self):
+        self.home.write("maps/dm/mohdm1.scr", """main:
+	event_subscribe "level_intermission" on_intermission
+	level waittill spawn
+	wait 5
+	match_pause
+	wait 60
+	match_resume
+	println ("TCLOCK resumed at " + level.time)
+end
+
+on_intermission:
+	println ("TCLOCK intermission at " + level.time)
+end
+""")
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "2", "+set", "timelimit", "1",
+                        "+set", "sv_maxbots", "2", "+set", "sv_minPlayers", "2", "+map", "dm/mohdm1")
+        log = s.wait_for(r"TCLOCK intermission at", timeout=240)
+        self.assertEqual(s.quit(), 0)
+        self.assertIn("TCLOCK resumed at", log)                   # no intermission at 60 s, during the pause
+        at = float(re.search(r"TCLOCK intermission at ([\d.]+)", log).group(1))
+        self.assertGreater(at, 115)                                # 60 s of play plus 60 s paused
+
     def test_team_swap_in_team_deathmatch(self):
         self.home.write("maps/dm/mohdm1.scr", """main:
 	level waittill spawn

@@ -144,6 +144,8 @@ extern cvar_t *g_gametype;
 extern cvar_t *g_gametypestring;
 extern cvar_t *g_realismmode;
 extern cvar_t *g_teamdamage;
+extern cvar_t *g_hitsounds; // Added in OpenMOHAA Plus
+extern cvar_t *g_hitsound;  // Added in OpenMOHAA Plus
 extern cvar_t *g_healthdrop;
 extern cvar_t *g_healrate;
 

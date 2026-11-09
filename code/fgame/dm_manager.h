@@ -185,6 +185,9 @@ private:
     int m_iNumTargetsDestroyed;
     int m_iNumBombsPlanted;
     int m_iTotalMapTime;
+    // Added in OpenMOHAA Plus: match pause
+    bool m_bPaused;
+    int  m_iPausedTime;
 
     bool m_bAllowAlliedRespawn;
     bool m_bAllowAxisRespawn;
@@ -231,6 +234,11 @@ public:
     void       EventFinishRoundTransition(Event *ev);
     void       TeamWin(int teamnum);
     void       SwapTeams(void); // Added in OpenMOHAA Plus
+    // Added in OpenMOHAA Plus: match pause
+    void       SetPaused(bool paused);
+    bool       IsPaused(void) const;
+    void       UpdatePause(void);
+    int        GetPausedTime(void) const; // total paused milliseconds on this level
     void       SwapTeamPlayer(Player *player, DM_Team *team);
     void       StartRound(void);
     void       EndRound(void);
