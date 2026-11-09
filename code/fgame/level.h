@@ -341,6 +341,7 @@ public:
     void GetPapersLevel(Event *ev);
     void SetPapersLevel(Event *ev);
     void EventGetRoundStarted(Event *ev);
+    void EventGetMatchPaused(Event *ev); // Added in OpenMOHAA Plus
     void EventGetDMRespawning(Event *ev);
     void EventSetDMRespawning(Event *ev);
     void EventGetDMRoundLimit(Event *ev);

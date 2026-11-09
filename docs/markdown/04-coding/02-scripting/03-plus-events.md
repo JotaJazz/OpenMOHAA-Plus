@@ -61,6 +61,7 @@ Commands that let a script drive the match, together with the existing `teamwin`
 | Command | Effect |
 |---|---|
 | `team_swap` | Halftime side swap: every axis player becomes allies and vice versa; the team scores (wins, kills, deaths) follow the players. Living players respawn at their new side. Team games only. Does not fire `player_teamchange`. |
+| `match_pause` / `match_resume` | Freezes the match: players frozen, no damage, round clock and time limit stopped. `level.match_paused` is 1 while paused. See [match control](../../03-configuration/08-plus-match-control.md). |
 | `team_getscore "axis"` | Returns the team score (round wins in round-based modes). Fixed in OpenMOHAA Plus: the value could not be read before. |
 
 In round-based modes the map script runs again every round, so code in `main` runs once per round.

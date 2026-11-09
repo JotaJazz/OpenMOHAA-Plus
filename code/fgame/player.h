@@ -341,6 +341,7 @@ public:
     int    mCurTrailOrigin;
     int    mLastTrailTime;
     int    m_iNumHitsTaken;
+    int    m_iLastHitSoundTime; // Added in OpenMOHAA Plus (not archived: multiplayer only)
     int    m_iNumEnemiesKilled;
     int    m_iNumObjectsDestroyed;
     int    m_iNumShotsFired;
@@ -846,6 +847,7 @@ public:
     void ArmorDamage(Event *ev) override;
     void HUDPrint(const char *s);
     void Disconnect(void);
+    void PlayHitSound(void); // Added in OpenMOHAA Plus
 
     // team stuff
     int  GetNumKills() const;

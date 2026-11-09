@@ -687,6 +687,8 @@ DM_Manager::DM_Manager()
     m_bAllowAlliedRespawn  = true;
     m_bRoundActive         = false;
     m_iTotalMapTime        = 0;
+    m_bPaused              = false; // Added in OpenMOHAA Plus
+    m_iPausedTime          = 0;
 }
 
 DM_Manager::~DM_Manager() {}
@@ -1131,6 +1133,8 @@ void DM_Manager::InitGame(void)
     m_fRoundEndTime         = 0;
     m_iTeamWin              = 0;
     m_bIgnoringClockForBomb = false;
+    m_bPaused               = false; // Added in OpenMOHAA Plus: a new level starts unpaused
+    m_iPausedTime           = 0;
     m_iNumTargetsDestroyed  = 0;
     m_iNumBombsPlanted      = 0;
 
@@ -1262,7 +1266,8 @@ bool DM_Manager::CheckEndMatch()
                 }
             }
 
-            if (timelimit->integer && level.inttime >= timelimit->integer * 60000) {
+            // Changed in OpenMOHAA Plus: paused time does not count
+            if (timelimit->integer && level.inttime - m_iPausedTime >= timelimit->integer * 60000) {
                 G_BeginIntermission2();
                 return true;
             } else {
@@ -1507,7 +1512,8 @@ void DM_Manager::EventFinishRoundTransition(Event *ev)
 
     CancelEventsOfType(EV_DM_Manager_FinishRoundTransition);
 
-    if (timelimit->integer && m_iTotalMapTime + level.inttime >= 60000 * timelimit->integer) {
+    // Changed in OpenMOHAA Plus: paused time does not count
+    if (timelimit->integer && m_iTotalMapTime + level.inttime - m_iPausedTime >= 60000 * timelimit->integer) {
         G_BeginIntermission2();
         return;
     }
@@ -1516,7 +1522,7 @@ void DM_Manager::EventFinishRoundTransition(Event *ev)
     gi.cvar_set("g_tempaxiswinsinrow", va("%d", m_team_axis.m_wins_in_a_row));
     gi.cvar_set("g_tempalliesscore", va("%d", m_team_allies.m_teamwins));
     gi.cvar_set("g_tempallieswinsinrow", va("%d", m_team_allies.m_wins_in_a_row));
-    gi.cvar_set("g_tempmaptime", va("%d", m_iTotalMapTime + level.inttime));
+    gi.cvar_set("g_tempmaptime", va("%d", m_iTotalMapTime + level.inttime - m_iPausedTime)); // Changed in OpenMOHAA Plus
 
     for (i = 0, ent = g_entities; i < game.maxclients; ent++, i++) {
         if (!ent->inuse || !ent->entity) {
@@ -1588,6 +1594,44 @@ void DM_Manager::SwapTeams(void)
 
     m_team_allies.UpdateTeamStatus();
     m_team_axis.UpdateTeamStatus();
+}
+
+//
+// Added in OpenMOHAA Plus: match pause
+//  Players are frozen (PMF_FROZEN, see Player) and take no damage; the round clock and the time
+//  limit stand still.
+//
+void DM_Manager::SetPaused(bool paused)
+{
+    if (paused == m_bPaused) {
+        return;
+    }
+    m_bPaused = paused;
+    G_CenterPrintToAllClients(va("\n\n\n%s\n", gi.LV_ConvertString(paused ? "Match paused" : "Match resumed")));
+    G_PrintToAllClients(va("%s\n", gi.LV_ConvertString(paused ? "Match paused" : "Match resumed")));
+    gi.Printf("%s\n", paused ? "Match paused" : "Match resumed");
+}
+
+bool DM_Manager::IsPaused(void) const
+{
+    return m_bPaused;
+}
+
+int DM_Manager::GetPausedTime(void) const
+{
+    return m_iPausedTime;
+}
+
+void DM_Manager::UpdatePause(void)
+{
+    if (!m_bPaused) {
+        return;
+    }
+    m_iPausedTime += level.intframetime;
+    // the round clock counts from m_fRoundTime: moving it keeps the time left unchanged
+    if (m_fRoundTime > 0 && m_fRoundEndTime <= 0) {
+        m_fRoundTime += level.frametime;
+    }
 }
 
 void DM_Manager::SwapTeamPlayer(Player *player, DM_Team *team)

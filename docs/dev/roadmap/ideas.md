@@ -44,7 +44,7 @@ Every branch named in a "Status" line below was merged into `main` on 2026-11-09
 |---|---|---|
 | 0 | all | - |
 | 1 | all (flood protection already existed) | - |
-| 2 | gametype API levels 1 and 2 (`team_swap`), libmoh MVP, script toolkit | match pause |
+| 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
 | 3 | `sv_fps 40`, `sv_scripts`, plus-stats reference mod, server administration (#905); ready-up, player info, anti-wallhack and votes already existed | competition mode, server QoL (hitsounds), better bots, competitive netcode |
 | 4 | HTTP mod download, Spanish README | server browser, install detection, widescreen + sharp text, Linux packaging, in-game translations, demos, #601 saves |
 | 5 | - | all |
@@ -443,6 +443,9 @@ checked with a working and a broken synthetic mod. Real community mods still hav
 
 - **Shape:** hitsounds, hit markers, round timer on the HUD; off by default and enabled by the
   server, so the Plus client gives no unfair advantage.
+- **Status:** hit sounds (`g_hitsounds`, `g_hitsound`) on branch `feat/pause-hitsounds`, played with
+  the client's `play` command so original clients hear them. Open: hit markers (needs HUD drawing in
+  the Plus client), round timer.
 
 ## Master server and community portal (long term)
 

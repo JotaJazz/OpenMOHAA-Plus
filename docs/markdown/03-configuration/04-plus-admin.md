@@ -44,6 +44,7 @@ Each account gets only the permissions it needs. RCON keeps working as before.
 | `ad_listbans` | `admin.listbans` | `listbans` |
 | `ad_map <map>` | `admin.map` | `map` |
 | `ad_restart` | `admin.restart` | `restart` |
+| `ad_pause` / `ad_resume` | `admin.pause` | `matchpause` / `matchresume` |
 | `ad_say <message>` / `ad_tell <client number> <message>` | `admin.say` / `admin.tell` | `say` / `tell` |
 | `ad_dumpuser <player name>` | `admin.dumpuser` | `dumpuser` |
 | `ad_set <cvar> <value>` | `cvar.<name>` (for example `cvar.timelimit`, `cvar.*`) | sets the cvar |

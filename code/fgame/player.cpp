@@ -2335,6 +2335,7 @@ void Player::InitStats(void)
     m_iNumObjectives       = 0;
     m_iObjectivesCompleted = 0;
     m_iNumHitsTaken        = 0;
+    m_iLastHitSoundTime = -1000; // Added in OpenMOHAA Plus
     m_iNumEnemiesKilled    = 0;
     m_iNumObjectsDestroyed = 0;
 }
@@ -4035,7 +4036,8 @@ void Player::ClientMove(usercmd_t *ucmd)
         ~(PMF_FROZEN | PMF_NO_PREDICTION | PMF_NO_MOVE | PMF_DUCKED | PMF_TURRET | PMF_VIEW_PRONE | PMF_VIEW_DUCK_RUN
           | PMF_VIEW_JUMP_START);
 
-    if (level.playerfrozen || m_bFrozen) {
+    // Changed in OpenMOHAA Plus: also during a match pause
+    if (level.playerfrozen || m_bFrozen || dmManager.IsPaused()) {
         client->ps.pm_flags |= PMF_FROZEN;
     }
 
@@ -4230,7 +4232,8 @@ void Player::VehicleMove(usercmd_t *ucmd)
     // disable prediction
     client->ps.pm_flags |= PMF_TURRET | PMF_NO_PREDICTION;
 
-    if (level.playerfrozen || m_bFrozen) {
+    // Changed in OpenMOHAA Plus: also during a match pause
+    if (level.playerfrozen || m_bFrozen || dmManager.IsPaused()) {
         client->ps.pm_flags |= PMF_FROZEN;
     }
 
@@ -4268,7 +4271,8 @@ void Player::TurretMove(usercmd_t *ucmd)
         client->ps.pm_flags |= PMF_TURRET;
     }
 
-    if (level.playerfrozen || m_bFrozen) {
+    // Changed in OpenMOHAA Plus: also during a match pause
+    if (level.playerfrozen || m_bFrozen || dmManager.IsPaused()) {
         client->ps.pm_flags |= PMF_FROZEN;
     }
 
@@ -9821,6 +9825,11 @@ void Player::ArmorDamage(Event *ev)
             return;
         }
 
+        // Added in OpenMOHAA Plus: no damage during a match pause
+        if (dmManager.IsPaused() && mod != MOD_TELEFRAG) {
+            return;
+        }
+
         Player *attacker = (Player *)ev->GetEntity(1);
 
         if (attacker && attacker->IsSubclassOfPlayer() && attacker != this) {
@@ -9874,6 +9883,17 @@ void Player::ArmorDamage(Event *ev)
 
     Sentient::ArmorDamage(ev);
 
+    // Added in OpenMOHAA Plus: hit sound for the attacker (g_hitsounds)
+    {
+        Player *attacker = (Player *)ev->GetEntity(1);
+
+        if (g_hitsounds->integer && g_gametype->integer != GT_SINGLE_PLAYER && attacker
+            && attacker->IsSubclassOfPlayer() && attacker != this
+            && (g_gametype->integer < GT_TEAM || attacker->GetDM_Team() != GetDM_Team())) {
+            attacker->PlayHitSound();
+        }
+    }
+
     Event *event = new Event(0, 11);
 
     event->AddEntity(ev->GetEntity(1));
@@ -9890,6 +9910,25 @@ void Player::ArmorDamage(Event *ev)
 
     scriptDelegate_damage.Trigger(this, *event);
     scriptedEvents[SE_DAMAGE].Trigger(event);
+}
+
+//
+// Added in OpenMOHAA Plus
+//  The sound is played by the client's own "play" command, so original clients hear it too.
+//  At most one every 50 ms (a shotgun blast is many hits).
+//
+void Player::PlayHitSound(void)
+{
+    const char *sound = g_hitsound->string;
+
+    if (level.inttime - m_iLastHitSoundTime < 50 && m_iLastHitSoundTime <= level.inttime) {
+        return;
+    }
+    if (!*sound || strpbrk(sound, "\";\n\r")) {
+        return;
+    }
+    m_iLastHitSoundTime = level.inttime;
+    gi.SendServerCommand(edict - g_entities, "stufftext \"play %s\"", sound);
 }
 
 void Player::Disconnect(void)

@@ -139,6 +139,8 @@ cvar_t *g_gametype;
 cvar_t *g_gametypestring;
 cvar_t *g_realismmode;
 cvar_t *g_teamdamage;
+cvar_t *g_hitsounds; // Added in OpenMOHAA Plus
+cvar_t *g_hitsound;  // Added in OpenMOHAA Plus
 cvar_t *g_healthdrop;
 cvar_t *g_healrate;
 
@@ -490,6 +492,9 @@ void CVAR_Init(void)
     }
 
     g_teamdamage = gi.Cvar_Get("g_teamdamage", "0", 0);
+    // Added in OpenMOHAA Plus: hit sounds for the attacker, chosen by the server
+    g_hitsounds = gi.Cvar_Get("g_hitsounds", "0", CVAR_SERVERINFO);
+    g_hitsound  = gi.Cvar_Get("g_hitsound", "sound/items/hit_notify.wav", 0);
     g_healthdrop = gi.Cvar_Get("g_healthdrop", "1", 0);
     if (g_protocol >= protocol_e::PROTOCOL_MOHTA_MIN) {
         g_healrate = gi.Cvar_Get("g_healrate", "10", 0);

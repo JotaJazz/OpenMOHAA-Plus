@@ -346,6 +346,8 @@ public:
     void TeamGetScore(Event *ev);
     void TeamSetScore(Event *ev);
     void TeamSwap(Event *ev); // Added in OpenMOHAA Plus
+    void MatchPause(Event *ev);  // Added in OpenMOHAA Plus
+    void MatchResume(Event *ev); // Added in OpenMOHAA Plus
     void TraceDetails(Event *ev);
     void TypeOfVariable(Event *ev);
     void UnregisterEvent(Event *ev);

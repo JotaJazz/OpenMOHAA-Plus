@@ -631,6 +631,8 @@ const AdminCommand s_commands[] = {
     {"ad_listbans",   "listbans",   "admin.listbans",   ""                                    },
     {"ad_map",        "map",        "admin.map",        "<map>"                               },
     {"ad_restart",    "restart",    "admin.restart",    ""                                    },
+    {"ad_pause",      "matchpause", "admin.pause",      ""                                    },
+    {"ad_resume",     "matchresume","admin.pause",      ""                                    },
     {"ad_say",        "say",        "admin.say",        "<message>"                           },
     {"ad_tell",       "tell",       "admin.tell",       "<client number> <message>"           },
     {"ad_dumpuser",   "dumpuser",   "admin.dumpuser",   "<player name>"                       },

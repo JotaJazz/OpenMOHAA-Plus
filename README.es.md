@@ -66,6 +66,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
   - [favoritos, historial y búsqueda en el buscador de servidores](docs/markdown/03-configuration/06-plus-server-browser.md),
     y el juego ya no se congela cuando el DNS de los masters no responde (#376)
   - [traducciones de la comunidad](docs/markdown/03-configuration/07-plus-translations.md) para los textos del juego (`cl_language`)
+  - [pausa de partida y sonidos de impacto](docs/markdown/03-configuration/08-plus-match-control.md) controlados por el servidor
   - descarga automática de mods por HTTP (`sv_dlURL`), el motivo cuando un servidor te expulsa,
     audio HRTF para audífonos (`s_hrtf 1`)
   - un validador de scripts y una extensión de VS Code ([misc/scr-tools](misc/scr-tools),

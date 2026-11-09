@@ -1481,7 +1481,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Gets the current script that will handle attack events",
+"doc": "Sets the current script that will handle attack events",
 "name": "attackhandler",
 "signature": "attackhandler"
 },
@@ -1700,7 +1700,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Get the crossblend time",
+"doc": "Set the crossblend time to something other than the default, in seconds",
 "name": "blendtime",
 "signature": "blendtime"
 },
@@ -1740,7 +1740,7 @@
 "classes": [
 "Level"
 ],
-"doc": "Sets the number of bombs that are set",
+"doc": "the number of bombs that are set",
 "name": "bombs_planted",
 "signature": "bombs_planted ( Integer num )"
 },
@@ -2607,15 +2607,7 @@
 ],
 "doc": "Sets the current damage multiplier",
 "name": "damage_multiplier",
-"signature": "damage_multiplier ( Float damage_multiplier )"
-},
-{
-"classes": [
-"Player"
-],
-"doc": "Called when the player is dead.",
-"name": "damage_multiplier",
-"signature": "damage_multiplier dead"
+"signature": "damage_multiplier damage_multiplier( Float damage_multiplier )"
 },
 {
 "classes": [
@@ -2720,6 +2712,14 @@
 "classes": [
 "Player"
 ],
+"doc": "Called when the player is dead.",
+"name": "dead",
+"signature": "dead"
+},
+{
+"classes": [
+"Player"
+],
 "doc": "Spawn a dead body",
 "name": "deadbody",
 "signature": "deadbody"
@@ -2736,7 +2736,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Sets the current script that will handle death events",
+"doc": "Gets the current script that will handle death events",
 "name": "deathhandler",
 "signature": "deathhandler"
 },
@@ -3205,7 +3205,7 @@
 "classes": [
 "Level"
 ],
-"doc": "set to 1 to turn on wave-based DM,to 0 to disable respawns within a round",
+"doc": "set to 1 to turn on wave-based DM, to 0 to disable respawns within a round",
 "name": "dmrespawning",
 "signature": "dmrespawning ( Integer allow_respawn )"
 },
@@ -4563,7 +4563,7 @@
 "AISpawnPoint",
 "Sentient"
 ],
-"doc": "Force the sentient to drop weapons no matter what level.nodropweapon is.",
+"doc": "Get if the sentient is forced to drop weapons no matter what level.nodropweapon is.",
 "name": "forcedropweapon",
 "signature": "forcedropweapon"
 },
@@ -5174,7 +5174,7 @@
 "classes": [
 "Player"
 ],
-"doc": "Gives the player the specified weapon.",
+"doc": "Gives player all weapons.",
 "name": "giveweapon",
 "signature": "giveweapon ( String weapon_name )"
 },
@@ -6337,7 +6337,7 @@
 "classes": [
 "Player"
 ],
-"doc": "Gets the player's current killed event handler. Returns NIL if no custom killhandler was set.",
+"doc": "Replace the player's killed event by a new scripted handler. None or an empty string will revert to the default killed event handler.",
 "name": "killhandler",
 "signature": "killhandler ( String label )"
 },
@@ -6900,6 +6900,30 @@
 "doc": "set the mass of this entity.",
 "name": "mass",
 "signature": "mass ( Float massAmount )"
+},
+{
+"classes": [
+"ScriptThread"
+],
+"doc": "Pauses the match: players are frozen and take no damage, the round clock and time limit stop.",
+"name": "match_pause",
+"signature": "match_pause"
+},
+{
+"classes": [
+"Level"
+],
+"doc": "1 while the match is paused (match_pause)",
+"name": "match_paused",
+"signature": "match_paused"
+},
+{
+"classes": [
+"ScriptThread"
+],
+"doc": "Resumes a paused match.",
+"name": "match_resume",
+"signature": "match_resume"
 },
 {
 "classes": [
@@ -7885,7 +7909,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Specifies if the actor will not go into idle after playing an animation",
+"doc": "Gets if the actor will not go into idle after playing an animation",
 "name": "no_idle",
 "signature": "no_idle"
 },
@@ -8417,7 +8441,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Sets the current script that will handle pain events",
+"doc": "Gets the current script that will handle pain events",
 "name": "painhandler",
 "signature": "painhandler"
 },
@@ -9158,7 +9182,7 @@
 "Player",
 "Weapon"
 ],
-"doc": "makes this player ready for the round to start",
+"doc": "returns 1 if this player is ready,0 otherwise",
 "name": "ready",
 "signature": "ready"
 },
@@ -11618,7 +11642,7 @@
 "classes": [
 "Level"
 ],
-"doc": "the number of bomb targets that have been destroyed",
+"doc": "Sets the number of bomb targets that have been destroyed",
 "name": "targets_destroyed",
 "signature": "targets_destroyed ( Integer num )"
 },
@@ -11634,7 +11658,7 @@
 "classes": [
 "Level"
 ],
-"doc": "the number of bomb targets that must be destroyed",
+"doc": "Sets the number of bomb targets that must be destroyed",
 "name": "targets_to_destroy",
 "signature": "targets_to_destroy ( Integer num )"
 },
@@ -13082,7 +13106,7 @@
 "Actor",
 "AISpawnPoint"
 ],
-"doc": "Gets the voice type",
+"doc": "Set voicetype to magic letter postfix",
 "name": "voicetype",
 "signature": "voicetype"
 },
