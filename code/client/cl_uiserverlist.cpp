@@ -510,7 +510,11 @@ void UIFAKKServerList::RefreshServerList(Event *ev)
     {
         cvar_t *filters[] = {
             Cvar_Get("dm_browser_show", "0", CVAR_ARCHIVE), Cvar_Get("dm_browser_search", "", CVAR_ARCHIVE),
-            Cvar_Get("dm_max_ping", "0", CVAR_ARCHIVE)};
+            Cvar_Get("dm_max_ping", "0", CVAR_ARCHIVE), Cvar_Get("dm_free_for_all", "1", CVAR_ARCHIVE),
+            Cvar_Get("dm_team_match", "1", CVAR_ARCHIVE), Cvar_Get("dm_round_based_match", "1", CVAR_ARCHIVE),
+            Cvar_Get("dm_objective_match", "1", CVAR_ARCHIVE), Cvar_Get("dm_tow_match", "1", CVAR_ARCHIVE),
+            Cvar_Get("dm_liberation_match", "1", CVAR_ARCHIVE), Cvar_Get("dm_filter_pure", "0", CVAR_ARCHIVE),
+            Cvar_Get("dm_run_fast", "1", CVAR_ARCHIVE), Cvar_Get("dm_run_normal", "1", CVAR_ARCHIVE)};
         bool changed = false;
 
         for (i = 0; i < ARRAY_LEN(filters); i++) {
@@ -1238,9 +1242,19 @@ void UIFAKKServerList::UpdateServerListCallBack(
                 bHide = !bFavorite && !bRecent;
             } else if (!bFavorite) {
                 // favorites are never hidden by the filters
+                // the game type filter cvars were declared but never applied: game types as in g_gametype
+                cvar_t *typeFilters[] = {
+                    NULL, dm_free_for_all, dm_team_match, dm_round_based_match,
+                    dm_objective_match, dm_tow_match, dm_liberation_match};
+                const int gametype = ServerGetIntValue(server, "gametype_i", -1);
+                const int sprint   = ServerGetIntValue(server, "sprinton", -1);
+
                 bHide = (dm_max_ping->integer > 0 && ServerGetPing(server) > dm_max_ping->integer)
                      || (dm_browser_search->string[0] && !Q_stristr(pszHostName, dm_browser_search->string)
-                         && !Q_stristr(ServerGetStringValue(server, "mapname", ""), dm_browser_search->string));
+                         && !Q_stristr(ServerGetStringValue(server, "mapname", ""), dm_browser_search->string))
+                     || (gametype > 0 && gametype < (int)ARRAY_LEN(typeFilters) && !typeFilters[gametype]->integer)
+                     || (dm_filter_pure->integer && !ServerGetIntValue(server, "pure", 0))
+                     || (sprint == 1 && !dm_run_fast->integer) || (sprint == 0 && !dm_run_normal->integer);
             }
 
             if (bHide) {
