@@ -1038,6 +1038,7 @@ void SV_Init (void)
 	int index;
 
 	SV_AddOperatorCommands();
+	SV_Admin_Init(); // Added in OpenMOHAA Plus
 
 	// serverinfo vars
 	Cvar_Get ("dmflags", "0", CVAR_SERVERINFO);

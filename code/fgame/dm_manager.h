@@ -230,6 +230,8 @@ public:
     void       EventDoRoundTransition(Event *ev);
     void       EventFinishRoundTransition(Event *ev);
     void       TeamWin(int teamnum);
+    void       SwapTeams(void); // Added in OpenMOHAA Plus
+    void       SwapTeamPlayer(Player *player, DM_Team *team);
     void       StartRound(void);
     void       EndRound(void);
     bool       RoundActive(void) const;

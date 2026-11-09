@@ -288,5 +288,66 @@ class Downloads(GameTestCase):
         self.assertNotIn("clientDownload", s.log())
 
 
+@require_game
+class Admin(GameTestCase):
+    CONFIG = """// test policy
+role mod allow admin.status admin.kick* admin.ban* cvar.*
+role mod deny admin.ban
+account jota roles mod
+account jota allow admin.say
+account jota deny cvar.fraglimit
+"""
+
+    def test_admin_accounts_roles_and_sessions(self):
+        self.home.write("admin_config.txt", self.CONFIG)
+        s = self.server("+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        s.send("admin_add jota pass-1234")
+        s.send("admin_add nobody pass-5678")
+        s.wait_for(r"Account nobody created")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"entered the battle", timeout=120)
+
+        def run(line, expect):
+            mark = len(c.log())
+            c.send(line)
+            return c.wait_for(expect, start=mark, timeout=20)[mark:]
+
+        run("ad_status", r"Not logged in")
+        run("ad_login jota wrong", r"Login failed")
+        run("ad_login jota pass-1234", r"Too many failed logins")       # throttled right after a failure
+        time.sleep(2.5)
+        run("ad_login jota pass-1234", r"Logged in as jota")
+        run("ad_help", r"Admin commands for jota: ad_logout ad_status ad_kick ad_say ad_set")   # admin.kick* does not cover admin.clientkick
+        run("ad_status", r"map: dm/mohdm1")                               # console output reaches the admin
+        run("ad_ban 0", r"Permission denied: admin.ban")                  # deny wins over admin.ban*
+        run("ad_rcon status", r"Permission denied: admin.rcon")
+        run("ad_set timelimit 15", r"timelimit is '15'")
+        run("ad_set fraglimit 1", r"Permission denied: cvar.fraglimit")
+        run("ad_set rconPassword x", r"Permission denied: cvar.rconPassword")  # cvar.* does not grant rcon
+        run('ad_kick "x;quit"', r"Usage: ad_kick")                         # no second command
+        s.send("admin_passwd jota pass-9999")
+        c.wait_for(r"Admin session ended: password changed", timeout=20)
+        run("ad_status", r"Not logged in")
+        c.quit()
+        s.send("timelimit")
+        s.wait_for(r'"timelimit" is:"15"')
+        self.assertEqual(s.quit(), 0)
+
+        audit = open(self.home.file("admin.log")).read()
+        for entry in (r"account=jota failed: ad_login", r"account=jota throttled: ad_login",
+                      r"account=jota ok: ad_login", r"account=jota denied: ad_ban 0",
+                      r"account=jota ok: status", r"account=jota ok: ad_set timelimit 15",
+                      r"console \"\" account=jota ok: admin_passwd"):
+            self.assertRegex(audit, entry)
+        accounts = open(self.home.file("admin_accounts.txt")).read()
+        for secret in ("pass-1234", "pass-5678", "pass-9999"):
+            self.assertNotIn(secret, audit + accounts)
+        self.assertRegex(accounts, r"account nobody 1 pbkdf2-sha256\$100000\$[0-9a-f]{32}\$[0-9a-f]{64}")
+
+
 if __name__ == "__main__":
     unittest.main()

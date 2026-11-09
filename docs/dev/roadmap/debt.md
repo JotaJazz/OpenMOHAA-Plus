@@ -25,6 +25,7 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.
 - No `clang-format` run on fork commits so far.
+- Admin system (#905): `admin_config.txt` is read at start only (no reload command); `ad_*` cover server console commands only, not game commands (for example `callvote` settings); login throttling is per address and kept in memory.
 - The "Generate Documentation" workflow (`.github/workflows/doxygen-publish.yml`) fails on the fork
   because GitHub Pages is not enabled for the repository (deploy returns 404). Fix: enable Pages
   with source "GitHub Actions" in the repository settings (maintainer decision; it publishes the

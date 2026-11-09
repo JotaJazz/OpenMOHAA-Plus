@@ -52,3 +52,28 @@ Fired in round-based gametypes (round-based match, objective, Tug-of-War, Libera
 | `match_start` | none | the first round of the map starts |
 | `round_start` | `local.round` | a round starts (1 for the first one) |
 | `round_end` | `local.winner local.axis_wins local.allies_wins` | the round winner is known (`axis`, `allies` or `draw`); win counts include this round |
+
+## Control commands
+
+Commands that let a script drive the match, together with the existing `teamwin`, `team_setscore`,
+`join_team` and `respawn`.
+
+| Command | Effect |
+|---|---|
+| `team_swap` | Halftime side swap: every axis player becomes allies and vice versa; the team scores (wins, kills, deaths) follow the players. Living players respawn at their new side. Team games only. Does not fire `player_teamchange`. |
+| `team_getscore "axis"` | Returns the team score (round wins in round-based modes). Fixed in OpenMOHAA Plus: the value could not be read before. |
+
+In round-based modes the map script runs again every round, so code in `main` runs once per round.
+A halftime swap in a round-based mode:
+
+```
+main:
+	event_subscribe "round_end" on_round_end
+end
+
+on_round_end local.winner local.axis_wins local.allies_wins:
+	if (local.axis_wins + local.allies_wins == 6) {
+		team_swap
+	}
+end
+```

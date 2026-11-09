@@ -12,9 +12,9 @@
 "classes": [
 "ThrobbingBox_Explosive"
 ],
-"doc": "Cause the explosion to happen.",
+"doc": "sent to entity when it is used by another entity",
 "name": "ActivateSound",
-"signature": "ActivateSound ( String ActivateSound )BlowUpDestroyModel( String DestroyModel )Explode"
+"signature": "ActivateSound ( String ActivateSound )BlowUpDestroyModel( String DestroyModel )doUse( Entity activatingEntity )"
 },
 {
 "classes": [
@@ -159,6 +159,14 @@
 "doc": "End the cycle..",
 "name": "EndCycle",
 "signature": "EndCycle"
+},
+{
+"classes": [
+"ThrobbingBox_Explosive"
+],
+"doc": "Cause the explosion to happen.",
+"name": "Explode",
+"signature": "Explode"
 },
 {
 "classes": [
@@ -505,9 +513,9 @@
 "classes": [
 "ThrobbingBox_Explosive"
 ],
-"doc": "sent to entity when it is used by another entity",
+"doc": "general damage event used by all entitiesLocation values:-1 General0 Pelvis1 Lower Torso2 Mid Torso3 Upper Torso4 Neck5 Head6 RUpperArm7 RForearm8 RHand9 LUpperArm10 LForearm11 LHand12 RThigh13 RCalf14 RFoot15 LThigh16 LCalf17 LFoot",
 "name": "UsedModel",
-"signature": "UsedModel ( String UsedModel )doUse( Entity activatingEntity )"
+"signature": "UsedModel ( String UsedModel ) ThrobbingBox_Stickybomb (ThrobbingBox_Stickybomb) -> ThrobbingBox_Explosive -> Animate -> Entity -> SimpleEntity -> Listener -> Classdamage( Entity attacker, Integer damage, Entity inflictor, Vector position, Vector direction, Vector normal, Integer knockback, Integer damageflags, Integer meansofdeath, Integer location )"
 },
 {
 "classes": [
@@ -1473,7 +1481,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Sets the current script that will handle attack events",
+"doc": "Gets the current script that will handle attack events",
 "name": "attackhandler",
 "signature": "attackhandler"
 },
@@ -1692,7 +1700,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Set the crossblend time to something other than the default, in seconds",
+"doc": "Get the crossblend time",
 "name": "blendtime",
 "signature": "blendtime"
 },
@@ -1732,7 +1740,7 @@
 "classes": [
 "Level"
 ],
-"doc": "the number of bombs that are set",
+"doc": "Sets the number of bombs that are set",
 "name": "bombs_planted",
 "signature": "bombs_planted ( Integer num )"
 },
@@ -2483,6 +2491,14 @@
 },
 {
 "classes": [
+"ScriptThread"
+],
+"doc": "Queues an HTTP get/post request (needs sv_api_client 1); the handler is called withhttp_code (-1 on error), response and userdata. Returns 0 queued, 1 invalid arguments,2 API client not running, 3 error.",
+"name": "create_api_request",
+"signature": "create_api_request ( String url, String method, String scriptname, [ String userdata] )"
+},
+{
+"classes": [
 "Weapon"
 ],
 "doc": "Turn on/off the crosshair for this weapon",
@@ -2591,7 +2607,15 @@
 ],
 "doc": "Sets the current damage multiplier",
 "name": "damage_multiplier",
-"signature": "damage_multiplier damage_multiplier( Float damage_multiplier )"
+"signature": "damage_multiplier ( Float damage_multiplier )"
+},
+{
+"classes": [
+"Player"
+],
+"doc": "Called when the player is dead.",
+"name": "damage_multiplier",
+"signature": "damage_multiplier dead"
 },
 {
 "classes": [
@@ -2696,14 +2720,6 @@
 "classes": [
 "Player"
 ],
-"doc": "Called when the player is dead.",
-"name": "dead",
-"signature": "dead"
-},
-{
-"classes": [
-"Player"
-],
 "doc": "Spawn a dead body",
 "name": "deadbody",
 "signature": "deadbody"
@@ -2720,7 +2736,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Gets the current script that will handle death events",
+"doc": "Sets the current script that will handle death events",
 "name": "deathhandler",
 "signature": "deathhandler"
 },
@@ -3205,7 +3221,7 @@
 "classes": [
 "Level"
 ],
-"doc": "sets the default roundlimit, in minutes; can be overridden by 'roundlimit' cvar",
+"doc": "sets the default roundlimit,in minutes; can be overridden by 'roundlimit' cvar",
 "name": "dmroundlimit",
 "signature": "dmroundlimit ( Integer roundlimit )"
 },
@@ -3274,7 +3290,6 @@
 "RunThrough",
 "ScriptSlave",
 "SinkObject",
-"ThrowObject",
 "TossObject",
 "Trigger",
 "TriggerAll",
@@ -4539,7 +4554,7 @@
 "AISpawnPoint",
 "Sentient"
 ],
-"doc": "Get if the sentient is forced to drop health no matter what level.nodrophealth is.",
+"doc": "Force the sentient to drop health no matter what level.nodrophealth is.",
 "name": "forcedrophealth",
 "signature": "forcedrophealth"
 },
@@ -4548,7 +4563,7 @@
 "AISpawnPoint",
 "Sentient"
 ],
-"doc": "Get if the sentient is forced to drop weapons no matter what level.nodropweapon is.",
+"doc": "Force the sentient to drop weapons no matter what level.nodropweapon is.",
 "name": "forcedropweapon",
 "signature": "forcedropweapon"
 },
@@ -6162,6 +6177,22 @@
 "doc": "Join the specified team (allies or axis)",
 "name": "join_team",
 "signature": "join_team ( String team )"
+},
+{
+"classes": [
+"ScriptThread"
+],
+"doc": "Parses a JSON string into a variable (objects and arrays become arrays, true/false 1/0).",
+"name": "json_parse",
+"signature": "json_parse ( String json_string )"
+},
+{
+"classes": [
+"ScriptThread"
+],
+"doc": "Converts a variable to typed JSON ({\"type\": ..., \"content\": ...}).",
+"name": "json_stringify",
+"signature": "json_stringify"
 },
 {
 "classes": [
@@ -7854,7 +7885,7 @@
 "classes": [
 "Actor"
 ],
-"doc": "Gets if the actor will not go into idle after playing an animation",
+"doc": "Specifies if the actor will not go into idle after playing an animation",
 "name": "no_idle",
 "signature": "no_idle"
 },
@@ -9127,7 +9158,7 @@
 "Player",
 "Weapon"
 ],
-"doc": "returns 1 if this player is ready,0 otherwise",
+"doc": "makes this player ready for the round to start",
 "name": "ready",
 "signature": "ready"
 },
@@ -11249,9 +11280,9 @@
 "classes": [
 "ThrobbingBox_Stickybomb"
 ],
-"doc": "general damage event used by all entitiesLocation values:-1 General0 Pelvis1 Lower Torso2 Mid Torso3 Upper Torso4 Neck5 Head6 RUpperArm7 RForearm8 RHand9 LUpperArm10 LForearm11 LHand12 RThigh13 RCalf14 RFoot15 LThigh16 LCalf17 LFoot",
+"doc": "sent to entity when touched.",
 "name": "stickybombwet",
-"signature": "stickybombwet damage( Entity attacker, Integer damage, Entity inflictor, Vector position, Vector direction, Vector normal, Integer knockback, Integer damageflags, Integer meansofdeath, Integer location )"
+"signature": "stickybombwet ThrowObject (func_throwobject) -> Animate -> Entity -> SimpleEntity -> Listener -> ClassdoTouch( Entity touchingEntity )"
 },
 {
 "classes": [
@@ -11587,7 +11618,7 @@
 "classes": [
 "Level"
 ],
-"doc": "Sets the number of bomb targets that have been destroyed",
+"doc": "the number of bomb targets that have been destroyed",
 "name": "targets_destroyed",
 "signature": "targets_destroyed ( Integer num )"
 },
@@ -11603,7 +11634,7 @@
 "classes": [
 "Level"
 ],
-"doc": "Sets the number of bomb targets that must be destroyed",
+"doc": "the number of bomb targets that must be destroyed",
 "name": "targets_to_destroy",
 "signature": "targets_to_destroy ( Integer num )"
 },
@@ -11619,7 +11650,7 @@
 "classes": [
 "TurretGun"
 ],
-"doc": "Sets the target type to be none, any, or player",
+"doc": "Sets the target type to be none any, or player",
 "name": "targettype",
 "signature": "targettype ( String value )"
 },
@@ -11663,6 +11694,14 @@
 "doc": "Change/Add score to a team.",
 "name": "team_setscore",
 "signature": "team_setscore ( String team, Integer score, [ Integer bAdd] )"
+},
+{
+"classes": [
+"ScriptThread"
+],
+"doc": "Swaps the axis and allies teams (halftime): every player changes side and the team scores followthe players. Living players respawn at their new side.",
+"name": "team_swap",
+"signature": "team_swap"
 },
 {
 "classes": [
@@ -12485,7 +12524,7 @@
 "classes": [
 "Player"
 ],
-"doc": "returns userinfo string",
+"doc": "Retrieves the player's user info. Use info_valueforkey to retrieve the value for the specified key.",
 "name": "userinfo",
 "signature": "userinfo"
 },
