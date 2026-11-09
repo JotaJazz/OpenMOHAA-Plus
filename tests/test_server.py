@@ -197,6 +197,23 @@ class Diagnostics(GameTestCase):
 
 
 @require_game
+class Profiling(GameTestCase):
+    def test_sv_perf_reports_game_frames(self):
+        s = self.server("+set", "g_gametype", "1", "+set", "sv_fps", "40", *BOTS, "+map", "dm/mohdm1")
+        s.wait_for(r"entered the battle", count=2)
+        s.send("sv_perf reset")
+        time.sleep(5)
+        mark = len(s.log())
+        s.send("sv_perf")
+        log = s.wait_for(r"^send ", start=mark, timeout=20)[mark:]
+        self.assertEqual(s.quit(), 0)
+        game = re.search(r"^game\s+n=(\d+) avg=([\d.]+)ms max=([\d.]+)ms", log, re.M)
+        self.assertIsNotNone(game, log)
+        self.assertGreaterEqual(int(game.group(1)), 150)       # ~40 frames per second for ~5 s
+        self.assertLess(float(game.group(2)), 25.0)           # within the 40 Hz budget
+
+
+@require_game
 @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 3 minutes); set OMOH_SLOW=1")
 class SameMapRestart(GameTestCase):
     def test_script_waits_do_not_burst_after_restart(self):

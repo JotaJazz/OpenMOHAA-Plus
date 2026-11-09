@@ -68,6 +68,7 @@ list(APPEND SYSTEM_SOURCES
     ${SOURCE_DIR}/sys/sys_curl.c
     ${SOURCE_DIR}/sys/sys_update_checker.cpp
     ${SOURCE_DIR}/sys/sys_watchdog.cpp
+    ${SOURCE_DIR}/sys/sys_microseconds.cpp
 )
 
 # Append TIKI sources

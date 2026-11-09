@@ -221,6 +221,12 @@ Joining a modded server usually means finding its pk3 files by hand.
 
 ## Performance profiling
 
+Status: first step on branch `feat/server-perf`: `sv_perf [reset]` reports microsecond timings of
+game frames and snapshot sending (avg, max, histogram). Measured on dm/mohdm1 with bots (one
+machine, 30 s each): game frame avg 0.19 ms (4 bots) / 0.30 ms (8 bots) at sv_fps 20, 0.12 /
+0.24 ms at sv_fps 40, max 3.1 ms, against a 25 ms budget at 40 Hz. CPU is not the limit for a
+faster tick; snapshot cost with real clients and gameplay correctness at 40 Hz are still open.
+
 - **Shape:** integrate a profiler (upstream PR #865 proposes Tracy) to measure server frame cost
   before raising the tick rate or adding a renderer.
 

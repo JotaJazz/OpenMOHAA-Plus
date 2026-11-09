@@ -35,6 +35,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | SDL input | Cursor pointers cleared, cursor image freed immediately | (found via #534) |
 | CI | Executable bits restored before release zips | #923 |
 | Diagnostics | `com_freezeWatch` freeze watchdog (`code/sys/sys_watchdog.cpp`), crash reports to `crash.log`, fixed Unix backtrace | (phase 0) |
+| Profiling | `sv_perf` server frame timings, `Sys_Microseconds` | (phase 1) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests

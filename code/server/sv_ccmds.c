@@ -1930,6 +1930,7 @@ void SV_AddOperatorCommands(void) {
 #endif
 	Cmd_AddCommand("kickall", SV_KickAll_f);
 	Cmd_AddCommand("kicknum", SV_KickNum_f);
+	Cmd_AddCommand("sv_perf", SV_Perf_f); // Added in OpenMOHAA Plus
 	Cmd_AddCommand("clientkick", SV_KickNum_f); // Legacy command
 	Cmd_AddCommand("clientkickr", SV_KickNum_f); // Legacy command with reason
 	Cmd_AddCommand("kickr", SV_KickNum_f); // Legacy command with reason

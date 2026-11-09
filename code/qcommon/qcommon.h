@@ -1361,6 +1361,7 @@ void	Sys_UnloadDll( void *dllHandle );
 qboolean Sys_DllExtension(const char* name);
 
 qboolean	Sys_UnloadGame( void );
+long long	Sys_Microseconds( void ); // Added in OpenMOHAA Plus
 void	*Sys_GetGameAPI( void *parms );
 
 void	Sys_UnloadCGame( void );
