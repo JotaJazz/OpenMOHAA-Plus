@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "weapon.h"
 #include "trigger.h"
 #include "scriptmaster.h"
+#include "scriptthread.h"
 #include "scriptexception.h"
 #include "navigate.h"
 #include "misc.h"
@@ -5434,6 +5435,9 @@ void Player::EvaluateState(State *forceTorso, State *forceLegs)
 
             if (waitForState.length() && (!waitForState.icmpn(currentState_Torso->getName(), waitForState.length()))) {
                 waitForState = "";
+                // Fixed in OPM
+                //  Resume threads waiting in waitForState
+                Unregister(STRING_NULL);
             }
 
             move = currentState_Torso->getMoveType();
@@ -5577,6 +5581,9 @@ void Player::EvaluateState(State *forceTorso, State *forceLegs)
                 if (waitForState.length()
                     && (!waitForState.icmpn(currentState_Legs->getName(), waitForState.length()))) {
                     waitForState = "";
+                    // Fixed in OPM
+                    //  Resume threads waiting in waitForState
+                    Unregister(STRING_NULL);
                 }
 
                 str legsAnim(currentState_Legs->getLegAnim(*this, &legs_conditionals));
@@ -8320,6 +8327,12 @@ void Player::AmmoAmountChanged(Ammo *ammo, int ammo_in_clip)
 void Player::WaitForState(Event *ev)
 {
     waitForState = ev->GetString(1);
+    // Fixed in OPM
+    //  Actually suspend the calling thread until the state is hit,
+    //  the original game only stored the string (FAKK leftover for waitforplayer)
+    if (Director.CurrentScriptThread()) {
+        Register(STRING_NULL, Director.CurrentScriptThread());
+    }
 }
 
 void Player::SetDamageMultiplier(Event *ev)
