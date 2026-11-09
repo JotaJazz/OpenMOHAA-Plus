@@ -1455,6 +1455,49 @@ void CG_DrawCrosshair()
     }
 }
 
+/*
+==============
+CG_DrawHitMarker
+
+Added in OpenMOHAA Plus
+ A small X around the crosshair after a hit reported by the server, fading out in 250 ms.
+ Drawn with small boxes: the 2D API has no rotated pictures.
+==============
+*/
+void CG_DrawHitMarker(void)
+{
+    static const int duration = 250;
+    const int        elapsed  = cg.time - cg.hitMarkerTime;
+    float            cx, cy, scale, size;
+    vec4_t           color = {1.0f, 1.0f, 1.0f, 1.0f};
+    int              i, step;
+
+    if (!cg_hitmarker->integer || !cg.hitMarkerTime || elapsed < 0 || elapsed > duration) {
+        return;
+    }
+    if (!cg_hud->integer || !cg.snap || (cg.snap->ps.pm_flags & (PMF_NO_HUD | PMF_INTERMISSION))) {
+        return;
+    }
+
+    color[3] = 1.0f - (float)elapsed / duration;
+    cgi.R_SetColor(color);
+
+    scale = cgs.uiHiResScale[0];
+    size  = 2.0f * scale;
+    cx    = cgs.glconfig.vidWidth * 0.5f;
+    cy    = cgs.glconfig.vidHeight * 0.5f;
+    // each arm goes from 6 to 13 units away from the center, diagonally
+    for (step = 6; step <= 13; step++) {
+        const float d = step * scale;
+        for (i = 0; i < 4; i++) {
+            const float sx = (i & 1) ? 1.0f : -1.0f;
+            const float sy = (i & 2) ? 1.0f : -1.0f;
+            cgi.R_DrawBox(cx + sx * d - size * 0.5f, cy + sy * d - size * 0.5f, size, size);
+        }
+    }
+    cgi.R_SetColor(NULL);
+}
+
 void CG_DrawVote()
 {
     const char *text;
@@ -1553,4 +1596,5 @@ void CG_Draw2D(void)
     CG_DrawVote();
     CG_DrawInstantMessageMenu();
     CG_DrawCrosshair();
+    CG_DrawHitMarker(); // Added in OpenMOHAA Plus
 }

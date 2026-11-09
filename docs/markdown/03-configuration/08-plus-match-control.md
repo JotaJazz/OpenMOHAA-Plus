@@ -1,4 +1,4 @@
-# OpenMOHAA Plus: match pause and hit sounds
+# OpenMOHAA Plus: match pause, hit sounds and hit markers
 
 ## Match pause
 
@@ -22,3 +22,14 @@ Projectiles already in flight are not stopped. A new map starts unpaused.
 
 The server decides, so every player on the server gets the same help. The sound is played with the
 client's `play` command, so original MOHAA clients hear it too. Hits on teammates make no sound.
+
+## Hit markers
+
+| Cvar | Where | Default | Effect |
+|---|---|---|---|
+| `g_hitmarkers` | server | `0` | `1`: a small X flashes around the crosshair when a player damages an enemy |
+| `cg_hitmarker` | player | `1` | `0`: the player does not want them |
+
+Only OpenMOHAA Plus clients draw hit markers; they tell the server through their userinfo, so
+original clients never receive the command. Like hit sounds, the server decides, and teammate hits
+show nothing.

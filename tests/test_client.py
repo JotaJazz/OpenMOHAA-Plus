@@ -641,6 +641,46 @@ class Fonts(GameTestCase):
 
 
 @require_game
+class HitMarkers(GameTestCase):
+    # the player hits an enemy bot every 0.1 s, so a marker is always fading out
+    SCRIPT = HitSounds.SCRIPT.replace("5 local.human", "1 local.human").replace("println \"THIT hit\"\n", "") \
+                             .replace("wait 1\n", "wait 0.1\n")
+
+    def _center_pixels(self, *settings):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        home.write("maps/dm/mohdm1.scr", self.SCRIPT)
+        # plain background: no world or entities, only the HUD
+        c = omoh.client(home, "+set", "developer", "1", *settings, "+set", "r_clear", "1", "+set", "r_drawworld", "0",
+                        "+set", "r_drawentities", "0", "+set", "r_mode", "-1", "+set", "r_customwidth", "1280",
+                        "+set", "r_customheight", "720", "+set", "g_gametype", "2", "+set", "sv_maxclients", "4",
+                        "+set", "sv_maxbots", "2", "+set", "sv_minPlayers", "2", "+devmap", "dm/mohdm1")
+        self.games.append(c)
+        c.wait_for(r"==== InitGame ====", timeout=120)
+        time.sleep(10)
+        c.send("primarydmweapon smg")
+        c.send("join_team allies")
+        time.sleep(5)
+        c.send("popmenu 0")
+        c.send("popmenu 0")
+        time.sleep(3)
+        c.send("screenshot silent")
+        time.sleep(2)
+        self.assertEqual(c.quit(), 0)
+        w, h, rows = read_tga(glob.glob(os.path.join(home.path, "main", "screenshots", "shot*.tga"))[0])
+        background = rows[h // 2 - 40][w // 2 - 40]
+        return sum(1 for y in range(h // 2 - 40, h // 2 + 40) for x in range(w // 2 - 40, w // 2 + 40)
+                   if sum(abs(a - b) for a, b in zip(rows[y][x], background)) > 60)
+
+    def test_hit_marker_around_the_crosshair(self):
+        on = self._center_pixels("+set", "g_hitmarkers", "1")
+        off = self._center_pixels("+set", "g_hitmarkers", "0")
+        opted_out = self._center_pixels("+set", "g_hitmarkers", "1", "+set", "cg_hitmarker", "0")
+        self.assertGreater(on, off + 50, (on, off, opted_out))      # crosshair plus the X
+        self.assertLess(abs(opted_out - off), 10, (on, off, opted_out))   # the server sends nothing
+
+
+@require_game
 class Admin(GameTestCase):
     CONFIG = """// test policy
 role mod allow admin.status admin.kick* admin.ban* cvar.*
