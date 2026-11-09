@@ -66,6 +66,30 @@ ScriptDelegate Player::scriptDelegate_spawned("player_spawned", "The player has 
 ScriptDelegate Player::scriptDelegate_damage("player_damaged", "The player got hit");
 ScriptDelegate Player::scriptDelegate_kill("player_killed", "The player got killed");
 ScriptDelegate Player::scriptDelegate_textMessage("player_textMessage", "The player just sent a text message");
+// Added in OpenMOHAA Plus: events that fire before the action and can change or cancel it
+ScriptDelegate Player::scriptDelegate_preDamage(
+    "player_damage",
+    "The player is about to be damaged; return a number to replace the damage (0 cancels it)"
+);
+ScriptDelegate Player::scriptDelegate_teamChange(
+    "player_teamchange", "The player is about to change team; return 0 to refuse, or a string to refuse with a reply"
+);
+
+static const char *Player_TeamName(teamtype_t team)
+{
+    switch (team) {
+    case TEAM_SPECTATOR:
+        return "spectator";
+    case TEAM_FREEFORALL:
+        return "freeforall";
+    case TEAM_ALLIES:
+        return "allies";
+    case TEAM_AXIS:
+        return "axis";
+    default:
+        return "none";
+    }
+}
 
 //
 // mohaas 2.0 and above
@@ -9590,6 +9614,30 @@ void Player::Join_DM_Team(Event *ev)
         return;
     }
 
+    //
+    // Added in OpenMOHAA Plus
+    //  Let scripts refuse a team change
+    //
+    {
+        Event          event;
+        ScriptVariable result;
+
+        event.AddString(Player_TeamName(team));
+        event.AddString(Player_TeamName(GetTeam()));
+
+        result = scriptDelegate_teamChange.Trigger(this, event);
+        if (result.HasValue()) {
+            if (result.IsString()) {
+                gi.SendServerCommand(
+                    edict - g_entities, "print \"" HUD_MESSAGE_CHAT_WHITE "%s\n\"", result.stringValue().c_str()
+                );
+                return;
+            } else if (!result.booleanValue()) {
+                return;
+            }
+        }
+    }
+
     m_fTeamSelectTime = level.time;
     SetTeam(team);
     // Make sure to remove player from turret
@@ -9791,6 +9839,34 @@ void Player::ArmorDamage(Event *ev)
 
             pAttackerDistPointer = attacker;
             fAttackerDispTime    = g_drawattackertime->value + level.time;
+        }
+    }
+
+    //
+    // Added in OpenMOHAA Plus
+    //  Let scripts change or cancel the damage before it is applied
+    //
+    {
+        Event          event;
+        ScriptVariable result;
+        int            i;
+
+        for (i = 1; i <= ev->NumArgs(); i++) {
+            event.AddValue(ev->GetValue(i));
+        }
+
+        result = scriptDelegate_preDamage.Trigger(this, event);
+        if (result.HasValue()) {
+            const float damage = result.floatValue();
+            if (damage <= 0) {
+                return;
+            }
+            ev->GetValue(2).setFloatValue(damage);
+        }
+
+        if (IsDead()) {
+            // the script killed the player
+            return;
         }
     }
 

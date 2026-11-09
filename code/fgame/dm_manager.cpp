@@ -1459,6 +1459,18 @@ void DM_Manager::EventDoRoundTransition(Event *ev)
         }
     }
 
+    //
+    // Added in OpenMOHAA Plus: the round winner is final here
+    //
+    {
+        Event event;
+
+        event.AddString(m_iTeamWin == TEAM_AXIS ? "axis" : (m_iTeamWin == TEAM_ALLIES ? "allies" : "draw"));
+        event.AddInteger(m_team_axis.m_teamwins);
+        event.AddInteger(m_team_allies.m_teamwins);
+        scriptDelegate_roundEnd.Trigger(&level, event);
+    }
+
     if (m_iTeamWin == TEAM_AXIS) {
         G_CenterPrintToAllClients(va("\n\n\n%s\n", gi.LV_ConvertString("Axis win!")));
         G_PrintToAllClients(va("%s\n", gi.LV_ConvertString("Axis win!")));
@@ -1578,6 +1590,13 @@ void DM_Manager::TeamWin(int teamnum)
     EndRound();
 }
 
+// Added in OpenMOHAA Plus: round flow events for scripts (round-based gametypes)
+ScriptDelegate DM_Manager::scriptDelegate_matchStart("match_start", "The first round of the map starts");
+ScriptDelegate DM_Manager::scriptDelegate_roundStart("round_start", "A round starts; argument: round number");
+ScriptDelegate DM_Manager::scriptDelegate_roundEnd(
+    "round_end", "A round ended; arguments: winner (axis, allies or draw), axis wins, allies wins"
+);
+
 void DM_Manager::StartRound(void)
 {
     gentity_t *ent;
@@ -1609,6 +1628,22 @@ void DM_Manager::StartRound(void)
     level.RemoveWaitTill(STRING_ROUNDSTART);
     level.Unregister(STRING_ROUNDSTART);
     gi.setConfigstring(CS_WARMUP, va("%.0f", GetMatchStartTime()));
+
+    //
+    // Added in OpenMOHAA Plus: round events for scripts
+    //
+    {
+        Event      event;
+        const int  round = m_team_allies.m_teamwins + m_team_axis.m_teamwins + 1;
+
+        if (round == 1) {
+            Event matchEvent;
+            scriptDelegate_matchStart.Trigger(&level, matchEvent);
+        }
+
+        event.AddInteger(round);
+        scriptDelegate_roundStart.Trigger(&level, event);
+    }
 }
 
 void DM_Manager::EndRound()
