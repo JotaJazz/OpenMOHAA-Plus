@@ -20,17 +20,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#if !defined(_WIN32) && !defined(_GNU_SOURCE)
+// for dladdr()
+#    define _GNU_SOURCE
+#endif
+
 #include "../sys_local.h"
 #include "../win_localization.h"
 #include "../sys_loadlib.h"
 #include "../sys_curl.h"
 #include "../sys_update_checker.h"
 
+#ifndef _WIN32
+#    include <dlfcn.h>
+#endif
+
 // a pointer to the last piece of data retrieved from the clipboard is stored here,
 // so that it can be cleaned up when new data is retrieved, preventing memory leaks
 static void* clipboard_text = NULL;
 
 static void* game_library = NULL;
+static void* game_api = NULL;
 static void* cgame_library = NULL;
 qboolean	GLimp_SpawnRenderThread(void (*function)(void))
 {
@@ -219,15 +229,29 @@ void Sys_CloseMutex(void)
 Sys_UnloadGame
 =================
 */
-void Sys_UnloadGame(void)
+qboolean Sys_UnloadGame(void)
 {
+    qboolean unloaded = qtrue;
+
     Com_Printf("------ Unloading Game ------\n");
 
     if (game_library) {
         Sys_UnloadLibrary(game_library);
+#ifndef _WIN32
+        {
+            Dl_info info;
+
+            // dlclose() may keep the library resident (it's a no-op on musl),
+            // in which case its globals still reference the memory it allocated
+            unloaded = !game_api || !dladdr(game_api, &info);
+        }
+#endif
     }
 
     game_library = NULL;
+    game_api     = NULL;
+
+    return unloaded;
 }
 
 /*
@@ -253,6 +277,7 @@ void* Sys_GetGameAPI(void* parms)
 
     Com_Printf("Sys_GetGameAPI(%s): succeeded ...\n", gamename);
     GetGameAPI = (void* (*)(void*))Sys_LoadFunction(game_library, "GetGameAPI");
+    game_api   = (void*)GetGameAPI;
 
     if (!GetGameAPI)
     {
