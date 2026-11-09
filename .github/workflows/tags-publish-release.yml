@@ -69,7 +69,10 @@ jobs:
 
     - name: Zip
       working-directory: '${{github.workspace}}/${{matrix.target_os}}'
-      run: zip -9 -r "../${{ env.RELEASE_NAME }}.zip" ./
+      # upload-artifact does not preserve file permissions, restore the executable bit
+      run: |
+        find . -type f \( -name 'openmohaa' -o -name 'omohaaded' -o -name 'launch_openmohaa_*' \) ! -name '*.exe' -exec chmod +x {} +
+        zip -9 -r "../${{ env.RELEASE_NAME }}.zip" ./
 
     - name: Release
       uses: softprops/action-gh-release@v2.3.2
