@@ -3,6 +3,10 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — feature ideas recorded
+- Design discussion recorded in `docs/dev/roadmap/ideas.md`: zPAM-like competition mode (C++ match layer + script rules, since MOHAA game modes are C++), libmoh (script functions added natively, NightFall-compatible HTTP first), Vulkan renderer as a new renderer module.
+- Checked along the way: `openmohaa +set dedicated 1` already runs as a dedicated server; the fs_homepath fixes made in OpenCoD2-Plus are not needed here (ioquake3 filesystem already handles them).
+
 ## 2026-11-09 — README and project direction
 - README rewritten after OpenCoD2-Plus: the fork exists to advance with AI agents (forbidden upstream) and will add new features, not only fixes; a faster server tick (40 Hz and up) is the first idea, still unstarted.
 - A fresh-context review of the docs found real errors (nonexistent `ttycon` cvar, unbuilt `test_lz77`, wrong function names, missing `corepp` coupling); fixed, and the checker now checks paths against what git would commit.

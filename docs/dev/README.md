@@ -15,5 +15,6 @@ duplicated here.
 | Testing (headless recipes) | [development/testing.md](development/testing.md) |
 | Fork, branches, commits | [development/fork-workflow.md](development/fork-workflow.md) |
 | Risks, gaps, rejected issues | [roadmap/debt.md](roadmap/debt.md) |
+| Feature ideas (competition mode, libmoh, Vulkan...) | [roadmap/ideas.md](roadmap/ideas.md) |
 | Terms | [glossary.md](glossary.md) |
 | AI memory layer | [../ai/README_AI.md](../ai/README_AI.md) |

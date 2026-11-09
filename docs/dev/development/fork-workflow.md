@@ -20,6 +20,8 @@ git push origin main
 
 ## Fixing an upstream issue
 
+New features follow the same branch flow; check [ideas.md](../roadmap/ideas.md) first.
+
 1. Check the issue has no open upstream PR (`gh pr list -R openmoh/openmohaa --search <topic>`).
 2. `git switch -c fix/<topic> main`.
 3. Reproduce headless, fix the root cause, reproduce again ([testing.md](testing.md)).
