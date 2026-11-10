@@ -17,5 +17,5 @@ says `Vulkan could not start, using OpenGL`.
 | `r_swapInterval` | `1`: vertical sync (FIFO presentation); `0`: no sync |
 
 State: tested headless with Mesa's software Vulkan driver on Linux (menus, maps, models, sky, fog
-match the OpenGL renderer pixel for pixel). Not yet tested in a window on real hardware, and only the
-Linux builds include it for now. Report problems with your GPU and driver.
+match the OpenGL renderer pixel for pixel), and in a window on an NVIDIA GPU (proprietary driver,
+X11). Only the Linux builds include it for now. Report problems with your GPU and driver.

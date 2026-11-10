@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — Vulkan renderer in a window; opengl2 checked
+- First windowed run of `renderer_vulkan` on real hardware (NVIDIA RTX 5080, proprietary driver, X11): `training` played, `vid_restart` at first start, clean exit; the picture looked right to the maintainer.
+- Headless FPS (`com_speeds`, no vsync): GL1 and Vulkan both hit the engine's 1000 fps cap (integer ms frames) up to 4K; at 8K Vulkan ~580, GL1 still capped. Headless GL may not wait for the GPU, so the gap is likely overstated.
+- `renderer_opengl2` built and run for comparison: not usable for MOHAA (terrain, alpha-tested sprites, HUD colors); recorded in `debt.md`.
+
 ## 2026-11-09 — bots throw grenades (#833)
 - Bots never threw grenades and with grenades only took out an empty pistol (`UseWeaponWithAmmo` skipped throwables). Now: switch, aim above the enemy, charge 0.7-2 s (overcook is at 4 s), throw, switch back.
 - Three traps found by tracing: `WEAPON_CLASS_THROWABLE` includes the binoculars (use `WEAPON_CLASS_GRENADE`); `useWeapon()` is undone because `CheckValidWeapon` sees the bot without a weapon mid-switch and re-arms it (skipped during a throw); the switch then works through the player's own `useweaponclass grenade`.

@@ -43,8 +43,14 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 - Vulkan renderer ([renderer-vulkan.md](../architecture/renderer-vulkan.md)): one frame in flight
   (every submit waits for the GPU), one memory allocation per texture (drivers may cap allocations
   near 4096), pipelines created on first use (a hitch the first time a state appears). The window
-  and swapchain path, `vid_restart` on a real window, Windows and macOS builds (CI installs the
-  Vulkan headers on Linux only) are not tested.
+  and swapchain path and `vid_restart` were tested only on NVIDIA (proprietary driver, X11, one
+  session on `training`); AMD/Intel, Wayland, Windows and macOS builds (CI installs the Vulkan
+  headers on Linux only) are not tested.
+- `renderer_opengl2` (`BUILD_RENDERER_GL2=ON`, off by default) loads and runs but is not usable for
+  MOHAA. Seen on `training` (NVIDIA RTX 5080, Linux, headless and windowed, 2026-11-09): terrain is
+  not drawn (black holes beside the road), alpha-tested tree sprites draw as solid rectangles, the
+  health bar is red and the compass faint (likely the `RB_Color4f` byte scaling below, which GL1
+  depends on), sky and lighting are greyer than GL1. Causes not investigated; no other map tested.
 
 ## Sanitizer findings (headless suite on an ASan + UBSan build, 2026-11-09)
 
