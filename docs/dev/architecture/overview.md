@@ -16,6 +16,7 @@ Defined in `cmake/` and the root `CMakeLists.txt`.
 | `cgame.so` / `cgame.dll` | client game module (dlopen) | `cgame`, `bg_*` from `fgame`, script system, shared `qcommon` parts | `cmake/basegame.cmake` |
 | `renderer_opengl1.so` | renderer (dlopen when `USE_RENDERER_DLOPEN`) | `renderergl1`, `renderercommon` | `cmake/renderer_gl1.cmake` |
 | `renderer_opengl2.so` | renderer, off by default (`BUILD_RENDERER_GL2`) | `renderergl2`, `renderercommon` | `cmake/renderer_gl2.cmake` |
+| `renderer_vulkan.so` | renderer when the Vulkan headers are found (`BUILD_RENDERER_VULKAN`) | `renderergl1`, `renderervk`, `renderercommon` | `cmake/renderer_vulkan.cmake` |
 | `launch_openmohaa_{base,spearhead,breakthrough}` | launchers that start `openmohaa` with the right game | `Launcher` | `cmake/launcher.cmake` |
 
 "Shared engine" is `cmake/shared_sources.cmake` (`qcommon`, `server`, `sys`, `tiki`, `skeletor`,
@@ -42,7 +43,7 @@ regression tests: `tests/`.
 | `code/corepp` | Shared C++ base: class/event/listener system (`listener.cpp`, `class.cpp`), containers (`con_set`, `con_arrayset`); compiled per target and includes the host module's headers |
 | `code/tiki`, `code/skeletor` | TIKI model definitions and skeletal animation |
 | `code/uilib` | MOHAA UI library (Ubertools `.urc` menus), linked into the client |
-| `code/renderercommon`, `code/renderergl1`, `code/renderergl2` | Renderers |
+| `code/renderercommon`, `code/renderergl1`, `code/renderergl2`, `code/renderervk` | Renderers ([Vulkan](renderer-vulkan.md)) |
 | `code/gamespy` | GameSpy SDK (master server, CD key, NAT negotiation) |
 | `code/Launcher` | Launcher executables |
 | `code/tools` | Tools: q3asm and lcc (QVM build), stringify, `ommap`, `md5_2_skX` |

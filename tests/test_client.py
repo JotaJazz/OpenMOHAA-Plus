@@ -681,6 +681,100 @@ class HitMarkers(GameTestCase):
         self.assertLess(abs(opted_out - off), 10, (on, off, opted_out))   # the server sends nothing
 
 
+def vulkan_renderer():
+    """The renderer_vulkan module next to the binaries, or None."""
+    found = glob.glob(os.path.join(omoh.bin_dir() or "", "renderer_vulkan*"))
+    return found[0] if found else None
+
+
+# Mesa's software Vulkan driver, when installed: same pictures on every machine, no GPU needed
+LAVAPIPE = "/usr/share/vulkan/icd.d/lvp_icd.json"
+
+
+@require_game
+@unittest.skipUnless(vulkan_renderer(), "renderer_vulkan was not built (needs the Vulkan headers)")
+class VulkanRenderer(GameTestCase):
+    # The Vulkan renderer is the GL1 renderer on an emulation of its GL calls: pictures must match.
+    # Headless (SDL offscreen driver), it draws into its offscreen image only, which screenshots read.
+
+    # fixed camera through sv_scripts (the spawn point is random)
+    CAMERA = """main:
+	level waittill spawn
+	while (1) {
+		if ($player.size > 0) {
+			local.p = $player[1]
+			if (local.p.dmteam == "spectator") {
+				local.p join_team "allies"
+				wait 2
+				continue
+			}
+			local.p.origin = ( (float (getcvar "cam_x")) (float (getcvar "cam_y")) (float (getcvar "cam_z")) )
+			local.p.viewangles = ( (float (getcvar "cam_pitch")) (float (getcvar "cam_yaw")) 0 )
+			local.p physics_off
+		}
+		waitframe
+	}
+end
+"""
+
+    def shot(self, renderer, *args, map_name=None):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        env = {"VK_ICD_FILENAMES": LAVAPIPE} if os.path.exists(LAVAPIPE) else {}
+        if map_name:
+            home.write("global/cam.scr", self.CAMERA)
+            args = args + ("+set", "sv_maxclients", "2", "+set", "g_gametype", "1", "+set", "sv_scripts",
+                           "global/cam.scr", "+devmap", map_name)
+        c = omoh.client(home, "+set", "cl_renderer", renderer, "+set", "r_mode", "3", *args, env=env)
+        self.games.append(c)
+        if map_name:
+            c.wait_for(r"==== InitGame ====", timeout=120)
+            time.sleep(30)
+            c.send("popmenu 0")
+            c.send("freezeplayer")
+            time.sleep(3)
+        else:
+            c.wait_for(r"Opening IP socket", timeout=60)
+            time.sleep(8)                      # the main menu is up
+        c.send("screenshot silent")
+        time.sleep(3)
+        self.assertEqual(c.quit(), 0)
+        if renderer == "vulkan":
+            self.assertIn("Vulkan device:", c.log())
+        shots = glob.glob(os.path.join(home.path, "main", "screenshots", "shot*.tga"))
+        self.assertEqual(len(shots), 1)
+        return read_tga(shots[0])
+
+    def assertSamePicture(self, a, b, tolerance):
+        wa, ha, ra = a
+        wb, hb, rb = b
+        self.assertEqual((wa, ha), (wb, hb))
+        differing = sum(1 for y in range(ha) for x in range(wa) if sum(abs(p - q) for p, q in zip(ra[y][x], rb[y][x])) > 48)
+        self.assertLess(differing / (wa * ha), tolerance, f"{differing} of {wa * ha} pixels differ")
+
+    def test_falls_back_to_opengl_without_vulkan(self):
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        c = omoh.client(home, "+set", "cl_renderer", "vulkan", env={"VK_ICD_FILENAMES": "/nonexistent.json"})
+        self.games.append(c)
+        c.wait_for(r"Vulkan could not start, using OpenGL", timeout=60)
+        c.wait_for(r"Opening IP socket", timeout=60)
+        self.assertEqual(c.quit(), 0)
+
+    def test_main_menu_matches_opengl1(self):
+        # measured: identical
+        self.assertSamePicture(self.shot("opengl1"), self.shot("vulkan"), 0.001)
+
+    @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 2 minutes); set OMOH_SLOW=1")
+    def test_world_matches_opengl1(self):
+        # Algiers from above: world, lightmaps, models, trees, sky and distance fog. Measured: 0.03%
+        # of the pixels differ (swaying leaves)
+        camera = ("+set", "cam_x", "-2112", "+set", "cam_y", "-1776", "+set", "cam_z", "1217",
+                  "+set", "cam_pitch", "25", "+set", "cam_yaw", "45")
+        self.assertSamePicture(self.shot("opengl1", *camera, map_name="dm/mohdm2"),
+                               self.shot("vulkan", *camera, map_name="dm/mohdm2"), 0.01)
+
+
 @require_game
 @unittest.skipUnless(os.environ.get("OMOH_SLOW"), "slow (about 1 minute); set OMOH_SLOW=1")
 class LagCompensation(GameTestCase):

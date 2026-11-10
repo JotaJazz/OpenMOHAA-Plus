@@ -195,6 +195,11 @@ script events added to `fgame`, portable to every platform.
 
 ## Vulkan renderer
 
+Status: first stage on branch `feat/vulkan-renderer`: `renderer_vulkan`, the GL1 renderer on a Vulkan
+emulation of its GL calls ([ADR 0005](../architecture/adr/0005-vulkan-renderer-emulates-gl1.md));
+menus and maps match GL1 headless. Next: real hardware in a window, Windows/macOS builds, then
+performance (frames in flight, batching).
+
 - **Today:** `renderer_opengl1` (default, original look) and `renderer_opengl2` (ioquake3's GLSL
   renderer, `BUILD_RENDERER_GL2=OFF`), selected by `cl_renderer`; no Vulkan or Direct3D.
 - **Shape:** a new dynamically loaded module `renderer_vulkan` behind `refimport_t`/`refexport_t`

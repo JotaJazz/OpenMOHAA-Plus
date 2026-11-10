@@ -44,6 +44,7 @@ SDL_VIDEODRIVER=offscreen ALSOFT_DRIVERS=null timeout -s KILL 150 ./openmohaa \
 | Diagnose a freeze or crash | `+set com_freezeWatch <seconds>` reports frozen frames (with the main thread's backtrace on POSIX) to stderr and `<HOME_DIR>/freeze.log`; fatal signals append a report to `<HOME_DIR>/crash.log`; resolve `module(+0xOFFSET)` frames with `addr2line -f -C -e <binary> 0xOFFSET`; `developer 1` enables the `freeze <s>` and `crash` test commands |
 | Memory errors | Scratch build with `-fsanitize=address` in C/CXX/linker flags; run with `ASAN_OPTIONS=detect_leaks=0` |
 | Network probe (bans, pure checks) | Two processes on unique `net_port`s; server `developer 1` logs client state changes |
+| Compare renderers | `+set cl_renderer vulkan` with `VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json` (Mesa lavapipe, no GPU; headless it draws offscreen only); same shot with `opengl1`, compare pixels. Fixed camera: an `sv_scripts` script that sets `$player[1].origin`/`viewangles` every frame (`VulkanRenderer` in `tests/test_client.py`) |
 
 ## Before merging a batch
 

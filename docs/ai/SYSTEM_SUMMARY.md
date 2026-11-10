@@ -14,7 +14,8 @@ Last updated: 2026-11-09. Live snapshot; update when the facts below change.
 
 ## Build outputs
 
-`openmohaa`, `omohaaded`, `game.so`, `cgame.so`, `renderer_opengl1.so`, `launch_openmohaa_*`.
+`openmohaa`, `omohaaded`, `game.so`, `cgame.so`, `renderer_opengl1.so`, `renderer_vulkan.so` (when the
+Vulkan headers are found), `launch_openmohaa_*`.
 Details: [overview.md](../dev/architecture/overview.md).
 
 ## Subsystem state (fork changes on top of upstream)
@@ -59,6 +60,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | HUD | `ui_hudscale` multiplier; `ui_menuaspect` (4:3 menus with side bars); `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |
 | Downloads | HTTP download redirection (`sv_dlURL`): `USE_CURL` defined, `cl_curl.c` fixed, server info parsed | (phase 4) |
+| Renderer | `renderer_vulkan` (`cl_renderer vulkan`): GL1 renderer on a Vulkan emulation of its GL calls (`code/renderervk`, `USE_VULKAN` in `code/sdl/sdl_glimp.c`); headless offscreen mode; Linux CI builds it | (phase 5) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests

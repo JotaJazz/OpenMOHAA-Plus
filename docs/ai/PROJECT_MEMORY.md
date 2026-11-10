@@ -3,9 +3,19 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-09 — Vulkan renderer in a window; opengl2 checked
+- First windowed run of `renderer_vulkan` on real hardware (NVIDIA RTX 5080, proprietary driver, X11): `training` played, `vid_restart` at first start, clean exit; the picture looked right to the maintainer.
+- Headless FPS (`com_speeds`, no vsync): GL1 and Vulkan both hit the engine's 1000 fps cap (integer ms frames) up to 4K; at 8K Vulkan ~580, GL1 still capped. Headless GL may not wait for the GPU, so the gap is likely overstated.
+- `renderer_opengl2` built and run for comparison: not usable for MOHAA (terrain, alpha-tested sprites, HUD colors); recorded in `debt.md`.
+
 ## 2026-11-09 — bots throw grenades (#833)
 - Bots never threw grenades and with grenades only took out an empty pistol (`UseWeaponWithAmmo` skipped throwables). Now: switch, aim above the enemy, charge 0.7-2 s (overcook is at 4 s), throw, switch back.
 - Three traps found by tracing: `WEAPON_CLASS_THROWABLE` includes the binoculars (use `WEAPON_CLASS_GRENADE`); `useWeapon()` is undone because `CheckValidWeapon` sees the bot without a weapon mid-switch and re-arms it (skipped during a throw); the switch then works through the player's own `useweaponclass grenade`.
+
+## 2026-11-09 — Vulkan renderer, first stage
+- Not a port: the GL1 renderer calls OpenGL through 76 `qgl*` pointers, mostly GL 1.x fixed function, so `renderer_vulkan` is GL1 plus an emulation of those calls (ADR 0005); no renderer copy, pictures comparable pixel by pixel with GL1.
+- First bug: front faces must stay counter-clockwise when the shader flips y (clockwise culled the whole BSP while models showed). Spawn points are random, so screenshots use an `sv_scripts` camera.
+- Not tested: a real window/swapchain, Windows/macOS builds; Zink cannot run on lavapipe (rejects CPU devices), so Zink was not an option to test here.
 
 ## 2026-11-09 — lag compensation (g_antilag)
 - Bullets rewind the other players to the shooter's `usercmd.serverTime` (the time the client renders), restoring position, angles and the animation state the bone hit locations are computed from (the per-frame pose cache is reset); history of 64 frames, capped by `g_antilag_maxms`.
