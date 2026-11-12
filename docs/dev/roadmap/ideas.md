@@ -452,6 +452,22 @@ checked with a working and a broken synthetic mod. Real community mods still hav
   `feat/hitmarkers`. The round timer was already on the HUD (`hud_timelimit`, "Time Left" from
   `CS_MATCHEND`, round time in round-based modes); it stops during a match pause.
 
+## Plus protocol as a build variant (deferred)
+
+- **Shape:** as OpenCoD2-Plus (`COD2_PLUS_PROTOCOL`, its server's ADR 0015): a CMake option
+  defines `OPM_PLUS`; only what changes the network format sits behind it, every other
+  improvement stays in both builds. The server keeps announcing protocol 8/17 (listed by GameSpy
+  and original clients); the client sends `plus\<version>` in the `connect` userinfo
+  (`code/client/cl_main.cpp`), `SV_DirectConnect` refuses other clients with an update notice;
+  the Plus client still joins original servers.
+- **Status:** not started on purpose. Every current feature works on the original protocol
+  (userinfo-gated server commands, `stufftext`, server-only rules), so the option would be an
+  empty `#ifdef`. Add it with the first feature that needs a new format (candidates: cgame
+  prediction of fork rules, more snapshots or 60 Hz if the current format limits them,
+  more entities/configstrings), together with an ADR that scopes the "network formats stay
+  compatible" rule to the classic build.
+- **Cost:** most players run the original executables; a Plus server shuts them out.
+
 ## Master server and community portal (long term)
 
 - **Shape:** a server list that shows each server's Plus features (tick rate, competition mode)
