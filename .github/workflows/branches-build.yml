@@ -14,18 +14,33 @@ permissions:
   contents: write
 
 jobs:
-  build-all:
-   uses: ./.github/workflows/shared-build.yml
-   with:
+  # Changed in OpenMOHAA Plus: the platforms are separate jobs, so that a macOS runner shortage
+  # (GitHub could not assign one for hours on 2026-11-12) does not hold back the Linux and Windows
+  # pre-release. Tagged releases (tags-publish-release.yml) still need every platform.
+  build-platform-linux:
+    uses: ./.github/workflows/shared-build-linux.yml
+    with:
+      environment: 'testing'
+
+  build-platform-windows:
+    uses: ./.github/workflows/shared-build-windows.yml
+    with:
+      environment: 'testing'
+
+  build-platform-macos:
+    uses: ./.github/workflows/shared-build-macos.yml
+    with:
       environment: 'testing'
 
   # Initially create a release with 1 job
   # so multiple files can be uploaded at the same time afterwards
   create-release:
-    if: github.event_name != 'pull_request' && github.ref_name == 'main'
+    if: >-
+      ${{ !cancelled() && github.event_name != 'pull_request' && github.ref_name == 'main'
+      && needs.build-platform-linux.result == 'success' && needs.build-platform-windows.result == 'success' }}
     runs-on: ubuntu-24.04
     environment: 'testing'
-    needs: [build-all]
+    needs: [build-platform-linux, build-platform-windows, build-platform-macos]
 
     steps:
     - name: Release
@@ -36,8 +51,9 @@ jobs:
         tag_name: 'dev'
 
   deploy-release:
-    if: github.event_name != 'pull_request' && github.ref_name == 'main'
+    if: ${{ !cancelled() && needs.create-release.result == 'success' }}
     strategy:
+      fail-fast: false
       matrix:
         target_os: [
           'linux-amd64',
@@ -58,24 +74,27 @@ jobs:
 
     runs-on: ubuntu-24.04
     environment: 'testing'
-    needs: [create-release]
+    needs: [create-release, build-platform-macos]
 
     env:
       RELEASE_NAME: ${{github.event.repository.name}}-dev-${{matrix.target_os}}
+      # Added in OpenMOHAA Plus: the macOS archive only when its build succeeded (the previous one stays)
+      PUBLISH: ${{ matrix.target_os != 'macos-multiarch-arm64-x86_64' || needs.build-platform-macos.result == 'success' }}
 
     steps:
     - uses: actions/download-artifact@v4
+      if: ${{ env.PUBLISH == 'true' }}
       with:
         name: 'out-${{matrix.target_os}}'
         path: ${{github.workspace}}/${{matrix.target_os}}
 
     - name: Zip
-      if: ${{ !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
+      if: ${{ env.PUBLISH == 'true' && !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
       working-directory: '${{github.workspace}}/${{matrix.target_os}}'
       run: zip -9 -r "../${{env.RELEASE_NAME}}.zip" ./
 
     - name: Release
-      if: ${{ !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
+      if: ${{ env.PUBLISH == 'true' && !endsWith(matrix.target_os, '-appimage') && matrix.target_os != 'fonts' }}
       uses: softprops/action-gh-release@v2.3.2
       with:
         tag_name: 'dev'

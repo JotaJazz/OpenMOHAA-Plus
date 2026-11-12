@@ -421,8 +421,8 @@ decide whether to enable it by default. Not verified at run time.
 - **Status:** the update checker queries `OpenGamePlus/OpenMOHAA-Plus` (`code/sys/sys_update_checker.cpp`,
   commit `7b461f77`) and the version is `0.83.0-plus.1`, shown in the console. Missing: tagged
   stable releases with a fork changelog (`CHANGELOG.md` is upstream's); the only release is the
-  `dev` pre-release, which every `main` build replaces, and only when all platforms build (a
-  macOS runner shortage on 2026-11-12 held it back).
+  `dev` pre-release, which every `main` build replaces once Linux and Windows build (macOS is
+  added when its build succeeds; a macOS runner shortage on 2026-11-12 had held everything back).
 - **Shape:** tagged stable releases with a fork changelog besides the `dev` pre-release.
 
 ## Automated upstream sync
