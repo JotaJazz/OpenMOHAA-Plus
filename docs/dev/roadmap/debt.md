@@ -14,7 +14,6 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 
 ## Known gaps (not fixed)
 
-- `Client Initialization Complete` prints a negative time (`start - end` in `code/client/cl_main.cpp`).
 - The client can hang on shutdown after a SIGTERM or after being dropped by a server.
 - The 1.11 `errormessage` menu shows `com_errorMessage` on one centered line, so long reasons (e.g.
   the "Unpure Client ..." text) are clipped on screen; the console has the full text.
