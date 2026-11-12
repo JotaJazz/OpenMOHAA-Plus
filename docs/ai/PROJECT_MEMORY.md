@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-11 — fork licensed AGPL-3.0 (ADR 0006)
+- Possible because every GPL header in `code/` is GPL-2.0-or-later; fork-only files (40 sources) now carry AGPL-3.0-or-later, upstream files keep their GPL header, `LICENSE` added next to `COPYING.txt`.
+- `vk_core.c` checked against Quake3e's `vk.c` (GPL-2.0, no header): only API boilerplate matches.
+- Open: GameSpy SDK has no licence notice (inherited); release zips and the AppImage ship no licence text (pre-existing).
+
 ## 2026-11-11 — bug batch: resident cgame, rehashbans line ends, init time
 - cgame on emulated musl crashed twice: `CL_ShutdownCGame` runs several times, so "nothing loaded" must not mean "unloaded" (a later call freed the resident module's memory); emitters kept the previous level's tiki pointers and crashed the autosave. `rehashbans` now reads CRLF and a last line without newline; the init time prints positive.
 - Not reproduced: client hang on shutdown (kick + quit, SIGTERM). Kept as is: `SetDMMaxAmount`, `G_SetTime` comparison (original-game code, no symptom). The HRTF-off test failed only because the game config picks headphones.
