@@ -20,6 +20,19 @@ function (create_launcher name type)
         set_target_properties(openmohaa_launcher_${name} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
         INSTALL(TARGETS openmohaa_launcher_${name} DESTINATION ${INSTALL_BINDIR_FULL})
+
+        # Added in OpenMOHAA Plus
+        #  The .desktop entries run the launchers by name: link them from <prefix>/bin.
+        #  The launcher finds the client through /proc/self/exe, so the link works.
+        if (UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
+            set(launcher_file "$<TARGET_FILE_NAME:openmohaa_launcher_${name}>")
+            cmake_path(RELATIVE_PATH INSTALL_BINDIR_FULL BASE_DIRECTORY bin OUTPUT_VARIABLE launcher_dir)
+            install(CODE "
+                file(MAKE_DIRECTORY \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin\")
+                file(CREATE_LINK \"${launcher_dir}/${launcher_file}\"
+                    \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/${launcher_file}\" SYMBOLIC)
+            ")
+        endif()
     endif()
 
     #add_executable(omohaaded_launcher_${name} ${LAUNCHER_SOURCES})

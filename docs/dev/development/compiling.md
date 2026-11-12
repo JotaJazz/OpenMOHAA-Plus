@@ -11,7 +11,8 @@ short Linux path used for development.
 cmake -S . -B .cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=<PREFIX>
 cmake --build .cmake
-cmake --install .cmake          # binaries and modules go to <PREFIX>/lib/openmohaa
+cmake --install .cmake          # binaries and modules go to <PREFIX>/lib/openmohaa,
+                                # launcher links (launch_openmohaa_*) to <PREFIX>/bin
 ```
 
 - `.cmake/` is the conventional build dir; it is gitignored (it contains absolute local paths).
