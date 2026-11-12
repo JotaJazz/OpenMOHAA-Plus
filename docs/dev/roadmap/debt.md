@@ -34,7 +34,10 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 
 - Vulkan renderer ([renderer-vulkan.md](../architecture/renderer-vulkan.md)): one frame in flight
   (every submit waits for the GPU), one memory allocation per texture (drivers may cap allocations
-  near 4096), pipelines created on first use (a hitch the first time a state appears). The window
+  near 4096; measured 450-540 images per map), pipelines created on first use, without an
+  on-disk cache. Measured 2026-11-12 on dm/mohdm2: 14 pipelines, 7.2 ms in all on an RTX 5080
+  (Windows), 1.0 ms with a `VkPipelineCache` saved to disk; under a frame, and NVIDIA and Mesa
+  drivers keep their own shader cache, so the disk cache was tried and dropped. The window
   and swapchain path and `vid_restart` were tested only on NVIDIA (proprietary driver, X11, one
   session on `training`); on Windows one windowed session by the maintainer (MSVC x64, NVIDIA,
   2026-11-12: menus, local maps, saving and loading, an online server, all fine); AMD/Intel, Wayland and the Windows x86/ARM64 builds are not tested.
