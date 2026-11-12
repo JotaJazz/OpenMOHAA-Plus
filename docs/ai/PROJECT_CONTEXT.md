@@ -31,6 +31,8 @@ the docs checker.
 ## Constraints
 - Must stay compatible with original game data, saves and network protocol.
 - Module ABI versions (`GAME_API_VERSION`, `CGAME_IMPORT_API_VERSION`, `REF_API_VERSION`).
+- License: AGPL-3.0 for the program and the fork's own files; upstream files keep GPL-2.0-or-later
+  (ADR 0006). No GPL-2.0-only code may be added.
 - Test coverage so far: Linux with Allied Assault data only; no Spearhead/Breakthrough, macOS or
   GPU-specific testing.
 - Docs, code comments and commits in English.

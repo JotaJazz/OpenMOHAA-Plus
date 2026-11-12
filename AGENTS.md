@@ -18,6 +18,8 @@ OpenMOHAA Plus: fork of OpenMoHAA (Medal of Honor: Allied Assault engine and gam
 - Do not edit upstream user docs (`docs/markdown`, `docs/README.md`), vendored code or generated
   parser sources. Fork user docs are new `NN-plus-*.md` pages in `docs/markdown`, linked from
   the upstream index page with as small an edit as possible.
+- New fork files are AGPL-3.0-or-later; upstream files keep their GPL-2.0-or-later header
+  ([ADR 0006](docs/dev/architecture/adr/0006-fork-licensed-agpl-3.md)). No GPL-2.0-only code.
 - Never commit game data (pk3), personal paths or credentials.
 - Docs, comments and commit messages in English.
 

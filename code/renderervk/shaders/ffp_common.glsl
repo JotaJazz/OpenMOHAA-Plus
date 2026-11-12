@@ -1,3 +1,5 @@
+// Copyright (C) 2026 the OpenMOHAA Plus contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Added in OpenMOHAA Plus: per-draw state of the emulated OpenGL 1.x fixed-function pipeline (vk_gl.c)
 layout(set = 0, binding = 0, std140) uniform DrawState {
     mat4  mvp;

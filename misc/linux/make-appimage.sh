@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # Build an AppImage from a folder holding the installed game files (openmohaa, omohaaded, *.so and
 # the bundled libSDL2/libopenal/libcurl), as produced by the Linux CI build.
 #   misc/linux/make-appimage.sh <package dir> <x86_64|aarch64> <output .AppImage> [appimagetool]

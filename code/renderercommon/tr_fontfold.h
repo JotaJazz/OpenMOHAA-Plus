@@ -1,3 +1,24 @@
+/*
+===========================================================================
+Copyright (C) 2026 the OpenMOHAA Plus contributors
+
+This file is part of OpenMOHAA Plus source code.
+
+OpenMOHAA Plus source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License
+as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+OpenMOHAA Plus source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OpenMOHAA Plus source code.  If not, see <https://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
 // tr_fontfold.h: Added in OpenMOHAA Plus
 //  The game's fonts only hold printable ASCII. A Latin-1 / Windows-1252 character without a glyph
 //  is drawn with the glyph of its base letter (a for á, n for ñ, ! for ¡) instead of '?', so

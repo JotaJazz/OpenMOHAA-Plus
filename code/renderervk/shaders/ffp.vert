@@ -1,4 +1,6 @@
 #version 450
+// Copyright (C) 2026 the OpenMOHAA Plus contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
 #extension GL_GOOGLE_include_directive : require
 // Added in OpenMOHAA Plus: vertex stage of the emulated fixed-function pipeline
 #include "ffp_common.glsl"

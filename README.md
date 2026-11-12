@@ -3,7 +3,7 @@
 <p align="center"><img src="docs/banner.svg" alt="OpenMOHAA Plus" width="100%"></p>
 
 ![Status: in development](https://img.shields.io/badge/status-in%20development-orange)
-![License: GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)
+![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)
 ![Platforms: Linux | Windows | macOS](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)
 ![MOHAA | Spearhead | Breakthrough](https://img.shields.io/badge/MOHAA-AA%20%7C%20Spearhead%20%7C%20Breakthrough-6b7a3a)
 [![Fork of openmoh/openmohaa](https://img.shields.io/badge/fork%20of-openmoh%2Fopenmohaa-555)](https://github.com/openmoh/openmohaa)
@@ -276,7 +276,12 @@ for identification only.
 
 ## License
 
-GPL-2.0, as OpenMoHAA ([COPYING.txt](COPYING.txt)). Third-party libraries keep their own licenses:
+[GNU Affero General Public License v3.0](LICENSE). Whoever distributes the game, or runs a
+modified version as a server for others, must offer its source under the same license. The code
+written for this fork is AGPL-3.0-or-later; the code that comes from OpenMoHAA, ioquake3 and the
+F.A.K.K. 2 SDK keeps its GPL-2.0-or-later notices ([COPYING.txt](COPYING.txt)), which allow it
+to be distributed as part of an AGPL-3.0 program
+([ADR 0006](docs/dev/architecture/adr/0006-fork-licensed-agpl-3.md)). Third-party libraries keep their own licenses:
 [Flex](https://github.com/westes/flex), [Bison](https://savannah.gnu.org/projects/bison/),
 [SDL](https://www.libsdl.org/), [OpenAL Soft](https://openal-soft.org/),
 [libmad](https://www.underbit.com/products/mad/), [cURL](https://curl.se/),

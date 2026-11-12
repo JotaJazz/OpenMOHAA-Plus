@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # AppImage entry point (OpenMOHAA Plus).
 #   OpenMOHAA-Plus.AppImage [--dedicated | --spearhead | --breakthrough] [game arguments]
 # Without +set fs_basepath, the folder holding the .AppImage is used when it contains main/: put the

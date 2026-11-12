@@ -1,4 +1,6 @@
 #version 450
+// Copyright (C) 2026 the OpenMOHAA Plus contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
 #extension GL_GOOGLE_include_directive : require
 // Added in OpenMOHAA Plus: fragment stage of the emulated fixed-function pipeline
 // (texture environments including GL_COMBINE / GL_COMBINE4_NV, alpha test, fog)

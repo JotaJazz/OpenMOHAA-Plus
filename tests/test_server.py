@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Dedicated server regression tests (need game data: OMOH_GAME_DIR).
 
 Run: OMOH_GAME_DIR=<GAME_DIR> python3 -m unittest discover -s tests -v
