@@ -7,7 +7,7 @@ Policy: [ADR 0001](../architecture/adr/0001-fork-keeps-ai-assisted-work.md),
 
 | Remote | Repository | Use |
 |---|---|---|
-| `origin` | `JotaJazz/OpenMOHAA-Plus` | push branches and `main` |
+| `origin` | `OpenGamePlus/OpenMOHAA-Plus` | push branches and `main` |
 | `upstream` | `openmoh/openmohaa` | read-only source of upstream changes and issues; push disabled with `git remote set-url --push upstream DISABLED` |
 
 ## Sync with upstream
