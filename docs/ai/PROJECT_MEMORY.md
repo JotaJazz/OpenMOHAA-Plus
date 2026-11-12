@@ -3,6 +3,9 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-12 — 4:3 menus: knobs and popups
+- Seen by the maintainer on Windows (Vulkan) but renderer-independent: four `uilib` widgets computed width/640 and height/480 themselves instead of `SetVirtualScale`, so the #583 uniform scale missed them (advanced options knobs stretched and cut). Grep for `vidWidth / 640` before adding a scaled widget.
+
 ## 2026-11-12 — fifth batch: #219 and #526 fixed, #538 and #243 not reproduced
 - #219: the issue's message on stock heads was not reproduced (AA `head1.skd` is valid), but its check had `||` for `&&`: a crafted morph offset crashed the server in `strlen`. The box message on `allied_pilot.skd`/`hedge_bomb.skd` is right: the shipped files end where 18 hit boxes should start.
 - #526: upstream already installs to `<prefix>/lib/openmohaa`; left were the `.desktop` entries that ran launchers not on PATH, and the vendored recastnavigation installing headers and static libs (`EXCLUDE_FROM_ALL` stops that without touching vendored code).
