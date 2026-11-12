@@ -964,6 +964,7 @@ public:
     spawnthing_t *CreateNewEmitter(void);
     spawnthing_t *GetEmitterByName(str emittername);
     void          DeleteEmitters(dtiki_t *tiki);
+    void          DeleteAllEmitters(); // Added in OPM
     void          CGEvent(centity_t *cent);
 
     void     ProcessPendingEventsForEntity();

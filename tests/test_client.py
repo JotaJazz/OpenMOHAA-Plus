@@ -67,6 +67,26 @@ class ClientSmoke(GameTestCase):
         c.wait_for(r"^Server: dm/mohdm1", timeout=120)
         self.assertEqual(c.quit(), 0)
 
+    @unittest.skipUnless(shutil.which("cc") and os.name == "posix", "needs a C compiler on POSIX")
+    def test_map_change_with_resident_cgame_module(self):
+        # #918 on the client side: emulate musl, where dlclose() never unloads the library
+        shim_dir = tempfile.mkdtemp(prefix="omoh-shim-")
+        self.addCleanup(shutil.rmtree, shim_dir, True)
+        src = os.path.join(shim_dir, "nodlclose.c")
+        lib = os.path.join(shim_dir, "nodlclose.so")
+        with open(src, "w") as f:
+            f.write("int dlclose(void *handle) { (void)handle; return 0; }\n")
+        subprocess.run(["cc", "-shared", "-fPIC", "-o", lib, src], check=True)
+        c = self.client("+devmap", "dm/mohdm1", env={"LD_PRELOAD": lib})
+        loaded = r"Sys_GetCGameAPI\(cgame\.so\): succeeded"
+        c.wait_for(loaded, timeout=120)
+        for n, level in enumerate(("dm/mohdm2", "dm/mohdm1"), start=2):
+            time.sleep(3)
+            c.send("devmap " + level)
+            c.wait_for(loaded, count=n, timeout=120)
+        time.sleep(3)
+        self.assertEqual(c.quit(), 0)
+
 
 @require_game
 class SaveLoad(GameTestCase):

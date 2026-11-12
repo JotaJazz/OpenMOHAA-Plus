@@ -14,6 +14,10 @@ Notes that are not obvious from a single file. Paths are relative to the repo ro
 A module can stay resident after `dlclose()` (always on musl, sometimes on glibc). Code that runs
 at init must not assume fresh globals. `L_ShutdownEvents` (`code/corepp/listener.cpp`) therefore
 keeps the event tables: they are filled once from static constructors and cannot be rebuilt.
+The client does the same for `cgame`: `CL_ShutdownCGame` (`code/client/cl_cgame.cpp`) frees
+`TAG_CGAME` only if `Sys_UnloadCGame` really unloaded a module (it runs several times in a row, so
+a call with nothing loaded frees nothing), and `CG_Shutdown` drops the emitters and temp models
+that point to the level's models.
 
 ## Event system (`code/corepp`)
 

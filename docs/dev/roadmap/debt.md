@@ -9,7 +9,7 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 |---|---|---|
 | `AL_MAX_GAIN` raised | Default mix ~15% louder (stock aliases at volume 1.5 no longer clamp); peaks above full scale clip because the OpenAL limiter is disabled | #885 |
 | `waitForState` now waits | Mods that relied on it returning immediately now block | #702 |
-| Resident game module | `cgame` still frees `TAG_CGAME` unconditionally after unload; may crash on musl like #918 did | #918 |
+| Resident cgame module | Tested with an emulated musl (`dlclose()` no-op) over three map loads and the autosave; other cgame globals (scoreboard, `cg` state) still survive and were not audited one by one | #918 |
 | `sv_pure` stale references | Fix covers stale pak references from the menu; the issue's literal symptom (hang) was never reproduced | #659 |
 | `rehashbans` | Last line without trailing newline is still dropped; CRLF leaves `\r` in ban reasons | #926 |
 

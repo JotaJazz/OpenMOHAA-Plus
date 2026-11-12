@@ -90,7 +90,7 @@ Each one reproduced before and after on the real game:
 - the HUD stopwatch survives loading a save (#916)
 - map scripts no longer burst all their waits after a same-map restart, which dropped every player
   on single-map servers (#287)
-- no crash on map change when the game module stays loaded, as on Alpine/musl (#918)
+- no crash on map change when the game or client module stays loaded, as on Alpine/musl (#918)
 - `sv_pure 1` no longer rejects clients that read an extra pk3 in the menu (#659)
 - `rehashbans` no longer keeps removed bans (#926)
 - script fixes: `registercmd` commands run (#672), item `amount`/`dmamount` are readable (#920),
@@ -160,8 +160,7 @@ progress in [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md#open-work) (No
 | 4. Player experience | nearly done: match demos, a Flatpak and loading saves from the original game (#601) are left |
 | 5. Big bets (campaign co-op, WebAssembly, Vulkan, community portal) | started: a first Vulkan renderer |
 
-Upstream bugs keep being fixed alongside, picked by what can be reproduced and verified (next: the
-same musl fix for the client module that the server got in #918). Tested on Linux with the original
+Upstream bugs keep being fixed alongside, picked by what can be reproduced and verified. Tested on Linux with the original
 Allied Assault data; Windows and macOS are built by CI but less tested, and Spearhead and
 Breakthrough are not tested here.
 
