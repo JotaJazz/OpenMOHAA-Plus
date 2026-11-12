@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-11 — docs audit: drift fixed
+- Checker passed but facts had drifted (fork owner now `OpenGamePlus`, lag compensation missing from the summary, incomplete fork-file list, "next" already done, `test_lz77` claimed unwired while CTest runs it in CI): checks against git and code catch what path/link checks cannot.
+- Phase progress moved from `ideas.md` to `SYSTEM_SUMMARY.md` (live state in one place); `ideas.md` stays the backlog.
+- `AGENTS.md` now allows fork user pages `docs/markdown/**/NN-plus-*.md` (practice already did); doc-sync row added for new cvars, commands and events.
+
 ## 2026-11-09 — Vulkan renderer in a window; opengl2 checked
 - First windowed run of `renderer_vulkan` on real hardware (NVIDIA RTX 5080, proprietary driver, X11): `training` played, `vid_restart` at first start, clean exit; the picture looked right to the maintainer.
 - Headless FPS (`com_speeds`, no vsync): GL1 and Vulkan both hit the engine's 1000 fps cap (integer ms frames) up to 4K; at 8K Vulkan ~580, GL1 still capped. Headless GL may not wait for the GPU, so the gap is likely overstated.
