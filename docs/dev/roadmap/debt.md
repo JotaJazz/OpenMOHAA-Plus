@@ -10,6 +10,7 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 | `AL_MAX_GAIN` raised | Default mix ~15% louder (stock aliases at volume 1.5 no longer clamp); peaks above full scale clip because the OpenAL limiter is disabled | #885 |
 | `waitForState` now waits | Mods that relied on it returning immediately now block | #702 |
 | Resident cgame module | Tested with an emulated musl (`dlclose()` no-op) over three map loads and the autosave; other cgame globals (scoreboard, `cg` state) still survive and were not audited one by one | #918 |
+| Configstrings past `MAX_GAMESTATE_CHARS` refused | The server keeps clients by not registering the string that does not fit (a warning names it): that sound or model is missing for everyone. The real cause in the report (a full server with bots named "0", likely mods) was not found; stock maps with 8 bots stay near 20 KB of 41952 | #793 |
 | `sv_pure` stale references | Fix covers stale pak references from the menu; the issue's literal symptom (hang) was never reproduced | #659 |
 
 ## Known gaps (not fixed)

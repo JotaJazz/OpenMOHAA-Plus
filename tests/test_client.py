@@ -224,6 +224,43 @@ class FastServer(GameTestCase):
         for bad in ("ERROR:", "Server disconnected", "Server dropped connection"):
             self.assertNotIn(bad, c.log())
 
+    # upstream #793: configstrings registered mid-game (here 140 long sound names) used to exceed
+    # the client's gamestate buffer and drop it with "MAX_GAMESTATE_CHARS exceeded"
+    FILL_SCRIPT = """main:
+    level waittill spawn
+    local.go = getcvar "plus_gs_fill"
+    while (local.go != "1") {
+        wait 0.5
+        local.go = getcvar "plus_gs_fill"
+    }
+    for (local.i = 0; local.i < 140; local.i++) {
+        cache ("sound/plus_test/""" + "gamestate_fill_" * 12 + """" + local.i + ".wav")
+    }
+    println "PLUS_GS_FILLED"
+end
+"""
+
+    def test_client_stays_when_configstrings_outgrow_the_gamestate(self):
+        self.home.write("maps/dm/mohdm1.scr", self.FILL_SCRIPT)
+        s = self.server("+set", "developer", "1", "+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        client_home = omoh.Home()
+        self.addCleanup(client_home.cleanup)
+        c = omoh.client(client_home, "+connect", f"127.0.0.1:{s.port}")
+        self.games.append(c)
+        s.wait_for(r"entered the battle", timeout=120)
+        s.send("set plus_gs_fill 1")
+        s.wait_for(r"PLUS_GS_FILLED", timeout=30)
+        time.sleep(5)
+        mark = len(s.log())
+        s.send("status")
+        status = s.wait_for(r"^map: dm/mohdm1", timeout=20, start=mark)[mark:]
+        c.quit()
+        self.assertEqual(s.quit(), 0)
+        self.assertNotIn("MAX_GAMESTATE_CHARS exceeded", c.log())
+        self.assertRegex(status, r"\n\s*0\s+\d+\s+\d+\s")      # client 0 still connected
+        self.assertTrue("would exceed MAX_GAMESTATE_CHARS" in s.log(), "server did not refuse a configstring")
+
     def _fire_intervals(self, sv_fps, weapon):
         home = omoh.Home()
         self.addCleanup(home.cleanup)
