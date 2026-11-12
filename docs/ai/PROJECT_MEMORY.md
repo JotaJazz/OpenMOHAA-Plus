@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-12 — fourth batch: #793 fixed, #688, #927, #675/#894 not reproduced
+- 68 open upstream issues were still untriaged; this batch took the ones testable here. #793 reproduced only artificially (140 long sound names cached mid-game): stock maps with 8 bots stay near 20 KB of the 41952-byte gamestate, so the reporter's server likely ran mods. The server now refuses the configstring that would not fit instead of dropping every client.
+- Campaign screenshots need `finishloadingscreen` (the briefing's continue button); `spawn` stays refused even with `cheats 1` in `devmap`, `sv_scripts` with `global/model.scr` spawns effects instead.
+- `.cmake` still pointed at the old checkout path; reconfigured in place with the same options. The Plus protocol idea of OpenCoD2-Plus is recorded as deferred in ideas.md.
+
 ## 2026-11-11 — fork licensed AGPL-3.0 (ADR 0006)
 - Possible because every GPL header in `code/` is GPL-2.0-or-later; fork-only files (40 sources) now carry AGPL-3.0-or-later, upstream files keep their GPL header, `LICENSE` added next to `COPYING.txt`.
 - `vk_core.c` checked against Quake3e's `vk.c` (GPL-2.0, no header): only API boilerplate matches.

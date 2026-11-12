@@ -76,6 +76,9 @@ C/CXX flags and `-fsanitize=address,undefined` in linker flags, in a scratch dir
 | #534 | Not reproducible | `vid_restart` works on current code; report looks NVIDIA-proprietary/X11 specific |
 | #937 | Not testable here | Keyboard input cannot be exercised in the headless setup |
 | #928, #917 | Skipped | Upstream PRs #933 and #934 already address them |
+| #688 | Not reproducible | 2026-11-12: idle 45 s after the briefing on m3l3, m3l2, m1l2a, no statistics screen; it only opens on `+statistics` (unbound by default) or at mission end, so likely a stuck key or controller on the reporter's machine (no real input here) |
+| #927 | Not reproducible | 2026-11-12: the tank's two emitters spawned 6 times in `training` with `cg_effectdetail 0.2` and `com_freezeWatch 5`, no freeze; the emitter loops scaled by that cvar terminate; the reporter fixed it by raising every advanced option without isolating which |
+| #675, #894 | Not reproducible with AA | 2026-11-12: Allied and German grenades visible in first person (local game and dedicated server, after switching away and back); #894 is Spearhead (`com_target_game 1`), no data here |
 | Client hang on shutdown | Not reproducible | 2026-11-11: `quit` after a kick (3 runs) exits in 0.2 s with 0; SIGTERM exits in 0.1 s with 1 (headless, glibc) |
 | `Item::SetDMMaxAmount` sets the amount | Kept | Reimplemented from the original game; changing it alters DM ammo amounts, and the original `gamex86.dll` was not compared |
 | `G_SetTime` compares `level.svsStartTime != svsTime` | Kept | Only rewrites `CS_LEVEL_START_TIME` more often than needed; no visible symptom, and it sits on the #916 stopwatch path |
