@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">OpenMOHAA Plus</title>
+  <desc id="desc">Medal of Honor: Allied Assault, Spearhead and Breakthrough client, dedicated server and game logic, for Linux, Windows and macOS</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#333a22"/>
+      <stop offset="1" stop-color="#191c11"/>
+    </linearGradient>
+    <pattern id="stripes" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="7" height="14" fill="#ffffff" opacity="0.025"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="280" rx="14" fill="url(#bg)"/>
+  <rect width="1200" height="280" rx="14" fill="url(#stripes)"/>
+  <rect x="10" y="10" width="1180" height="260" rx="9" fill="none" stroke="#c9b37e" stroke-opacity="0.35" stroke-width="2"/>
+
+  <!-- emblem: a generic medal on a striped ribbon -->
+  <g>
+    <path d="M100 30h100l-18 92h-64z" fill="#6b7a3a" stroke="#c9b37e" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M134 30h32l-6 92h-20z" fill="#efe6cf" opacity="0.85"/>
+    <path d="M144 30h12l-2 92h-8z" fill="#8c2f2a"/>
+    <rect x="114" y="118" width="72" height="12" rx="3" fill="#a88a45" stroke="#5e5030" stroke-width="2"/>
+    <circle cx="150" cy="186" r="62" fill="#d4b96e" stroke="#5e5030" stroke-width="4"/>
+    <circle cx="150" cy="186" r="50" fill="none" stroke="#5e5030" stroke-opacity="0.6" stroke-width="2" stroke-dasharray="3 5"/>
+    <polygon points="150,148 159.4,173.1 186.1,174.3 165.2,190.9 172.3,216.7 150,202 127.7,216.7 134.8,190.9 113.9,174.3 140.6,173.1" fill="#5e5030"/>
+  </g>
+
+  <text x="290" y="136" font-family="'Segoe UI', 'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif" font-size="80" font-weight="800" fill="#efe6cf">OpenMOHAA<tspan fill="#c9b37e"> Plus</tspan></text>
+  <text x="294" y="182" font-family="'Segoe UI', 'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="600" fill="#d8ceb4">Medal of Honor: Allied Assault · Spearhead · Breakthrough</text>
+  <text x="294" y="218" font-family="'Segoe UI', 'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif" font-size="20" fill="#9c9478">Linux · Windows · macOS — client, dedicated server and game logic, with AI-assisted fixes</text>
+</svg>
