@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-12 — fifth batch: #219 and #526 fixed, #538 and #243 not reproduced
+- #219: the issue's message on stock heads was not reproduced (AA `head1.skd` is valid), but its check had `||` for `&&`: a crafted morph offset crashed the server in `strlen`. The box message on `allied_pilot.skd`/`hedge_bomb.skd` is right: the shipped files end where 18 hit boxes should start.
+- #526: upstream already installs to `<prefix>/lib/openmohaa`; left were the `.desktop` entries that ran launchers not on PATH, and the vendored recastnavigation installing headers and static libs (`EXCLUDE_FROM_ALL` stops that without touching vendored code).
+- Effects for screenshots: `global/model.scr` with `models/emitters/gren_exp.tik` shows the fire; the script command is `angles_toforward`. `training` prints 16 missing-label errors from the stock data (BSP triggers name labels absent from Pak5's `training.scr`).
+
 ## 2026-11-12 — fourth batch: #793 fixed, #688, #927, #675/#894 not reproduced
 - 68 open upstream issues were still untriaged; this batch took the ones testable here. #793 reproduced only artificially (140 long sound names cached mid-game): stock maps with 8 bots stay near 20 KB of the 41952-byte gamestate, so the reporter's server likely ran mods. The server now refuses the configstring that would not fit instead of dropping every client.
 - Campaign screenshots need `finishloadingscreen` (the briefing's continue button); `spawn` stays refused even with `cheats 1` in `devmap`, `sv_scripts` with `global/model.scr` spawns effects instead.

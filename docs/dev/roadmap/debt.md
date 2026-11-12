@@ -10,6 +10,7 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 | `AL_MAX_GAIN` raised | Default mix ~15% louder (stock aliases at volume 1.5 no longer clamp); peaks above full scale clip because the OpenAL limiter is disabled | #885 |
 | `waitForState` now waits | Mods that relied on it returning immediately now block | #702 |
 | Resident cgame module | Tested with an emulated musl (`dlclose()` no-op) over three map loads and the autosave; other cgame globals (scoreboard, `cg` state) still survive and were not audited one by one | #918 |
+| Launcher links in `<prefix>/bin` | `omohaaded` is not linked: the engine takes its folder from `argv[0]` (no symlink resolution) and would look for `game.so` in `bin`; run it from `<prefix>/lib/openmohaa` | #526 |
 | Configstrings past `MAX_GAMESTATE_CHARS` refused | The server keeps clients by not registering the string that does not fit (a warning names it): that sound or model is missing for everyone. The real cause in the report (a full server with bots named "0", likely mods) was not found; stock maps with 8 bots stay near 20 KB of 41952 | #793 |
 | `sv_pure` stale references | Fix covers stale pak references from the menu; the issue's literal symptom (hang) was never reproduced | #659 |
 
@@ -79,6 +80,8 @@ C/CXX flags and `-fsanitize=address,undefined` in linker flags, in a scratch dir
 | #688 | Not reproducible | 2026-11-12: idle 45 s after the briefing on m3l3, m3l2, m1l2a, no statistics screen; it only opens on `+statistics` (unbound by default) or at mission end, so likely a stuck key or controller on the reporter's machine (no real input here) |
 | #927 | Not reproducible | 2026-11-12: the tank's two emitters spawned 6 times in `training` with `cg_effectdetail 0.2` and `com_freezeWatch 5`, no freeze; the emitter loops scaled by that cvar terminate; the reporter fixed it by raising every advanced option without isolating which |
 | #675, #894 | Not reproducible with AA | 2026-11-12: Allied and German grenades visible in first person (local game and dedicated server, after switching away and back); #894 is Spearhead (`com_target_game 1`), no data here |
+| #538 | Not reproduced (macOS) | 2026-11-12: grenade explosion emitters in `training` captured every 0.1 s show the fire with `cg_shadows 0` and `2` alike (Linux, GL1, Mesa); both confirmations are Apple M1 |
+| #243 | Not reproducible | 2026-11-12: `thompson_pain_kneestodeath` exists for the winter soldiers through `new_generic_human.tik`; crouching SMG actors on m6l2b killed by script die without the error; reported on a February 2024 build |
 | Client hang on shutdown | Not reproducible | 2026-11-11: `quit` after a kick (3 runs) exits in 0.2 s with 0; SIGTERM exits in 0.1 s with 1 (headless, glibc) |
 | `Item::SetDMMaxAmount` sets the amount | Kept | Reimplemented from the original game; changing it alters DM ammo amounts, and the original `gamex86.dll` was not compared |
 | `G_SetTime` compares `level.svsStartTime != svsTime` | Kept | Only rewrites `CS_LEVEL_START_TIME` more often than needed; no visible symptom, and it sits on the #916 stopwatch path |
