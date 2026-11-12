@@ -66,6 +66,7 @@ class ClientSmoke(GameTestCase):
         c.send("devmap dm/mohdm1")
         c.wait_for(r"^Server: dm/mohdm1", timeout=120)
         self.assertEqual(c.quit(), 0)
+        self.assertRegex(c.log(), r"Client Initialization Complete ----- \d+ ms")  # was negative
 
     @unittest.skipUnless(shutil.which("cc") and os.name == "posix", "needs a C compiler on POSIX")
     def test_map_change_with_resident_cgame_module(self):
