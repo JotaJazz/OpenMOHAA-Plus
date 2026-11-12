@@ -18,5 +18,5 @@ says `Vulkan could not start, using OpenGL`.
 
 State: tested headless with Mesa's software Vulkan driver on Linux (menus, maps, models, sky, fog
 match the OpenGL renderer pixel for pixel), and in a window on an NVIDIA GPU (proprietary driver,
-X11; and on Windows, offscreen). The Linux and Windows builds include it; macOS does not yet.
+X11, and Windows). The Linux and Windows builds include it; macOS does not yet.
 Report problems with your GPU and driver.
