@@ -5,8 +5,8 @@
 ![Platforms: Linux | Windows | macOS](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)
 ![MOHAA | Spearhead | Breakthrough](https://img.shields.io/badge/MOHAA-AA%20%7C%20Spearhead%20%7C%20Breakthrough-6b7a3a)
 [![Fork of openmoh/openmohaa](https://img.shields.io/badge/fork%20of-openmoh%2Fopenmohaa-555)](https://github.com/openmoh/openmohaa)
-[![Builds](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml/badge.svg?branch=main)](https://github.com/JotaJazz/OpenMOHAA-Plus/actions/workflows/branches-build.yml)
-[![Last commit](https://img.shields.io/github/last-commit/JotaJazz/OpenMOHAA-Plus/main)](https://github.com/JotaJazz/OpenMOHAA-Plus/commits/main)
+[![Builds](https://github.com/OpenGamePlus/OpenMOHAA-Plus/actions/workflows/branches-build.yml/badge.svg?branch=main)](https://github.com/OpenGamePlus/OpenMOHAA-Plus/actions/workflows/branches-build.yml)
+[![Last commit](https://img.shields.io/github/last-commit/OpenGamePlus/OpenMOHAA-Plus/main)](https://github.com/OpenGamePlus/OpenMOHAA-Plus/commits/main)
 
 [Español](README.es.md) · **English**
 
@@ -18,7 +18,7 @@ logic, for Windows, Linux and macOS.
 It exists for one reason: **to move forward with AI coding agents**, which the original project
 does not accept. Here every change is made with an assistant, reproduced on the real game before
 and after, and kept in this fork. On top of OpenMoHAA's work we fix reported bugs and add new
-features, the way the sibling project [OpenCoD2-Plus](https://github.com/JotaJazz/OpenCoD2-Plus)
+features, the way the sibling project [OpenCoD2-Plus](https://github.com/OpenGamePlus/OpenCoD2-Plus)
 is doing for Call of Duty 2 with its 40 Hz server.
 
 <table>
@@ -132,7 +132,7 @@ Breakthrough are not tested here.
 ## How to play
 
 Development builds are published automatically on the
-[`dev` pre-release](https://github.com/JotaJazz/OpenMOHAA-Plus/releases/tag/dev). Otherwise build
+[`dev` pre-release](https://github.com/OpenGamePlus/OpenMOHAA-Plus/releases/tag/dev). Otherwise build
 it (see [Building](#building)). On Linux and the Steam Deck the simplest is the AppImage: put
 `OpenMOHAA-Plus-x86_64.AppImage` in your game folder (the one with `main/`), `chmod +x` it and run it
 (`--dedicated`, `--spearhead` or `--breakthrough` for the server and the expansions). Installation
@@ -191,7 +191,7 @@ together: [docs/dev/architecture/overview.md](docs/dev/architecture/overview.md)
 
 - **Who maintains this:** I'm JotaJazz. I like old games, and I want to keep playing them with my
   friends and keep them alive for the community, with open projects. This one sits next to
-  [OpenCoD2-Plus](https://github.com/JotaJazz/OpenCoD2-Plus).
+  [OpenCoD2-Plus](https://github.com/OpenGamePlus/OpenCoD2-Plus).
 - **How the work is done:** I work with [Claude Code](https://claude.com/claude-code), Anthropic's
   coding assistant. The changes in this fork, including this README, are written with its help.
   Commits made this way carry a `Co-Authored-By: Claude` line, so they can be found with `git log`.

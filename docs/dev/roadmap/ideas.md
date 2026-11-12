@@ -420,7 +420,7 @@ decide whether to enable it by default. Not verified at run time.
 - **Fact:** the update checker queries `api.github.com/repos/openmoh/openmohaa/releases/latest`
   (`code/sys/sys_update_checker.cpp`), so fork players are told to "update" to upstream and lose
   the fork's fixes.
-- **Shape:** point it at `JotaJazz/OpenMOHAA-Plus`; own version scheme (e.g. `0.83.0-plus.1`);
+- **Shape:** point it at `OpenGamePlus/OpenMOHAA-Plus`; own version scheme (e.g. `0.83.0-plus.1`);
   tagged stable releases with a changelog besides the `dev` pre-release; "Plus" visible in console
   and menu.
 

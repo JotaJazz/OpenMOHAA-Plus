@@ -262,7 +262,7 @@ void UpdateCheckerThread::InitClient()
     }
 
     result = curlImport.qcurl_easy_setopt(
-        handle, CURLOPT_URL, "https://api.github.com/repos/JotaJazz/OpenMOHAA-Plus/releases/latest"
+        handle, CURLOPT_URL, "https://api.github.com/repos/OpenGamePlus/OpenMOHAA-Plus/releases/latest"
     );
 
     if (result != CURLE_OK) {

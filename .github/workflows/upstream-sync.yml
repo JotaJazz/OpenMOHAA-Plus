@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   sync:
-    if: github.repository == 'JotaJazz/OpenMOHAA-Plus'
+    if: github.repository == 'OpenGamePlus/OpenMOHAA-Plus'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
