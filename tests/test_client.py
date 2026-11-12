@@ -155,7 +155,8 @@ class Hrtf(GameTestCase):
         self.assertRegex(c.log(), r"OpenAL: HRTF enabled \(")
 
     def test_hrtf_off_by_default(self):
-        c = self.client()
+        # speakers: game configs may pick headphones (s_speaker_type 1), which lets OpenAL use HRTF
+        c = self.client("+set", "s_speaker_type", "0")
         c.wait_for(r"OpenAL: HRTF (enabled|disabled)", timeout=60)
         self.assertEqual(c.quit(), 0)
         self.assertIn("OpenAL: HRTF disabled", c.log())
