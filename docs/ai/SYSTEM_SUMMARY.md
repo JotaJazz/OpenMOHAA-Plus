@@ -62,7 +62,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | HUD | `ui_hudscale` multiplier; `ui_menuaspect` (4:3 menus with side bars); `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
 | Administration | Admin accounts, roles, allow/deny permissions, `ad_*` commands, audit log (`code/server/sv_admin.cpp`) | #905 |
 | Downloads | HTTP download redirection (`sv_dlURL`): `USE_CURL` defined, `cl_curl.c` fixed, server info parsed | (phase 4) |
-| Renderer | `renderer_vulkan` (`cl_renderer vulkan`): GL1 renderer on a Vulkan emulation of its GL calls (`code/renderervk`, `USE_VULKAN` in `code/sdl/sdl_glimp.c`); headless offscreen mode; Linux CI builds it | (phase 5) |
+| Renderer | `renderer_vulkan` (`cl_renderer vulkan`): GL1 renderer on a Vulkan emulation of its GL calls (`code/renderervk`, `USE_VULKAN` in `code/sdl/sdl_glimp.c`); headless offscreen mode; Linux and Windows CI build it (`USE_RENDERER_DLOPEN=ON`), macOS not | (phase 5) |
 | Docs | Technical docs (`docs/dev`, `docs/ai`), docs checker and its workflow | - |
 
 ## Tests

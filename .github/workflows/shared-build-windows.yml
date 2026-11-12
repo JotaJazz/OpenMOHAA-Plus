@@ -218,6 +218,14 @@ jobs:
       with:
         path: 'source'
 
+    # Added in OpenMOHAA Plus: headers for renderer_vulkan (the Vulkan loader is loaded at run time)
+    - name: Checkout Vulkan headers
+      uses: actions/checkout@v4
+      with:
+        repository: 'KhronosGroup/Vulkan-Headers'
+        ref: 'v1.4.309'
+        path: 'thirdparties/Vulkan-Headers'
+
     - name: CMake Settings
       run: |
         echo "CMAKE_PARAM= `
@@ -232,7 +240,8 @@ jobs:
         -DOPENAL_INCLUDE_DIR='${{github.workspace}}/thirdparties/soft-oal/install/include/AL' `
         -DCURL_ROOT='${{github.workspace}}/thirdparties/curl/install' `
         -DFLEX_EXECUTABLE='${{github.workspace}}/thirdparties/winflexbison-install/win_flex.exe' `
-        -DUSE_RENDERER_DLOPEN=OFF `
+        -DUSE_RENDERER_DLOPEN=ON `
+        -DVULKAN_INCLUDE_DIR='${{github.workspace}}/thirdparties/Vulkan-Headers/include' `
         -DBUILD_RENDERER_GL2=OFF `
         -DPRODUCT_VERSION_STAGE='${{ env.RELEASE_STAGE }}'".Replace("`r", "").Replace("`n", "") >> $env:GITHUB_ENV
 

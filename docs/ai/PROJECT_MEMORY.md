@@ -6,6 +6,11 @@ Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 ## 2026-11-12 — 4:3 menus: knobs and popups
 - Seen by the maintainer on Windows (Vulkan) but renderer-independent: four `uilib` widgets computed width/640 and height/480 themselves instead of `SetVirtualScale`, so the #583 uniform scale missed them (advanced options knobs stretched and cut). Grep for `vidWidth / 640` before adding a scaled widget.
 
+## 2026-11-12 — Vulkan renderer ships in the Linux and Windows builds
+- No release had it: every CI configured `USE_RENDERER_DLOPEN=OFF` (renderer linked into the client), and `renderer_vulkan` only exists as a loadable module; the Linux job installed `libvulkan-dev` for nothing. Linux and Windows now load renderers at run time; the Windows MSI lists `renderer_opengl1.dll`/`renderer_vulkan.dll` (without them the installed game has no renderer).
+- Windows checked on the maintainer's machine from WSL: a copy of the tree on a Windows drive (MSVC cannot build from the WSL share), VS 2019 Build Tools x64 generator, CMake 4.4, win_flex_bison 2.5.25, Linux's Vulkan headers; run with SDL's `dummy` video driver (the bundled `SDL2.dll` has no `offscreen`): the renderer falls back to offscreen on the RTX 5080, `dm/mohdm2` drawn right. GL1 cannot be compared that way (no GL context).
+- Headless parity rechecked on six maps (mohdm1, 4, 6, 7, obj_team1, 2): only swaying foliage differs; maps load 450-540 images, far from the 4096-allocation cap some drivers have.
+
 ## 2026-11-12 — fifth batch: #219 and #526 fixed, #538 and #243 not reproduced
 - #219: the issue's message on stock heads was not reproduced (AA `head1.skd` is valid), but its check had `||` for `&&`: a crafted morph offset crashed the server in `strlen`. The box message on `allied_pilot.skd`/`hedge_bomb.skd` is right: the shipped files end where 18 hit boxes should start.
 - #526: upstream already installs to `<prefix>/lib/openmohaa`; left were the `.desktop` entries that ran launchers not on PATH, and the vendored recastnavigation installing headers and static libs (`EXCLUDE_FROM_ALL` stops that without touching vendored code).
