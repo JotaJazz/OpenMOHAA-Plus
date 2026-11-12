@@ -469,8 +469,8 @@ void UILanGameList::Realign(void)
     if (m_bVirtual) {
         vec2_t vNewVirtualScale;
 
-        vNewVirtualScale[0] = uid.vidWidth / 640.0;
-        vNewVirtualScale[1] = uid.vidHeight / 480.0;
+        // Changed in OpenMOHAA Plus: the menus' own scale (ui_menuaspect, upstream #583), not width/640 and height/480
+        SetVirtualScale(vNewVirtualScale);
         bVirtualChanged     = VectorCompare2D(m_vVirtualScale, vNewVirtualScale) == 0;
     }
 

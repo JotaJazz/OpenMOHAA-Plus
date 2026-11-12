@@ -107,8 +107,8 @@ UIRect2D UIPulldownMenu::getAlignmentRect(UIWidget *parent)
 
     UIRect2D parentRect = parent->getClientFrame();
     if (m_bVirtual) {
-        m_vVirtualScale[0] = (float)uid.vidWidth / SCREEN_WIDTH;
-        m_vVirtualScale[1] = (float)uid.vidHeight / SCREEN_HEIGHT;
+        // Changed in OpenMOHAA Plus: the menus' own scale (ui_menuaspect, upstream #583), not width/640 and height/480
+        SetVirtualScale(m_vVirtualScale);
     }
 
     int maxheight = m_font->getHeight(m_bVirtual ? m_vVirtualScale : NULL);
