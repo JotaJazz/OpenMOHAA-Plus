@@ -90,6 +90,27 @@ void SV_SetConfigstring (int index, const char *val) {
 		return;
 	}
 
+	// Added in OPM
+	//  Clients drop with "MAX_GAMESTATE_CHARS exceeded" once all configstrings
+	//  don't fit in their gamestate buffer: refuse a game string that would
+	//  grow it past that (system strings always pass, clients need them)
+	if ( index >= RESERVED_CONFIGSTRINGS && strlen( val ) > strlen( sv.configstrings[ index ] ) ) {
+		size_t total = 1;	// the client's leading empty string
+
+		for ( i = 0; i < MAX_CONFIGSTRINGS; i++ ) {
+			const char *s = i == index ? val : sv.configstrings[ i ];
+			if ( s && s[0] ) {
+				total += strlen( s ) + 1;
+			}
+		}
+
+		if ( total > MAX_GAMESTATE_CHARS ) {
+			Com_Printf( S_COLOR_YELLOW "WARNING: SV_SetConfigstring: configstring %i not set, all configstrings would exceed MAX_GAMESTATE_CHARS (%i): %s\n",
+				index, MAX_GAMESTATE_CHARS, val );
+			return;
+		}
+	}
+
 	// change the string in sv
 	Z_Free( sv.configstrings[index] );
 	sv.configstrings[index] = CopyString( val );
