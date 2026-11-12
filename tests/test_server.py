@@ -478,6 +478,23 @@ class Bans(GameTestCase):
         self.assertNotIn(removed, listed)
         self.assertIn("Ban #1: " + kept, listed)
 
+    def test_rehashbans_reads_crlf_and_last_line_without_newline(self):
+        # a ban file edited by hand: CRLF line ends, no newline after the last ban
+        s = self.server("+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        s.wait_for(r"==== InitGame ====")
+        with open(self.home.file("serverbans.dat"), "wb") as f:
+            f.write(b"0 1.2.3.4 32:cheating\r\n0 5.6.7.8 32")
+        mark, raw_mark = len(s.log()), os.path.getsize(s.log_path)
+        s.send("rehashbans")
+        s.send("listbans")
+        s.wait_for(r"Ban #1: ", timeout=20, start=mark)
+        time.sleep(1)
+        self.assertEqual(s.quit(), 0)
+        with open(s.log_path, "rb") as f:
+            listed = f.read()[raw_mark:]
+        self.assertIn(b"Ban #1: 1.2.3.4/32 - Reason: cheating\n", listed)
+        self.assertIn(b"Ban #2: 5.6.7.8/32\n", listed)
+
 
 @require_game
 class ModuleLifecycle(GameTestCase):
