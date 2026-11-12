@@ -37,7 +37,7 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
   near 4096), pipelines created on first use (a hitch the first time a state appears). The window
   and swapchain path and `vid_restart` were tested only on NVIDIA (proprietary driver, X11, one
   session on `training`); on Windows one windowed session by the maintainer (MSVC x64, NVIDIA,
-  2026-11-12: played, menus and maps fine); AMD/Intel, Wayland and the Windows x86/ARM64 builds are not tested.
+  2026-11-12: menus, local maps, saving and loading, an online server, all fine); AMD/Intel, Wayland and the Windows x86/ARM64 builds are not tested.
   macOS builds without it (its CI keeps `USE_RENDERER_DLOPEN=OFF` and has no MoltenVK).
 - `renderer_opengl2` (`BUILD_RENDERER_GL2=ON`, off by default) loads and runs but is not usable for
   MOHAA. Seen on `training` (NVIDIA RTX 5080, Linux, headless and windowed, 2026-11-09): terrain is
