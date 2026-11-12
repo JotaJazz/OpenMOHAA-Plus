@@ -244,7 +244,7 @@ jobs:
         cp -l ${{github.workspace}}/thirdparties/SDL2/install/lib/libSDL2-2.0.so.0 '${{github.workspace}}/package/'
         cp -l ${{github.workspace}}/thirdparties/soft-oal/install/lib/libopenal.so.1 '${{github.workspace}}/package/'
         cp -l ${{github.workspace}}/thirdparties/curl/install/lib*/libcurl.so.4 '${{github.workspace}}/package/'
-        if [ -d ${{github.workspace}}/install/bin ]; then cp -r ${{github.workspace}}/install/bin/openmohaa/. '${{github.workspace}}/package'; fi
+        if [ -d ${{github.workspace}}/install/bin/openmohaa ]; then cp -r ${{github.workspace}}/install/bin/openmohaa/. '${{github.workspace}}/package'; fi
         if [ -d ${{github.workspace}}/install/lib ]; then cp -r ${{github.workspace}}/install/lib/openmohaa/. '${{github.workspace}}/package'; fi
 
     # Added in OpenMOHAA Plus: one-file package for any distro and the Steam Deck
