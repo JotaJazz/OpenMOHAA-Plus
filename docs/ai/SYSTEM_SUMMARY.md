@@ -9,7 +9,7 @@ Last updated: 2026-11-11. Live snapshot; update when the facts below change.
 | Fork | `OpenGamePlus/OpenMOHAA-Plus` (`origin`), upstream `openmoh/openmohaa` (`upstream`) |
 | Default branch | `main`; work branches are merged with `--no-ff` and deleted |
 | Upstream base | `a2f34019` (docs: clarify contribution guidelines) |
-| Fork-only files | `AGENTS.md`, `README.es.md`, `docs/dev/`, `docs/ai/`, `tests/`, `misc/docs-check/`, `misc/scr-tools/`, `misc/vscode-mohaa/`, `misc/mods/`, `misc/fonts/`, `misc/i18n/`, `misc/linux/`, `code/renderervk/`, `cmake/renderer_vulkan.cmake`, `code/fgame/g_antilag.*`, `docs/markdown/**/*plus-*.md`, `.github/workflows/docs-check.yml`, `.github/workflows/upstream-sync.yml` |
+| Fork-only files | `AGENTS.md`, `README.es.md`, `docs/banner.svg`, `docs/dev/`, `docs/ai/`, `tests/`, `misc/docs-check/`, `misc/scr-tools/`, `misc/vscode-mohaa/`, `misc/mods/`, `misc/fonts/`, `misc/i18n/`, `misc/linux/`, `code/renderervk/`, `cmake/renderer_vulkan.cmake`, `code/fgame/g_antilag.*`, `docs/markdown/**/*plus-*.md`, `.github/workflows/docs-check.yml`, `.github/workflows/upstream-sync.yml` |
 | Upstream files modified (merge conflict risk) | `LAYOUT.md` (pointer), `.gitignore`, `README.md`, `docs/markdown/04-coding/02-coding.md`, `.github/workflows/{branches-build,shared-build-linux,tags-publish-release}.yml`, the files touched by the fixes below |
 
 ## Build outputs

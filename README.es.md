@@ -1,5 +1,7 @@
 # OpenMOHAA Plus
 
+<p align="center"><img src="docs/banner.svg" alt="OpenMOHAA Plus" width="100%"></p>
+
 ![Estado: en desarrollo](https://img.shields.io/badge/estado-en%20desarrollo-orange)
 ![Licencia: GPL-2.0](https://img.shields.io/badge/licencia-GPL--2.0-blue)
 ![Plataformas: Linux | Windows | macOS](https://img.shields.io/badge/plataforma-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)
@@ -33,7 +35,7 @@ para Call of Duty 2 con su servidor a 40 Hz.
 </table>
 <p align="center"><sub>Capturas de OpenMoHAA; el motor y el código del juego son los mismos.</sub></p>
 
-## Qué ofrece OpenMOHAA Plus
+## Qué funciona hoy
 
 Todo lo que hace [OpenMoHAA](https://github.com/openmoh/openmohaa): la campaña completa de un
 jugador de los tres juegos, todos los modos multijugador oficiales (Free-For-All, Team Deathmatch,
@@ -106,24 +108,6 @@ administrador las activa. La lista completa, con los riesgos de cada
 cambio, está en [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md) y
 [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
 
-## Estado (noviembre de 2026)
-
-El trabajo sigue un [plan por fases](docs/dev/roadmap/ideas.md#prioritized-plan):
-
-| Fase | Estado |
-|---|---|
-| 0. Bases (versiones, tests, reportes de crash) | terminada |
-| 1. Calidad (sanitizers, fuzzing, profiling, sincronización con el original) | terminada |
-| 2. Plataforma de scripts (eventos de gametype, HTTP/JSON, herramientas) | terminada |
-| 3. Competitivo y online | casi terminada: faltan bots que jueguen objetivos (#602) y validar impactos imposibles |
-| 4. Experiencia del jugador | casi terminada: faltan demos de partidas, un Flatpak y cargar partidas guardadas del juego original (#601) |
-| 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | empezada: un primer renderer Vulkan |
-
-En paralelo se siguen corrigiendo bugs del proyecto original, elegidos según lo que se pueda
-reproducir y verificar (el próximo: la misma corrección para el módulo del cliente en musl que
-recibió el servidor en #918). Probado en Linux con los datos originales de Allied Assault; Windows
-y macOS se compilan en CI pero se prueban menos, y Spearhead y Breakthrough no se prueban aquí.
-
 > [!NOTE]
 > **Todavía en desarrollo.** Espera bugs y piezas faltantes. Los cambios de comportamiento respecto
 > del original están en [docs/dev/roadmap/debt.md](docs/dev/roadmap/debt.md).
@@ -154,6 +138,37 @@ instalador original, también dentro del prefijo de Wine por defecto):
 ./omohaaded +set fs_basepath /ruta/a/MOHAA +map dm/mohdm1     # servidor dedicado
 ```
 
+## Versiones del juego
+
+| Juego | Carpeta de datos | Cómo iniciarlo |
+|---|---|---|
+| Allied Assault | `main` | `openmohaa`, o `+set com_target_game 0` (por defecto) |
+| Spearhead | `mainta` | `launch_openmohaa_spearhead`, o `+set com_target_game 1` |
+| Breakthrough | `maintt` | `launch_openmohaa_breakthrough`, o `+set com_target_game 2` |
+
+El protocolo de red sigue al juego, así que cada uno juega en sus propios servidores originales.
+Aquí solo se prueba Allied Assault; Spearhead y Breakthrough se compilan pero no se prueban
+([ejecutar las expansiones](docs/markdown/02-running/01-running.md)).
+
+## Hoja de ruta
+
+El trabajo sigue un [plan por fases](docs/dev/roadmap/ideas.md#prioritized-plan), con su avance al
+día en [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md#open-work) (noviembre de 2026):
+
+| Fase | Estado |
+|---|---|
+| 0. Bases (versiones, tests, reportes de crash) | terminada |
+| 1. Calidad (sanitizers, fuzzing, profiling, sincronización con el original) | terminada |
+| 2. Plataforma de scripts (eventos de gametype, HTTP/JSON, herramientas) | terminada |
+| 3. Competitivo y online | casi terminada: faltan bots que jueguen objetivos (#602) y validar impactos imposibles |
+| 4. Experiencia del jugador | casi terminada: faltan demos de partidas, un Flatpak y cargar partidas guardadas del juego original (#601) |
+| 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | empezada: un primer renderer Vulkan |
+
+En paralelo se siguen corrigiendo bugs del proyecto original, elegidos según lo que se pueda
+reproducir y verificar (el próximo: la misma corrección para el módulo del cliente en musl que
+recibió el servidor en #918). Probado en Linux con los datos originales de Allied Assault; Windows
+y macOS se compilan en CI pero se prueban menos, y Spearhead y Breakthrough no se prueban aquí.
+
 ## Para contribuir
 
 Jugar y reportar bugs, probar en otros sistemas, o código: toda ayuda cuenta. No envíes los cambios
@@ -172,29 +187,72 @@ cmake --build .cmake
 cmake --install .cmake        # -> $HOME/omohaa/lib/openmohaa: openmohaa, omohaaded, game.so, cgame.so...
 ```
 
+<details>
+<summary><b>Opciones de compilación</b></summary>
+
+| Opción | Por defecto | Efecto |
+|---|---|---|
+| `BUILD_RENDERER_VULKAN` | `ON` | `renderer_vulkan`, si se encuentran los headers de Vulkan y `USE_RENDERER_DLOPEN` está activo ([notas](docs/dev/architecture/renderer-vulkan.md)) |
+| `BUILD_RENDERER_GL2` | `OFF` | `renderer_opengl2`, todavía no usable para MOHAA |
+| `USE_RENDERER_DLOPEN` | `ON` | renderers como módulos cargables en vez de enlazados |
+| `BUILD_TESTING` | `ON` | tests unitarios de CTest (`test_lz77`) |
+
 Más detalles en [docs/dev/development/compiling.md](docs/dev/development/compiling.md).
+
+</details>
 
 ## Tests
 
-```sh
-python3 -I -m unittest discover -s misc/docs-check     # tests del checker de documentación
-python3 -I misc/docs-check/check_docs.py               # checker de documentación
-OMOH_GAME_DIR=/ruta/a/MOHAA python3 -I -m unittest discover -s tests   # tests del juego, sin ventanas
-```
+<details>
+<summary><b>Los tests y los checkers</b></summary>
 
 Los bugs se verifican con los binarios reales sin abrir ventanas ni reproducir sonido: cliente
-offscreen, audio nulo, comandos de consola por script, bots, capturas de pantalla y audio renderizado
-a un archivo. Las recetas están en
-[docs/dev/development/testing.md](docs/dev/development/testing.md).
+offscreen, audio nulo, comandos de consola por script, bots, capturas de pantalla y audio
+renderizado a un archivo.
+
+```sh
+ctest --test-dir .cmake                                # tests unitarios
+OMOH_GAME_DIR=/ruta/a/MOHAA python3 -I -m unittest discover -s tests          # tests del juego, sin ventanas
+OMOH_GAME_DIR=/ruta/a/MOHAA OMOH_SLOW=1 python3 -I -m unittest discover -s tests   # con los lentos
+python3 -I misc/scr-tools/test_scr_tools.py           # checker de scripts
+python3 -I -m unittest discover -s misc/fonts          # generador de fuentes
+python3 -I -m unittest discover -s misc/i18n           # herramienta de localización
+python3 -I -m unittest discover -s misc/docs-check     # tests del checker de documentación
+python3 -I misc/docs-check/check_docs.py               # checker de documentación
+```
+
+- `tests/test_server.py` y `tests/test_client.py` reproducen cada bug corregido y cada función de
+  Plus en un servidor dedicado y un cliente sin ventana; cada test se comprobó que falla antes de
+  su corrección. Necesitan los datos de Allied Assault y se saltan sin ellos; la lista está en
+  [tests/README.md](tests/README.md).
+- Las recetas para nuevas comprobaciones están en
+  [docs/dev/development/testing.md](docs/dev/development/testing.md).
+
+</details>
 
 ## Estructura del repositorio
 
-El árbol de código, los binarios que se generan y cómo encajan el motor, los módulos del juego y el
-renderer: [docs/dev/architecture/overview.md](docs/dev/architecture/overview.md).
+<details>
+<summary><b>Qué hay en cada sitio</b></summary>
+
+| Ruta | Contenido |
+|---|---|
+| `code` | El motor (`qcommon`, `server`, `client`, `sys`, `sdl`), los módulos del juego (`fgame`, `cgame`), la VM de scripts (`script`, `parser`, `corepp`), los renderers (`renderergl1`, `renderervk`...), `uilib` y las librerías incluidas `thirdparty` y `gamespy` |
+| `cmake` | Definiciones de compilación de cada binario |
+| `tests` | Tests de regresión del juego sin ventanas (Python, stdlib) |
+| `misc/mods` | Mods de script de referencia: `plus-match` (competición) y `plus-stats` (estadísticas por HTTP) |
+| `misc/scr-tools`, `misc/vscode-mohaa` | Checker de scripts y extensión de VS Code |
+| `misc/fonts`, `misc/i18n` | Generador de fuentes con tildes y herramienta de localización |
+| `misc/linux`, `misc/macos`, `misc/windows` | Empaquetado: el AppImage de Linux, la imagen de disco de macOS, iconos |
+| `misc/docs-check` | El checker de documentación |
+| `docs/markdown` | Documentación de usuario (la de OpenMoHAA, más las páginas `*plus-*.md` de este fork) |
+| `docs/dev`, `docs/ai` | Documentación técnica: [arquitectura](docs/dev/architecture/overview.md), decisiones, deuda y la capa de memoria para agentes de IA |
+
+</details>
 
 ## Transparencia
 
-- **Quién lo mantiene:** soy JotaJazz. Me gustan los juegos antiguos y quiero seguir jugándolos con
+- **Quién lo mantiene:** OpenGamePlus. Me gustan los juegos antiguos y quiero seguir jugándolos con
   mis amigos y mantenerlos vivos para la comunidad, con proyectos abiertos. Este está junto a
   [OpenCoD2-Plus](https://github.com/OpenGamePlus/OpenCoD2-Plus).
 - **Cómo se trabaja:** trabajo con [Claude Code](https://claude.com/claude-code), el asistente de
@@ -215,9 +273,15 @@ OpenMOHAA Plus es un proyecto independiente. No está afiliado, autorizado, patr
 por Electronic Arts Inc. ni ninguna de sus filiales. "Medal of Honor" es una marca de Electronic Arts
 Inc., usada aquí solo para identificar el juego con el que el código es compatible.
 
-Este proyecto no proporciona ni ayuda a obtener datos del juego protegidos por derechos de autor. Las
-capturas muestran contenido de Medal of Honor: Allied Assault, propiedad de Electronic Arts Inc.,
-solo con fines de identificación.
+Este proyecto no proporciona ni ayuda a obtener datos del juego protegidos por derechos de autor.
+Para usarlo con contenido real del juego, debes aportar los archivos de una copia de Medal of Honor:
+Allied Assault que tengas legalmente.
+
+Si tienes derechos sobre algo de lo que hay aquí y crees que no debería distribuirse, abre un issue
+o contacta con el mantenedor y se atenderá con prontitud.
+
+Las capturas muestran contenido de Medal of Honor: Allied Assault, propiedad de Electronic Arts
+Inc., solo con fines de identificación.
 
 ## Licencia
 

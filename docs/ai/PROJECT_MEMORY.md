@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-11 — README follows the sibling projects; repo moved to OpenGamePlus
+- README (en, es) takes the OpenCoD2-Plus / OpenBF1942-Plus layout: banner, "What works today", callouts, Game versions, Roadmap, collapsible Building / Testing / "What is where"; maintainer is OpenGamePlus, as in OpenBF1942-Plus.
+- The repo move had broken the update checker (old API URL answers 301, curl does not follow) and silently disabled the upstream-sync workflow (`github.repository` guard).
+- Not done: four more README languages (siblings have six), own screenshots (still OpenMoHAA's v0.60.0 ones); the update checker still finds nothing until a stable (non-pre-release) release exists.
+
 ## 2026-11-11 — docs audit: drift fixed
 - Checker passed but facts had drifted (fork owner now `OpenGamePlus`, lag compensation missing from the summary, incomplete fork-file list, "next" already done, `test_lz77` claimed unwired while CTest runs it in CI): checks against git and code catch what path/link checks cannot.
 - Phase progress moved from `ideas.md` to `SYSTEM_SUMMARY.md` (live state in one place); `ideas.md` stays the backlog.

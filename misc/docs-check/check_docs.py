@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Check the OpenMOHAA Plus technical docs (AGENTS.md, LAYOUT.md, docs/dev, docs/ai).
+"""Check the OpenMOHAA Plus technical docs (AGENTS.md, LAYOUT.md, README.md, README.es.md,
+docs/dev, docs/ai).
 
 Flags broken relative links, repository paths in backticks that git would not commit
 (tracked or untracked-but-not-ignored; plain filesystem check outside a git repo),
@@ -18,7 +19,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 
-CHECKED_FILES = ["AGENTS.md", "LAYOUT.md", "tests/README.md"]
+CHECKED_FILES = ["AGENTS.md", "LAYOUT.md", "README.md", "README.es.md", "tests/README.md"]
 CHECKED_DIRS = ["docs/dev", "docs/ai"]
 EXCLUDED_DIRS = {"plans"}
 EXCLUDED_SUFFIX = ".local.md"
