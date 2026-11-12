@@ -613,10 +613,15 @@ static void SV_RehashBans_f(void)
 			return;
 		}
 
-		curpos = textbuf = Z_Malloc(filelen);
+		// Fixed in OPM
+		//  One more byte to end the last line when the file has no final newline
+		curpos = textbuf = Z_Malloc(filelen + 1);
 		
 		filelen = FS_Read(textbuf, filelen, readfrom);
 		FS_FCloseFile(readfrom);
+		
+		if(filelen > 0 && textbuf[filelen - 1] != '\n')
+			textbuf[filelen++] = '\n';
 		
 		endpos = textbuf + filelen;
 		
@@ -639,7 +644,9 @@ static void SV_RehashBans_f(void)
 			maskpos++;
 			
 			// find the end of the subnet specifier
-			for(newlinepos = maskpos; newlinepos < endpos && *newlinepos != '\n' && *newlinepos != ':'; newlinepos++);
+			// Fixed in OPM
+			//  A CR also ends the line (files edited on Windows)
+			for(newlinepos = maskpos; newlinepos < endpos && *newlinepos != '\n' && *newlinepos != '\r' && *newlinepos != ':'; newlinepos++);
 			
 			if(newlinepos >= endpos)
 				break;
@@ -650,7 +657,7 @@ static void SV_RehashBans_f(void)
 				reasonpos = newlinepos + 1;
 				
 				// Find the end of the reason string
-				for(newlinepos = reasonpos; newlinepos < endpos && *newlinepos != '\n'; newlinepos++);
+				for(newlinepos = reasonpos; newlinepos < endpos && *newlinepos != '\n' && *newlinepos != '\r'; newlinepos++);
 				
 				if(newlinepos >= endpos)
 					break;

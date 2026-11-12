@@ -11,7 +11,6 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 | `waitForState` now waits | Mods that relied on it returning immediately now block | #702 |
 | Resident cgame module | Tested with an emulated musl (`dlclose()` no-op) over three map loads and the autosave; other cgame globals (scoreboard, `cg` state) still survive and were not audited one by one | #918 |
 | `sv_pure` stale references | Fix covers stale pak references from the menu; the issue's literal symptom (hang) was never reproduced | #659 |
-| `rehashbans` | Last line without trailing newline is still dropped; CRLF leaves `\r` in ban reasons | #926 |
 
 ## Known gaps (not fixed)
 
