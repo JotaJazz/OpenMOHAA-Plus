@@ -1,3 +1,24 @@
+/*
+===========================================================================
+Copyright (C) 2026 the OpenMOHAA Plus contributors
+
+This file is part of OpenMOHAA Plus source code.
+
+OpenMOHAA Plus source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License
+as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+OpenMOHAA Plus source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OpenMOHAA Plus source code.  If not, see <https://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
 // Used by tests/test_client.py (ServerBrowser): LD_PRELOAD fault injection, Linux only.
 // Fault injection for tests: looking up a host name takes 5 s and fails, like an unreachable DNS
 // server. Numeric addresses still go to the real resolver (they never need DNS).

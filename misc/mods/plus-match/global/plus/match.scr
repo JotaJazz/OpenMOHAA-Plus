@@ -1,3 +1,5 @@
+// Copyright (C) 2026 the OpenMOHAA Plus contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // OpenMOHAA Plus reference mod: competition match rules (zPAM-like), scripts only.
 //
 // Install: put this folder (or a pk3 of it) in main/, then `exec plus-match.cfg` (example settings)

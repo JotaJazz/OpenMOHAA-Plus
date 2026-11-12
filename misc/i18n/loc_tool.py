@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Translation helper for OpenMOHAA Plus (cl_language).
 
 The game's texts are read from your own copy of the game; this repository ships no game text.

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Black-box UDP fuzzer for omohaaded: malformed connectionless and sequenced packets.
 
 Usage: python3 tests/netfuzz.py <port> <seconds> [seed]

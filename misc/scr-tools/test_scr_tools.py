@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Tests for scr_check.py and gen_editor_data.py. Run: python3 -m unittest discover -s misc/scr-tools"""
 
 import os

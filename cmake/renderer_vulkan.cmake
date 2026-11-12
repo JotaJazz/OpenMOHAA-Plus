@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # Added in OpenMOHAA Plus: renderer_vulkan, the GL1 renderer on a Vulkan emulation of the GL 1.x
 # calls it makes (code/renderervk, docs/dev/architecture/renderer-vulkan.md). Built when the
 # Vulkan headers are found (Debian/Ubuntu: libvulkan-dev); the Vulkan loader is loaded at run time.

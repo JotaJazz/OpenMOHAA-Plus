@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Helpers to run OpenMOHAA Plus binaries headless in tests.
 
 Never opens a window or plays sound: the client always runs with the SDL offscreen video driver

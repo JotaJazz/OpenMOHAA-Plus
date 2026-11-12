@@ -36,6 +36,10 @@ Git and commits: [fork-workflow.md](../dev/development/fork-workflow.md).
 | New player/server-facing cvar, command or script event | Its `docs/markdown/**/NN-plus-*.md` page, `README.md` and `README.es.md` lists |
 
 ## Recipes
+- New file written for the fork: C/C++ gets the AGPL-3.0-or-later block from
+  `code/server/sv_admin.cpp`; other sources a `Copyright (C) <year> the OpenMOHAA Plus
+  contributors` line and `SPDX-License-Identifier: AGPL-3.0-or-later`. Upstream files keep their
+  GPL header (ADR 0006).
 - Script-visible property: add an `EV_GETTER` `Event` with the same name + handler, bind it in the
   class `ResponseDef` (pattern: `max_health`, `code/fgame/entity.cpp`).
 - Test game logic: map-script override in `<HOME_DIR>/main/maps/`, `developer 1`, bots for players.

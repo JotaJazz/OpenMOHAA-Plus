@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for make_fonts.py (need Pillow and the DejaVu fonts; skipped otherwise)."""
 import os
 import re

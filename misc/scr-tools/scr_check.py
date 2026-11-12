@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Check MOHAA .scr scripts with the real script compiler, without starting the game window.
 
 Starts a headless omohaaded with a temporary home, runs `compilescript` on every file and prints

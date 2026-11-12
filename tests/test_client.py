@@ -1,3 +1,5 @@
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Headless client regression tests (need game data: OMOH_GAME_DIR).
 
 The client runs with SDL's offscreen video driver and OpenAL's null backend: no window, no sound.

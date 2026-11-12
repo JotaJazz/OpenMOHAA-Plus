@@ -4,7 +4,7 @@
   "description": "Syntax highlighting, completion and hover docs for Medal of Honor: Allied Assault .scr scripts",
   "version": "0.1.0",
   "publisher": "openmohaa-plus",
-  "license": "GPL-2.0",
+  "license": "AGPL-3.0-or-later",
   "engines": { "vscode": "^1.75.0" },
   "categories": ["Programming Languages"],
   "main": "./extension.js",

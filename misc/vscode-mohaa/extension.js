@@ -1,3 +1,5 @@
+// Copyright (C) 2026 the OpenMOHAA Plus contributors
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // OpenMOHAA Plus: completion and hover docs for MOHAA .scr scripts.
 // data/commands.json is generated from the engine by misc/scr-tools/gen_editor_data.py.
 const vscode = require('vscode');

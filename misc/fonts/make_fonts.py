@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 the OpenMOHAA Plus contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Build MOHAA bitmap fonts (fonts/<name>.RitualFont + gfx/fonts/<name>.tga) from TrueType fonts.
 
 The game's fonts only hold printable ASCII at 1x. These keep each font's name, height and layout
