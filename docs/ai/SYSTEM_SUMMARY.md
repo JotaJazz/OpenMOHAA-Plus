@@ -1,16 +1,16 @@
 # System summary
 
-Last updated: 2026-11-09. Live snapshot; update when the facts below change.
+Last updated: 2026-11-11. Live snapshot; update when the facts below change.
 
 ## Repository
 
 | Item | State |
 |---|---|
-| Fork | `JotaJazz/OpenMOHAA-Plus` (`origin`), upstream `openmoh/openmohaa` (`upstream`) |
+| Fork | `OpenGamePlus/OpenMOHAA-Plus` (`origin`), upstream `openmoh/openmohaa` (`upstream`) |
 | Default branch | `main`; work branches are merged with `--no-ff` and deleted |
 | Upstream base | `a2f34019` (docs: clarify contribution guidelines) |
-| Fork-only files | `AGENTS.md`, `README.es.md`, `docs/dev/`, `docs/ai/`, `tests/`, `misc/docs-check/`, `misc/scr-tools/`, `misc/vscode-mohaa/`, `misc/mods/`, `.github/workflows/docs-check.yml`, `.github/workflows/upstream-sync.yml` |
-| Upstream files modified (merge conflict risk) | `LAYOUT.md` (pointer), `.gitignore`, `README.md`, the files touched by the fixes below |
+| Fork-only files | `AGENTS.md`, `README.es.md`, `docs/dev/`, `docs/ai/`, `tests/`, `misc/docs-check/`, `misc/scr-tools/`, `misc/vscode-mohaa/`, `misc/mods/`, `misc/fonts/`, `misc/i18n/`, `misc/linux/`, `code/renderervk/`, `cmake/renderer_vulkan.cmake`, `code/fgame/g_antilag.*`, `docs/markdown/**/*plus-*.md`, `.github/workflows/docs-check.yml`, `.github/workflows/upstream-sync.yml` |
+| Upstream files modified (merge conflict risk) | `LAYOUT.md` (pointer), `.gitignore`, `README.md`, `docs/markdown/04-coding/02-coding.md`, `.github/workflows/{branches-build,shared-build-linux,tags-publish-release}.yml`, the files touched by the fixes below |
 
 ## Build outputs
 
@@ -55,6 +55,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Localization | `cl_language` overlay (`lang/<code>/`), UTF-8 to Latin-1, `localize` command, labels localized, missing Latin-1 glyphs drawn as base letters (`code/renderercommon/tr_fontfold.h`), sorted localization files | (phase 4) |
 | Packaging | Linux AppImage (x86_64, aarch64) built in CI, `misc/linux/AppRun` picks the game folder | #890 |
 | Competition mod | `misc/mods/plus-match` (scripts only): rounds, halftime side swap, draw, team timeouts | (phase 3) |
+| Netcode | Lag compensation for bullets (`g_antilag`, `g_antilag_maxms`, `code/fgame/g_antilag.cpp`): other players rewound to the shooter's `usercmd.serverTime` | (phase 3) |
 | Bots | `g_bot_skill` levels (scale reaction, spread, turn speed), `g_bot_weapons`, grenade throws (`g_bot_grenades`) | #684, #833 |
 | Match control | Match pause (`DM_Manager::SetPaused`, `matchpause`, `match_pause`, `ad_pause`), hit sounds (`g_hitsounds`), hit markers (`g_hitmarkers`, `cg_hitmarker`) | (phase 3) |
 | HUD | `ui_hudscale` multiplier; `ui_menuaspect` (4:3 menus with side bars); `cg_crosshair_size`/`cg_crosshair_scale`; UI screen width from the real scale | #585, #911 |
@@ -75,6 +76,16 @@ Details: [overview.md](../dev/architecture/overview.md).
 
 ## Open work
 
-See [debt.md](../dev/roadmap/debt.md) and the feature backlog [ideas.md](../dev/roadmap/ideas.md)
-(prioritized plan and progress at its top). Next: competition reference mod;
-upstream bug fixing continues in parallel.
+Phase progress of the [prioritized plan](../dev/roadmap/ideas.md#prioritized-plan):
+
+| Phase | Done | Open |
+|---|---|---|
+| 0 | all | - |
+| 1 | all (flood protection already existed) | - |
+| 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
+| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds, hit markers, bot skill, weapons and grenades, lag compensation; ready-up, player info, anti-wallhack, votes and the HUD round timer already existed | bot objectives (#602), hit validation |
+| 4 | HTTP mod download, Spanish README, server browser, install detection, widescreen + sharp text, AppImage, in-game translations | Flatpak, demos, #601 saves (needs an original save file) |
+| 5 | Vulkan renderer, first stage | rest of Vulkan, campaign co-op, WebAssembly, single binary, community portal, gametype API level 3 |
+
+Next: the open items above; upstream bug fixing continues in parallel. Risks and gaps:
+[debt.md](../dev/roadmap/debt.md).

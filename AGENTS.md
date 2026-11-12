@@ -16,7 +16,8 @@ OpenMOHAA Plus: fork of OpenMoHAA (Medal of Honor: Allied Assault engine and gam
 - Keep original-game behaviour unless clearly a bug; mark deviations with the `... in OPM` markers
   defined in `CONTRIBUTING.md`.
 - Do not edit upstream user docs (`docs/markdown`, `docs/README.md`), vendored code or generated
-  parser sources.
+  parser sources. Fork user docs are new `NN-plus-*.md` pages in `docs/markdown`, linked from
+  the upstream index page with as small an edit as possible.
 - Never commit game data (pk3), personal paths or credentials.
 - Docs, comments and commit messages in English.
 

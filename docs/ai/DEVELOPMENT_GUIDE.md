@@ -33,6 +33,7 @@ Git and commits: [fork-workflow.md](../dev/development/fork-workflow.md).
 | New test technique or tool | `docs/dev/development/testing.md` |
 | Upstream merge | `SYSTEM_SUMMARY.md` (upstream base), conflicts noted in `PROJECT_MEMORY.md` |
 | New term used across docs | `docs/dev/glossary.md` |
+| New player/server-facing cvar, command or script event | Its `docs/markdown/**/NN-plus-*.md` page, `README.md` and `README.es.md` lists |
 
 ## Recipes
 - Script-visible property: add an `EV_GETTER` `Event` with the same name + handler, bind it in the

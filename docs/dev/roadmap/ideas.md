@@ -36,33 +36,19 @@ large bets last. Upstream bug fixing continues in parallel through every phase.
 | 4. Player experience and reach | Automatic mod download · Reliable server browser · Game install detection · Widescreen + Sharp text · Linux packaging · Translations + Translated README · Match demos · Saves from the original game (#601) | Broadens the audience once the online core is solid; README translations can be pulled earlier when the README stabilizes |
 | 5. Big bets | Campaign co-op · WebAssembly build · Vulkan renderer · Single binary · Master server and community portal · Gametype API level 3 | High cost or dependent on everything above |
 
-### Progress (2026-11-09)
-
-Every branch named in a "Status" line below was merged into `main` on 2026-11-09.
-
-| Phase | Done | Open |
-|---|---|---|
-| 0 | all | - |
-| 1 | all (flood protection already existed) | - |
-| 2 | gametype API levels 1 and 2 (`team_swap`, match pause), libmoh MVP, script toolkit | - |
-| 3 | `sv_fps 40` (20 Hz fire rate kept), `sv_scripts`, plus-stats and plus-match reference mods, server administration (#905), match pause, hit sounds, hit markers, bot skill, weapons and grenades, lag compensation; ready-up, player info, anti-wallhack, votes and the HUD round timer already existed | bot objectives (#602), hit validation |
-| 4 | HTTP mod download, Spanish README, server browser, install detection, widescreen + sharp text, AppImage, in-game translations | Flatpak, demos, #601 saves (needs an original save file) |
-| 5 | - | all |
-
-Next: the competition reference mod.
+Progress per phase is live state: [SYSTEM_SUMMARY.md](../../ai/SYSTEM_SUMMARY.md#open-work). Every branch
+named in a "Status" line below is merged into `main`.
 
 ## Automated test suite
 
-No project test runs in CI today (`test_lz77` exists but is not wired in; see
-[debt.md](debt.md)). Every fix so far was verified with hand-written headless commands
-([testing.md](../development/testing.md)).
+CI runs only `test_lz77` (CTest, `unit-testing.yml`) and the docs checker; the game tests in
+`tests/` need game data and run locally ([testing.md](../development/testing.md)).
 
 - **Shape:** turn those recipes into reusable Python scripts (stdlib), like OpenCoD2-Plus's:
   server smoke with bots and map rotation, save/load with screenshot check, `registercmd`, bans
   (`rehashbans`), `sv_pure`, audio rendered through the OpenAL wave backend, client `vid_restart`.
 - **Data:** tests needing game data take a `<GAME_DIR>` argument and run locally; CI runs what
   needs no data (unit tests, docs checker) and, if feasible, tests on generated minimal assets.
-- **Also:** wire `test_lz77` into CTest.
 - **Why first:** every later fix gets regression protection and an agent can verify its own work.
 
 ## Robustness: fuzzing and sanitizers
