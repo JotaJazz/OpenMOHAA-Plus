@@ -42,6 +42,7 @@ static void* clipboard_text = NULL;
 static void* game_library = NULL;
 static void* game_api = NULL;
 static void* cgame_library = NULL;
+static void* cgame_api = NULL;
 qboolean	GLimp_SpawnRenderThread(void (*function)(void))
 {
     return qfalse;
@@ -293,15 +294,31 @@ void* Sys_GetGameAPI(void* parms)
 Sys_UnloadCGame
 =================
 */
-void Sys_UnloadCGame(void)
+qboolean Sys_UnloadCGame(void)
 {
+    // qtrue only if a loaded module is really gone: shutdown runs several times in a row,
+    // and a later call must not free the memory of a module that stayed resident
+    qboolean unloaded = qfalse;
+
     Com_Printf("------ Unloading ClientGame ------\n");
 
     if (cgame_library) {
         Sys_UnloadLibrary(cgame_library);
+        unloaded = qtrue;
+#ifndef _WIN32
+        {
+            Dl_info info;
+
+            // Same as Sys_UnloadGame: the library may stay resident (musl)
+            unloaded = !cgame_api || !dladdr(cgame_api, &info);
+        }
+#endif
     }
 
     cgame_library = NULL;
+    cgame_api     = NULL;
+
+    return unloaded;
 }
 
 /*
@@ -327,6 +344,7 @@ void* Sys_GetCGameAPI(void* parms)
 
     Com_Printf("Sys_GetCGameAPI(%s): succeeded ...\n", gamename);
     GetCGameAPI = (void* (*)(void*))Sys_LoadFunction(cgame_library, "GetCGameAPI");
+    cgame_api   = (void*)GetCGameAPI;
 
     if (!GetCGameAPI)
     {

@@ -786,6 +786,9 @@ Called before every level change or subsystem restart
 */
 void CG_Shutdown(void)
 {
+    // Added in OPM
+    //  The module may stay resident after unload (musl)
+    CG_ShutdownCommandManager();
     L_ShutdownEvents();
     // Shutdown radar
     cgi.CL_InitRadar(NULL, NULL, -1);

@@ -1364,7 +1364,7 @@ qboolean	Sys_UnloadGame( void );
 long long	Sys_Microseconds( void ); // Added in OpenMOHAA Plus
 void	*Sys_GetGameAPI( void *parms );
 
-void	Sys_UnloadCGame( void );
+qboolean	Sys_UnloadCGame( void );
 void	*Sys_GetCGameAPI( void *parms );
 
 void	Sys_UnloadUI( void );

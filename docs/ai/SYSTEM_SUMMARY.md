@@ -29,7 +29,7 @@ Details: [overview.md](../dev/architecture/overview.md).
 | Frame loop (`qcommon`) | `com_maxfps` remainder carried across frames | #530 |
 | Server / savegames | svs time fixups add instead of overwrite (stopwatch after load) | #916 |
 | Server bans | `rehashbans` skips blank lines and stale slots | #926 |
-| Server / modules | `TAG_GAME` freed only if `game.so` really unloaded; event tables kept | #918 |
+| Server / modules | `TAG_GAME` freed only if `game.so` really unloaded; event tables kept; same for `cgame.so` (`TAG_CGAME`), whose emitters are dropped at shutdown | #918 |
 | Filesystem / pure | Paks rejected by a pure server not reported as referenced | #659 |
 | Script VM | Director time synced in `G_SetTime` (no burst after same-map restart) | #287 |
 | Script commands | `registercmd` dispatched; item `amount`/`dmamount`... readable; `waitForState` waits | #672, #920, #702 |

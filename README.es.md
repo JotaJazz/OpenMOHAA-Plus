@@ -93,7 +93,7 @@ Cada una reproducida antes y después en el juego real:
 - el cronómetro del HUD sigue visible al cargar una partida (#916)
 - los scripts de mapa ya no ejecutan de golpe sus esperas tras reiniciar el mismo mapa, lo que
   desconectaba a todos en servidores de un solo mapa (#287)
-- sin crash al cambiar de mapa cuando el módulo del juego queda cargado, como en Alpine/musl (#918)
+- sin crash al cambiar de mapa cuando el módulo del juego o del cliente queda cargado, como en Alpine/musl (#918)
 - `sv_pure 1` ya no rechaza a clientes que leyeron un pk3 extra en el menú (#659)
 - `rehashbans` ya no conserva bans borrados (#926)
 - scripts: los comandos de `registercmd` se ejecutan (#672), `amount`/`dmamount` de los ítems se
@@ -165,8 +165,7 @@ día en [docs/ai/SYSTEM_SUMMARY.md](docs/ai/SYSTEM_SUMMARY.md#open-work) (noviem
 | 5. Grandes apuestas (co-op de campaña, WebAssembly, Vulkan, portal de la comunidad) | empezada: un primer renderer Vulkan |
 
 En paralelo se siguen corrigiendo bugs del proyecto original, elegidos según lo que se pueda
-reproducir y verificar (el próximo: la misma corrección para el módulo del cliente en musl que
-recibió el servidor en #918). Probado en Linux con los datos originales de Allied Assault; Windows
+reproducir y verificar. Probado en Linux con los datos originales de Allied Assault; Windows
 y macOS se compilan en CI pero se prueban menos, y Spearhead y Breakthrough no se prueban aquí.
 
 ## Para contribuir

@@ -553,13 +553,17 @@ void CL_ShutdownCGame( void ) {
 		cge = NULL;
 	}
 
-	Sys_UnloadCGame();
+	const qboolean unloaded = Sys_UnloadCGame();
 
 	if( re.FreeModels ) {
 		re.FreeModels();
 	}
 
-	Z_FreeTags( TAG_CGAME );
+	// Free all memory allocated by the cgame module,
+	// unless the module stayed resident and still owns it
+	if( unloaded ) {
+		Z_FreeTags( TAG_CGAME );
+	}
 }
 
 static int	FloatAsInt( float f ) {

@@ -66,7 +66,6 @@ Public interface headers:
 | `uilib` includes `client` headers | `code/uilib` | UI library runs inside the client, not as a module |
 | `tiki` includes `client`/`server` headers | `code/tiki` | Shared by engine and modules; compiled per target |
 | `CGAME_HOOK` include of a removed directory | `code/fgame/glb_local.h`, `code/fgame/worldspawn.h` | Dead code behind an undefined macro |
-| Engine frees `TAG_CGAME` unconditionally after unloading cgame | `CL_ShutdownCGame` in `code/client/cl_cgame.cpp` | Violates rule 4 on musl; open in [debt.md](../roadmap/debt.md) |
 
 ## Forbidden
 

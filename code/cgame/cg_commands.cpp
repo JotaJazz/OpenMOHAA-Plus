@@ -3208,6 +3208,25 @@ void CG_DeleteEmitters(dtiki_t *tiki)
     commandManager.DeleteEmitters(tiki);
 }
 
+// Added in OPM
+void ClientGameCommandManager::DeleteAllEmitters()
+{
+    int i;
+
+    for (i = m_emitters.NumObjects(); i > 0; i--) {
+        FreeSpawnthing(m_emitters.ObjectAt(i));
+    }
+}
+
+// Added in OPM
+//  The module may stay resident after unload (musl), so drop what refers to the
+//  level's models: the next CG_Init would otherwise find it dangling
+void CG_ShutdownCommandManager()
+{
+    CG_RestartCommandManager();
+    commandManager.DeleteAllEmitters();
+}
+
 //==================
 // CreateNewEmitter
 //==================
