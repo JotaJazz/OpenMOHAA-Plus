@@ -418,12 +418,12 @@ decide whether to enable it by default. Not verified at run time.
 
 ## Fork identity: versions and updates
 
-- **Fact:** the update checker queries `api.github.com/repos/openmoh/openmohaa/releases/latest`
-  (`code/sys/sys_update_checker.cpp`), so fork players are told to "update" to upstream and lose
-  the fork's fixes.
-- **Shape:** point it at `OpenGamePlus/OpenMOHAA-Plus`; own version scheme (e.g. `0.83.0-plus.1`);
-  tagged stable releases with a changelog besides the `dev` pre-release; "Plus" visible in console
-  and menu.
+- **Status:** the update checker queries `OpenGamePlus/OpenMOHAA-Plus` (`code/sys/sys_update_checker.cpp`,
+  commit `7b461f77`) and the version is `0.83.0-plus.1`, shown in the console. Missing: tagged
+  stable releases with a fork changelog (`CHANGELOG.md` is upstream's); the only release is the
+  `dev` pre-release, which every `main` build replaces, and only when all platforms build (a
+  macOS runner shortage on 2026-11-12 held it back).
+- **Shape:** tagged stable releases with a fork changelog besides the `dev` pre-release.
 
 ## Automated upstream sync
 
