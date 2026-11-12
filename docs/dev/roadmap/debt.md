@@ -14,21 +14,13 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
 
 ## Known gaps (not fixed)
 
-- The client can hang on shutdown after a SIGTERM or after being dropped by a server.
 - The 1.11 `errormessage` menu shows `com_errorMessage` on one centered line, so long reasons (e.g.
   the "Unpure Client ..." text) are clipped on screen; the console has the full text.
 - "Unknown client game command: disconnect" is still printed by cgame for mid-connection drops
   (harmless).
-- `Item::SetDMMaxAmount` sets the amount instead of the maximum (may be original behaviour).
-- `G_SetTime` compares `level.svsStartTime != svsTime` (likely meant `svsStartTime`).
 - Stopwatch type (fuse/wet fuse) is not saved; only matters for Spearhead/Breakthrough.
 - No `clang-format` run on fork commits so far.
 - Admin system (#905): `admin_config.txt` is read at start only (no reload command); `ad_*` cover server console commands only, not game commands (for example `callvote` settings); login throttling is per address and kept in memory.
-- The "Generate Documentation" workflow (`.github/workflows/doxygen-publish.yml`) fails on the fork
-  because GitHub Pages is not enabled for the repository (deploy returns 404). Fix: enable Pages
-  with source "GitHub Actions" in the repository settings (maintainer decision; it publishes the
-  user documentation site). The `dev` pre-release's Windows `-pdb` zips are complete packages
-  (executables plus debug symbols), so they are playable.
 - The #885 gain fix has no automated test yet (needs time-aligned audio measurement with the OpenAL
   wave backend; manual method in `docs/dev/development/testing.md`).
 - Base paks: the client skips only `pak0`-`pak4` when comparing paks (`NUM_ID_PAKS 5` in
@@ -83,6 +75,9 @@ C/CXX flags and `-fsanitize=address,undefined` in linker flags, in a scratch dir
 | #534 | Not reproducible | `vid_restart` works on current code; report looks NVIDIA-proprietary/X11 specific |
 | #937 | Not testable here | Keyboard input cannot be exercised in the headless setup |
 | #928, #917 | Skipped | Upstream PRs #933 and #934 already address them |
+| Client hang on shutdown | Not reproducible | 2026-11-11: `quit` after a kick (3 runs) exits in 0.2 s with 0; SIGTERM exits in 0.1 s with 1 (headless, glibc) |
+| `Item::SetDMMaxAmount` sets the amount | Kept | Reimplemented from the original game; changing it alters DM ammo amounts, and the original `gamex86.dll` was not compared |
+| `G_SetTime` compares `level.svsStartTime != svsTime` | Kept | Only rewrites `CS_LEVEL_START_TIME` more often than needed; no visible symptom, and it sits on the #916 stopwatch path |
 
 ## Not attempted (needs data or hardware not available)
 

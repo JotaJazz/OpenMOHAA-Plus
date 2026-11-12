@@ -3,6 +3,11 @@
 Append-only operational memory. Newest first, at most 3 bullets per stage, never rewrite history.
 Template: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#memory-entry-template).
 
+## 2026-11-11 — bug batch: resident cgame, rehashbans line ends, init time
+- cgame on emulated musl crashed twice: `CL_ShutdownCGame` runs several times, so "nothing loaded" must not mean "unloaded" (a later call freed the resident module's memory); emitters kept the previous level's tiki pointers and crashed the autosave. `rehashbans` now reads CRLF and a last line without newline; the init time prints positive.
+- Not reproduced: client hang on shutdown (kick + quit, SIGTERM). Kept as is: `SetDMMaxAmount`, `G_SetTime` comparison (original-game code, no symptom). The HRTF-off test failed only because the game config picks headphones.
+- GitHub Pages enabled (Actions source); the docs workflow deploys. A second Claude session worked in the same checkout meanwhile (stale `index.lock`): use a worktree for parallel sessions.
+
 ## 2026-11-11 — README follows the sibling projects; repo moved to OpenGamePlus
 - README (en, es) takes the OpenCoD2-Plus / OpenBF1942-Plus layout: banner, "What works today", callouts, Game versions, Roadmap, collapsible Building / Testing / "What is where"; maintainer is OpenGamePlus, as in OpenBF1942-Plus.
 - The repo move had broken the update checker (old API URL answers 301, curl does not follow) and silently disabled the upstream-sync workflow (`github.repository` guard).
