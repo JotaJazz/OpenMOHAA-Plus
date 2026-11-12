@@ -945,5 +945,22 @@ end
         self.assertTrue(any(name not in ("Frag Grenade", "Stielhandgranate") for name in shots), shots)
 
 
+@require_game
+class SkelFiles(GameTestCase):
+    def test_morph_offset_past_the_file(self):
+        # upstream #219: a morph target offset past the end of the .skd read names out of bounds
+        # ('||' instead of '&&') and crashed the server; it must report the data as corrupted
+        import struct
+        import zipfile
+        data = bytearray(zipfile.ZipFile(os.path.join(omoh.game_dir(), "main", "Pak0.pk3"))
+                         .read("models/human/heads/head1.skd"))
+        struct.pack_into("<i", data, 8 + 64 + 20 + 40 + 12, 0x7ff00000)   # header.ofsMorphTargets
+        self.home.write("models/human/heads/head1.skd", bytes(data), "wb")
+        s = self.server("+set", "g_gametype", "1", "+map", "dm/mohdm1")
+        log = s.wait_for(r"Morph targets data is corrupted for 'models/human/heads/head1.skd'", timeout=90)
+        s.wait_for(r"==== InitGame ====|Server Initialization Complete", timeout=60)
+        self.assertEqual(s.quit(), 0, log[-2000:])
+
+
 if __name__ == "__main__":
     unittest.main()

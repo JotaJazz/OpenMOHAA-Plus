@@ -208,9 +208,18 @@ void TIKI_CacheFileSkel(skelHeader_t *pHeader, skelcache_t *cache, int length)
         nBoxBytes     = pHeader->numBoxes * sizeof(skelHitBox_t);
         pMorphTargets = (char *)((byte *)pHeader + pHeader->ofsMorphTargets);
 
-        if (pHeader->ofsMorphTargets > 0 || (pHeader->ofsMorphTargets + pHeader->numMorphTargets) < length) {
+        // Fixed in OPM
+        //  Both bounds must hold ('||' read names past the file), and names stay inside it
+        if (pHeader->ofsMorphTargets > 0 && (pHeader->ofsMorphTargets + pHeader->numMorphTargets) < length) {
+            const char *pEnd = (const char *)pHeader + length;
+
             for (i = 0; i < pHeader->numMorphTargets; i++) {
-                nLen = strlen(pMorphTargets) + 1;
+                nLen = strnlen(pMorphTargets, pEnd - pMorphTargets) + 1;
+                if (pMorphTargets + nLen > pEnd) {
+                    // past the end: the check below reports the data as corrupted
+                    nMorphBytes = length - pHeader->ofsMorphTargets + 1;
+                    break;
+                }
                 nMorphBytes += nLen;
                 pMorphTargets += nLen;
             }
