@@ -741,8 +741,8 @@ void UIFakkBindList::Realign(void)
     if (m_bVirtual) {
         float vNewVirtualScale[2];
 
-        vNewVirtualScale[0] = uid.vidWidth / 640.f;
-        vNewVirtualScale[1] = uid.vidHeight / 480.f;
+        // Changed in OpenMOHAA Plus: the menus' own scale (ui_menuaspect, upstream #583), not width/640 and height/480
+        SetVirtualScale(vNewVirtualScale);
         bVirtualChanged     = VectorCompare2D(m_vVirtualScale, vNewVirtualScale) == 0;
     }
 

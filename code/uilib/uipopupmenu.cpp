@@ -178,8 +178,8 @@ void UIPopupMenu::Create(
 
     if (bVirtualSize) {
         m_bVirtual         = qtrue;
-        m_vVirtualScale[0] = (float)uid.vidWidth / SCREEN_WIDTH;
-        m_vVirtualScale[1] = (float)uid.vidHeight / SCREEN_HEIGHT;
+        // Changed in OpenMOHAA Plus: the menus' own scale (ui_menuaspect, upstream #583), not width/640 and height/480
+        SetVirtualScale(m_vVirtualScale);
     }
 
     if (!(m_describe && m_listener)) {

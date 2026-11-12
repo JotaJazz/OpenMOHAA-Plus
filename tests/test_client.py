@@ -471,6 +471,27 @@ class HudScale(GameTestCase):
         self.assertEqual(left_bar_pixels(1), 0)          # black side bar
         self.assertGreater(left_bar_pixels(0), 1000)     # stretched menu background
 
+    def test_menu_knobs_keep_4_3_on_wide_screens(self):
+        # The advanced options knobs (pulldown menus) used width/640 while their menu used the 4:3
+        # scale: at 1280x720 they were drawn 2.0x wide in a 1.5x frame, cut on the right. The model
+        # detail knob is the 64x64 virtual rect at (4, 316): pixels 166-262 by 474-570 here, and
+        # its white arrow must sit in the middle (x 214), not at the middle of a 128-pixel picture
+        home = omoh.Home()
+        self.addCleanup(home.cleanup)
+        c = omoh.client(home, "+set", "r_mode", "-1", "+set", "r_customwidth", "1280", "+set", "r_customheight", "720")
+        self.games.append(c)
+        c.wait_for(r"Opening IP socket", timeout=60)
+        time.sleep(8)
+        c.send("pushmenu advancedoptions")
+        time.sleep(3)
+        c.send("screenshot silent")
+        time.sleep(2)
+        self.assertEqual(c.quit(), 0)
+        _, _, rows = read_tga(glob.glob(os.path.join(home.path, "main", "screenshots", "shot*.tga"))[0])
+        arrow = [x for y in range(474, 570) for x in range(166, 262) if min(rows[y][x]) > 200]
+        self.assertGreater(len(arrow), 20)
+        self.assertAlmostEqual(sum(arrow) / len(arrow), 214, delta=8)
+
     def test_ui_hudscale_scales_the_hud(self):
         # upstream #585: at 1920x1080 the HUD is drawn at its 640x480 pixel size; ui_hudscale enlarges it
         normal, double = self.shot(1), self.shot(2)
