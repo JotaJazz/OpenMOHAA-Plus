@@ -33,7 +33,9 @@ Update when a fix leaves something open or an issue is rejected. Issue numbers a
   generates its own parser.
 
 - Vulkan renderer ([renderer-vulkan.md](../architecture/renderer-vulkan.md)): one frame in flight
-  (every submit waits for the GPU), one memory allocation per texture (drivers may cap allocations
+  (every submit waits for the GPU; measured 2026-11-12 on an RTX 5080, Windows, offscreen, no
+  vsync: 850-950 fps at 1080p and at 4K on dm/mohdm2, 1 ms frames, the engine's own cap, so not
+  worth changing until a slower GPU shows it), one memory allocation per texture (drivers may cap allocations
   near 4096; measured 450-540 images per map), pipelines created on first use, without an
   on-disk cache. Measured 2026-11-12 on dm/mohdm2: 14 pipelines, 7.2 ms in all on an RTX 5080
   (Windows), 1.0 ms with a `VkPipelineCache` saved to disk; under a frame, and NVIDIA and Mesa
